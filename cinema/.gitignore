@@ -1,0 +1,17 @@
+# Ignorer l'environnement virtuel
+env/
+venv/
+
+# Ignorer la base de données SQLite
+*.new_projet_db.sqlite3
+
+# Ignorer les fichiers Python compilés
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignorer les fichiers de log
+*.log
+
+# Ignorer les fichiers d'environnement
+.env

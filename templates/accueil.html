@@ -1,0 +1,69 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>bonjours</h1>
+
+    <div class="navbar">
+        <a href="{% url 'films:films' %}">films</a>
+        <a href="{% url 'users:connexion' %}">connexion</a>
+        <a href="{% url 'contact' %}">contact</a>
+    </div>
+
+    <br><br>
+    <form method="get" action="{% url 'recherche_film:recommandation' %}">
+        <input type="text" name="film">
+        <button type="submit">recherche</button>
+    </form>
+    
+    <h1>tu a tapé ce film : {{ films_recommande.titre }}</h1>
+    {% for i in films_recommande %}
+        {{ i.resume }}
+        {% if i.image_url %}
+            <img src="{{ i.image_url }}" width="200">
+        {% else %}
+            <p>pas d'image</p>
+        {% endif %}
+    {% endfor %}
+
+    <br><br>
+
+    {% if movies %}
+        <h2>Films réalisés par {{ realisator }}</h2>
+        <ul>
+            {% for movie in movies %}
+                <li>{{ movie.title }} ({{ movie.release_date }}) {{ movie.overview }}</li>
+                {% if movie.poster_path %}
+                    <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" width="200">
+                {% else %}
+                    <p>pas d'image</p>
+                {% endif %}
+            {% endfor %}
+
+        </ul>
+    {% else %}
+        <p>Pas de films trouvés.</p>
+    {% endif %}
+    <br>
+    {% if movies_similar %}
+        <h2>Films similaires</h2>
+        <ul>
+            {% for i in movies_similar %}
+                <li>{{ i.title }} ({{ i.release_date }}) {{ i.overview }}</li>
+                {% if i.poster_path %}
+                    <img src="https://image.tmdb.org/t/p/w500{{ i.poster_path }}" width="200">
+                {% else %}
+                    <p>pas d'image</p>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Pas de films similaires trouvés.</p>
+    {% endif %}
+
+    
+</body>
+</html>

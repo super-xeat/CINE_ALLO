@@ -1,0 +1,48 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>liste film</h1>
+
+
+    <form action="{% url 'films:recherche' %}" method="get">
+        {% csrf_token %}
+        <input type="text" name="query" value="{{ query }}">
+        <button type="submit">rechercher</button>
+    </form>
+
+
+    {% if films_search %}
+    <h1>{{ query }}</h1>
+        {% for movie in films_search %}
+            <p>{{ movie.title }}</p>
+            <p>{{ movie.resume }}</p>
+            {% if movie.image_url %}
+                <img src="{{ movie.image_url }}" width="200">
+            {% else %}
+             <p>pas d'image</p>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>aucun film trouvé</p>
+    {% endif %}
+
+
+    
+    {% if films %}
+    <h1>Liste de films populaire</h1>
+        {% for film in films %}
+            <a href="{% url 'films:detail_film' film.movie_id %}">{{ film.titre }}</a>
+            <p>note : {{ film.note }}</p>
+            {% if film.image_url %}
+                <img src="{{ film.image_url }}" width="200">
+            {% else %}
+                <p>pas d'image</p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,31 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>connecte toi</h1>
+    {% if user.is_authenticated %}
+        <h2>bienvenue {{ user.username }}</h2>
+        <h1>(vous etes connecté)</h1>
+        <form method="POST" action="{% url 'users:deconnexion' %}">
+            {% csrf_token %}
+            <button type="submit">se deconnecter</button>
+        </form>
+    {% else %}
+        <h1> pas encore connecté</h1>
+        <form method='POST' action="{% url 'users:connexion' %}">
+            {% csrf_token %}
+            <label for="username">identifiant</label>
+            <input type="text" name="username" required>
+            <br>
+            <label for="password">mot de passe</label>
+            <input type="text" name="password" required>
+            <br>
+            <button type="submit">se connecter</button>
+        </form>
+    {% endif %}
+    <a href="{% url 'users:inscription' %}">tu na pas de compte, inscrit toi ici</a>
+</body>
+</html>
