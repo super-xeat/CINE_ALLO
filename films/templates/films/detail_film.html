@@ -1,17 +1,67 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+{% extends 'accueil.html' %}
+
+{% block content %}
+
     <h1>{{ film_details.original_title }}</h1>
     <p>budget: {{ film_details.budget }}</p>
     <p>popularité: {{ film_details.popularity }}</p>
-
     {% if film_details.image_url %}
         <img src="{{ film_details.image_url }}" width="200">
     {% endif %}
 
-</body>
-</html>
+    <h2>acteur principaux</h2>
+    <ul>
+        {% for i in acteur %}
+            {{ i.name }}
+            {{ i.personnage }}
+        {% endfor %}
+    </ul>
+
+    <h1>films similaire</h1>
+    <div id="paragraphe"></div>
+
+
+    <h1>Commentaires</h1>
+    {% for i in commentaires %}
+        <p>{{ i.auteur }}</p>
+        <p>{{ i.texte }}</p>
+    {% endfor %}
+
+
+    {% if user.is_authenticated %}
+        <form action="{% url 'films:detail_film' movie_id %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">envoyer</button>
+        </form>
+    {% else %}
+        <p>tu doit etre connecté</p>
+    {% endif %}
+    <script>
+        const movieId = "{{ film_details.movie_id }}"
+
+        async function similar() {
+            const apikey = "{{ api_key|escapejs }}"
+            const url = `https://api.themoviedb.org/3/movie/${movieId}/similar?api_key=${apikey}&language=fr-FR`
+            
+            const response = await fetch(url)
+            const data = await response.json()
+            const films = data.results.slice(0, 10)
+
+            const paragraphe = document.querySelector("#paragraphe")
+            
+            films.forEach(film => {
+                const div = document.createElement("div")
+                div.innerHTML = `
+                <p>${film.title}</p>
+                <img src="https://image.tmdb.org/t/p/w200${film.poster_path}" />
+                <p>${film.overview}</p>
+                `
+                paragraphe.appendChild(div)
+        })
+        
+    }
+    similar()
+    </script>
+
+{% endblock %}
