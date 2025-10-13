@@ -1,12 +1,11 @@
+
+
 from django.urls import path
-from . import views
+from .views import Liste_movie, Film_meilleur_note, DiscoverView
 
-
-app_name = 'films'
 
 urlpatterns = [
-    path('', views.films, name='films'),
-    path('recherche/', views.recherche, name='recherche'),
-    path('recherche_avancer/', views.recherche_avancer, name='recherche_avancer'),
-    path('<int:movie_id>/', views.detail_film, name='detail_film'),
+    path('liste_movie/', Liste_movie.as_view(), name='liste_movie'),
+    path('film_meilleur_note/', Film_meilleur_note.as_view(), name='film_meilleur_note'),
+    path('discover/', DiscoverView.as_view(), name='discover')
 ]

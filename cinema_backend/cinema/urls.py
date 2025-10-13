@@ -19,10 +19,6 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', views.accueil, name='accueil'),
-    path('film/', include('films.urls')),
-    path('users/', include('users.urls')),
-    path('recherche_film/', include('recherche_film.urls')),
-    path('contact/', views.contact, name='contact'),
+    path('api/', include('recherche_film.urls')),
+    path('api/films/', include('films.urls'))
 ]
