@@ -95,3 +95,24 @@ class DiscoverView(APIView, Listeview):
         return Response({
             'liste_discover_filtre': result
         })
+    
+
+class Detail_movie(APIView, Listeview):
+
+    def get(self, request):
+
+        movie_id = request.GET.get('movie_id')
+
+        detail_movie = self.appel_tmdb(
+            endpoint=f'movie/{movie_id}',
+            params={'include_adult': False}
+        )
+
+        if not detail_movie:
+            return Response({'erreur film introuvable'})
+        
+        response = detail_movie.json()
+
+        return Response({
+            'detail_film': response
+        })

@@ -78,7 +78,7 @@ class Recommandationview(APIView):
         response_data = {
             'film_detail': response_detail,
             'film_similaire': response_similar,
-            'film_recommandé': response_recommandation
+            'film_recommande': response_recommandation
         }
 
         return Response(response_data)
