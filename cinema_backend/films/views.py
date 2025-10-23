@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import generics
 from django.conf import settings
 import requests
-
+from rest_framework.permissions import AllowAny
 
 
 class Listeview:
@@ -29,7 +29,10 @@ class Listeview:
 
 
 class Liste_movie(APIView, Listeview):
-      
+    
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
     def get(self, request):
 
         liste_movie = self.appel_tmdb(
@@ -39,7 +42,7 @@ class Liste_movie(APIView, Listeview):
 
         if not liste_movie:
             return Response({'erreur pas de film'}, status=400)
-        
+         
         result = liste_movie.json().get('results', [])
         return Response({
            'liste_movie': result  
@@ -47,7 +50,10 @@ class Liste_movie(APIView, Listeview):
     
 
 class Film_meilleur_note(APIView, Listeview):
-     
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
     def get(self, request):
 
         meilleure_note = self.appel_tmdb(
@@ -66,6 +72,9 @@ class Film_meilleur_note(APIView, Listeview):
       
 
 class DiscoverView(APIView, Listeview):
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
 
     def get(self, request):
         
@@ -99,6 +108,9 @@ class DiscoverView(APIView, Listeview):
 
 class Detail_movie(APIView, Listeview):
 
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    
     def get(self, request):
 
         movie_id = request.GET.get('movie_id')

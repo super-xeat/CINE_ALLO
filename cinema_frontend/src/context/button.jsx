@@ -1,10 +1,14 @@
 
 
-export default function Button({children, style, onclick, color, disabled=false}) {
+export default function Button({children, style, onClick, color, disabled=false}) {
 
     
     return(
-        <button style={style} onclick={onclick}>
+        <button 
+            style={style} 
+            onClick={onClick}
+            disabled={disabled}
+        >
             {children}
         </button>
     )

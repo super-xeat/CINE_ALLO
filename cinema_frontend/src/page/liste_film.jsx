@@ -1,12 +1,14 @@
 
 import { useState, useEffect } from "react";
-import Card_film from "./film_card";
+import Card_film from "../components/film_card";
+import Hook_favori from "../hook/hook_favori";
+import Button from "../context/button"
 
 
 export default function Liste_films() {
 
-
     const [liste, setliste] = useState([])
+    const {Favori} = Hook_favori()
 
     useEffect(()=> {
         const liste_film = async()=> {
@@ -30,6 +32,7 @@ export default function Liste_films() {
                 {liste.map((film)=>(
                     <li key={film.id}>
                         <Card_film film={film}/>
+                        <Button onClick={()=>Favori(film.id)}>Ajouter au favorie</Button>
                     </li>
                 ))}
             </ul>

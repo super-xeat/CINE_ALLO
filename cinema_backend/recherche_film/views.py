@@ -5,10 +5,13 @@ from rest_framework.response import Response
 from django.conf import settings
 import os
 import requests
-
+from rest_framework.permissions import AllowAny
 
 
 class Recommandationview(APIView):
+    
+    permission_classes = [AllowAny]
+    authentication_classes = []
     
     def appel_tmdb(self, endpoint, params=None):
 
@@ -58,16 +61,18 @@ class Recommandationview(APIView):
         response_similar = film_similar.json().get('results', [])
 
         film_recommandation = self.appel_tmdb(
-            endpoint= f'movie/{film_id}/recommendations'
+            endpoint= f'movie/{film_id}/recommendations',
+            params={'language': 'fr-FR'}
         )
 
         if not film_recommandation:
             return Response({'erreur pas de films recommandé'})
         
-        response_recommandation = film_recommandation.json()
+        response_recommandation = film_recommandation.json().get('results', [])
 
         film_detail = self.appel_tmdb(
-            endpoint= f'movie/{film_id}'
+            endpoint= f'movie/{film_id}',
+            params={'language': 'fr-FR'}
         )
 
         if not film_detail:

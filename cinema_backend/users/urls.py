@@ -1,0 +1,14 @@
+
+from django.urls import path
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
+from .views import ListeFilmViews, RegisterViews, SupprimeView, ProfileView, AjoutFilmview
+
+urlpatterns = [
+    path('login', TokenObtainPairView.as_view(), name='register'),
+    path('logout', TokenBlacklistView.as_view(), name='logout'), 
+    path('register', RegisterViews.as_view(), name='register'),
+    path('ajout_film', AjoutFilmview.as_view(), name='ajouter_film'),
+    path('supprimer/<int:pk>', SupprimeView.as_view(), name='supprimer'),
+    path('voir_liste', ListeFilmViews.as_view(), name='voir_liste'),
+    path('auth/profile', ProfileView.as_view(), name='profile'),
+] 

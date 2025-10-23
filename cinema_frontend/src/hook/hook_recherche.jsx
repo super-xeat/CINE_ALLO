@@ -12,13 +12,14 @@ export default function Recherche_barre() {
     
     const fetch_recherche = async(item) => {
         if (!item) return
-        
+        console.log('item :', item)
         setloading(true)
         try {
-            const response = await fetch(`http://localhost:8000/api/films/recommandation?=${encodeURIComponent(item)}`)
+            const response = await fetch(`http://localhost:8000/api/recommandation?q=${encodeURIComponent(item)}`)
             const data = await response.json()
 
             setresult(data)
+            console.log(data)
         } catch {
             console.log('erreur pas de data')
             setresult([])
