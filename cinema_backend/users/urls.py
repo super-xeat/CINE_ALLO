@@ -10,5 +10,5 @@ urlpatterns = [
     path('ajout_film', AjoutFilmview.as_view(), name='ajouter_film'),
     path('supprimer/<int:pk>', SupprimeView.as_view(), name='supprimer'),
     path('voir_liste', ListeFilmViews.as_view(), name='voir_liste'),
-    path('auth/profile', ProfileView.as_view(), name='profile'),
+    path('profile', ProfileView.as_view(), name='profile'),
 ] 

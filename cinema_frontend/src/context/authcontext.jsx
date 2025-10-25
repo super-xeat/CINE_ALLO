@@ -30,7 +30,7 @@ function AuthProvider({children}) {
             const response = await fetch('http://localhost:8000/auth/login', {
                 method: 'POST',
                 headers: {
-                    'Content-type': 'application/json',
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     username: username,
@@ -38,14 +38,17 @@ function AuthProvider({children}) {
                 })
             })
             if (!response.ok) {
-                console.log('erreur')
+                const erreur = await response.text()
+                console.log('erreur', erreur)
             }
-            const token = await response.json()
-            localStorage.setItem('token', token.access)
+            const data = await response.json()
+            console.log('data :', data)
+
+            localStorage.setItem('token', data.access)
             setIsAuth(true)
             
         } catch (error) {
-            console.error('erreur de login')
+            console.error('erreur de login', error)
         }
     }
 

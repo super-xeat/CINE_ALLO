@@ -10,7 +10,10 @@ export default function Card_film({film}) {
             </Link>
             <h2>{film.release_date}</h2>
             <p>{film.overview}</p>
-
+            <img src={film.poster_path ? 
+            `https://image.tmdb.org/t/p/w500${film.poster_path}`
+            : '/placeholder-poster.jpg'
+            }/>
         </div>
     )
 }

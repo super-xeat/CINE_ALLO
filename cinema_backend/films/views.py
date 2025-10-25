@@ -9,7 +9,7 @@ from rest_framework.permissions import AllowAny
 
 
 class Listeview:
-
+ 
     def appel_tmdb(self, endpoint, params=None):
         base_url = "https://api.themoviedb.org/3"
         api_key = settings.TMDB_API_KEY
@@ -85,8 +85,7 @@ class DiscoverView(APIView, Listeview):
         params = {
             'include_adult': False,
             'sort_by': sort_by
-        }
-        
+        }  
         if genre:
             params['with_genres'] = genre  
         if release_year:

@@ -46,4 +46,5 @@ class ProfileView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
-
+    def get_object(self):
+        return self.request.user
