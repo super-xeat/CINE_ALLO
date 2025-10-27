@@ -1,11 +1,12 @@
 
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
 from django.conf import settings
 import requests
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .serializer import CommentaireSerializer
+from .models import Commentaire
 
 
 class Listeview:
@@ -27,11 +28,9 @@ class Listeview:
         return response
     
 
-
 class Liste_movie(APIView, Listeview):
     
     permission_classes = [AllowAny]
-    authentication_classes = []
 
     def get(self, request):
 
@@ -52,7 +51,6 @@ class Liste_movie(APIView, Listeview):
 class Film_meilleur_note(APIView, Listeview):
 
     permission_classes = [AllowAny]
-    authentication_classes = []
 
     def get(self, request):
 
@@ -60,7 +58,6 @@ class Film_meilleur_note(APIView, Listeview):
             endpoint='movie/top_rated',
             params={'include_adult': False}
         )
-
         if not meilleure_note:
             return Response({'erreur pas de films'})
         
@@ -68,14 +65,12 @@ class Film_meilleur_note(APIView, Listeview):
 
         return Response({
             'top_rated': result
-        })
-      
+        })     
 
 class DiscoverView(APIView, Listeview):
 
     permission_classes = [AllowAny]
-    authentication_classes = []
-
+    
     def get(self, request):
         
         genre = request.GET.get('with_genres') 
@@ -94,7 +89,6 @@ class DiscoverView(APIView, Listeview):
             endpoint='discover/movie',
             params=params
         )
-
         if not movie_genre or movie_genre.status_code != 200:
             return Response({'erreur': 'TMDB indisponible'}, status=503)
         
@@ -104,11 +98,9 @@ class DiscoverView(APIView, Listeview):
             'liste_discover_filtre': result
         })
     
-
 class Detail_movie(APIView, Listeview):
 
     permission_classes = [AllowAny]
-    authentication_classes = []
     
     def get(self, request):
 
@@ -127,3 +119,24 @@ class Detail_movie(APIView, Listeview):
         return Response({
             'detail_film': response
         })
+    
+class Commentaireview(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        film_id = request.GET.get('movie_id')
+        if not film_id:
+            return Response({'erreur film_id introuvable'}, status=400)
+        
+        queryset = Commentaire.objects.filter(film_id=film_id)
+        serializer = CommentaireSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    
+    def post(self, request):
+        serializer = CommentaireSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(utilisateur=request.user)
+            return Response(serializer.data)
+        return Response(serializer.errors)

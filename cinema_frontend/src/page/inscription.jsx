@@ -10,6 +10,7 @@ export default function Register() {
     const [identifiant, setidentifiant] = useState('')
     const [email, setemail] = useState('')
     const [password, setpassword] = useState('')
+    const [file, setfile] = useState(null)
     const [confimpassword, setconfirmpassword] = useState('')
 
     function handlesubmit(e) {
@@ -19,31 +20,29 @@ export default function Register() {
         setbio('')
         setidentifiant('')
         setemail('')
+        setfile(null)
     }
 
     
     async function Inscription() {
+        const formdata = new FormData()
+        formdata.append('image', file)
+        formdata.append('username', username)
+        formdata.append('bio', bio)
+        formdata.append('identifiant', identifiant)
+        formdata.append('email', email)
+        formdata.append('password', password)
+
         try {
             const response = await fetch('http://localhost:8000/auth/register', {
                 method: 'POST',
-                headers: {'Content-type': 'application/json'},
-                body: JSON.stringify({
-                    username: username,
-                    bio: bio,
-                    identifiant:identifiant,
-                    email:email,
-                    password:password,
-                    confirm_password: confimpassword
-                })
+                body: formdata
             })
-            if (!response) {
-                console.log('pas de reponse')
-            }
-            const data = await response.json()
-            console.log('data :', data)
 
+            const data = await response.json()
+            console.log('data envoyé', data)
         } catch(error) {
-            console.error('erreur de useeffect')
+            console.error('erreur de formdata', error)
         }
     }
     
@@ -68,7 +67,9 @@ export default function Register() {
 
                 <input onChange={(e)=>setconfirmpassword(e.target.value)} 
                 type="text" value={confimpassword} placeholder="confirm"/>
-                           
+
+                <input type="file" onChange={(e)=>setfile(e.target.files[0])}
+                value={file}/>       
             <Button type='submit'>envoyer</Button>
             </form>
         </div>

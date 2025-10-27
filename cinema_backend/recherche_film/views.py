@@ -11,7 +11,6 @@ from rest_framework.permissions import AllowAny
 class Recommandationview(APIView):
     
     permission_classes = [AllowAny]
-    authentication_classes = []
     
     def appel_tmdb(self, endpoint, params=None):
 

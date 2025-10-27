@@ -1,6 +1,9 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import Card_film from "../components/film_card";
+import Hook_favori from "../hook/hook_favori";
+import Button from "../context/button";
 
 
 export default function Discover() {
@@ -8,6 +11,7 @@ export default function Discover() {
     const [result, setresult] = useState([])
     const [searchparams, setsearchparams] = useSearchParams()
     const [loading, setloading] = useState(false)
+    const {Favori} = Hook_favori()
 
     const genres = searchparams.get('with_genres') || ''
     const realised_date = searchparams.get('realised_date') || ''
@@ -31,7 +35,6 @@ export default function Discover() {
     const handlegenre = (e) => {
         const newgenre = e.target.value
         const new_params = new URLSearchParams(searchparams)
-
         if (newgenre) {
             new_params.set('with_genres', newgenre)
         } else {
@@ -43,7 +46,6 @@ export default function Discover() {
     const handledate = (e) => {
         const newdate = e.target.value
         const new_params = new URLSearchParams(searchparams)
-
         if (newdate) {
             new_params.set('year', newdate)
         } else {
@@ -91,9 +93,8 @@ export default function Discover() {
             <div>
                 {result.map((movie) => (
                     <div key={movie.id}>
-                        <h3>{movie.original_title}</h3>
-                        <p>Sortie: {movie.release_date}</p>
-                        <p>Note: {movie.vote_average}/10</p>
+                        <Card_film film={movie}/>
+                        <Button onClick={()=>Favori(movie.id)}>Ajouté au favorie</Button>
                     </div>
                 ))}
             </div>

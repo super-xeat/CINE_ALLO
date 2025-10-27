@@ -1,12 +1,13 @@
 
 
 from django.urls import path
-from .views import Liste_movie, Film_meilleur_note, DiscoverView, Detail_movie
+from .views import Liste_movie, Film_meilleur_note, DiscoverView, Detail_movie, Commentaireview
 
 
 urlpatterns = [
     path('liste_movie', Liste_movie.as_view(), name='liste_movie'),
     path('film_meilleur_note', Film_meilleur_note.as_view(), name='film_meilleur_note'),
     path('discover', DiscoverView.as_view(), name='discover'),
-    path('detail_movie', Detail_movie.as_view(), name='detail_movie')
+    path('detail_movie', Detail_movie.as_view(), name='detail_movie'),
+    path('commentaires', Commentaireview.as_view(), name='commentaires')
 ]
