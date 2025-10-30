@@ -1,16 +1,57 @@
-
 from .serializer import RegisterSerializer, Liste_film_Serializer, ProfileSerializer, AjoutFilmSerializer
 from .models import User, Liste_film
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.views import APIView
+from django.core.mail import send_mail
+from rest_framework import  status
+import jwt
+from datetime import datetime, timedelta
+from django.conf import settings
+from django.utils import timezone
 
 
-class RegisterViews(generics.CreateAPIView):
-    serializer_class = RegisterSerializer
+class RegisterViews(APIView):
     permission_classes = [AllowAny]
     
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save(is_active=False)
+            token = jwt.encode(
+                {
+                    'user_id': user.id,
+                    'exp': timezone.now() + timedelta(hours=24)
+                },
+                settings.SECRET_KEY,  
+                algorithm='HS256'
+            )
+
+            send_mail(
+                'Activez votre compte Cine Allo',
+                f'Cliquez ici pour activer votre compte : http://localhost:8000/auth/confirm-email/{token}/',
+                'noreply@cinema.com',
+                [user.email],
+                fail_silently=False
+            )
+            return Response({'succé': 'compte créé : vérifiez vos mails'})
+        else:
+            return Response('erreur', status=404)
+
+
+class ConfirmEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, user_id):
+        try :
+            user = User.objects.get(id=user_id)
+            user.is_active = True
+            user.save()
+            return Response({'compte créé avec succés'})
+        except User.DoesNotExist:
+            return Response({'lien de confirmation invalide'}, status=400)
+
 
 
 class AjoutFilmview(generics.CreateAPIView):

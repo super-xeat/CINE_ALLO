@@ -60,16 +60,16 @@ export default function Register() {
                 type="text" value={identifiant} placeholder="identifiant"/>
                 
                 <input onChange={(e)=>setemail(e.target.value)} 
-                type="text" value={email} placeholder="email"/>
+                type="email" value={email} placeholder="email"/>
 
                 <input onChange={(e)=>setpassword(e.target.value)} 
-                type="text" value={password} placeholder="password"/>
+                type="password" value={password} placeholder="password"/>
 
                 <input onChange={(e)=>setconfirmpassword(e.target.value)} 
-                type="text" value={confimpassword} placeholder="confirm"/>
+                type="password" value={confimpassword} placeholder="confirm"/>
 
-                <input type="file" onChange={(e)=>setfile(e.target.files[0])}
-                value={file}/>       
+                <input type="file" onChange={(e)=>setfile(e.target.files[0])}/>
+                       
             <Button type='submit'>envoyer</Button>
             </form>
         </div>

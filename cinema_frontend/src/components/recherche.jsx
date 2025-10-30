@@ -1,8 +1,9 @@
 
-
 import { useState, useEffect } from "react";
 import Button from "../context/button";
 import Recherche_barre from "../hook/hook_recherche";
+import { FaSearch } from "react-icons/fa";
+import './recherche.css'
 
 
 export default function Recherche() {
@@ -16,12 +17,19 @@ export default function Recherche() {
     }
     console.log('data :', result)
     return(
-        <div>
-            <form onSubmit={handlesubmit}>
-                <input value={query} type="text" onChange={(e)=>setquery(e.target.value)}/>             
-                <Button type='submit'>
-                    rechercher
-                </Button>
+        <div className="recherche">
+            <form onSubmit={handlesubmit} className="formulaire">
+                <div className="input-wrapper">
+                    <input 
+                        value={query} 
+                        type="text" 
+                        onChange={(e) => setquery(e.target.value)} 
+                        placeholder="Rechercher un film..." 
+                    />
+                    <Button type="submit" className="search-btn">
+                        <FaSearch />
+                    </Button>
+                </div>              
             </form>
             {loading && <p>Chargement...</p>}
             {result && (

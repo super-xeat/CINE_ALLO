@@ -1,0 +1,83 @@
+.recherche {
+    width: 100vw;
+    height: 75vh;
+    min-height: 300px;
+    min-width: 300px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    /* Background animé */
+    background: linear-gradient(-45deg, #000000, #4d4c4c, #050505, #0d0d0d);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+
+    color: #fff;
+    padding: 1rem;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Formulaire */
+.formulaire {
+    display: flex;
+    align-items: center;
+}
+
+/* Wrapper input + loupe */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Input */
+.input-wrapper input {
+    flex: 1; /* prend tout l’espace disponible */
+    padding: 0.5rem 1rem;
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+}
+
+.input-wrapper input:hover,
+.input-wrapper input:focus {
+    width: 300px;
+    outline: none;
+}
+
+/* Bouton loupe intégré */
+.input-wrapper .search-btn {
+    position: absolute;
+    right: 5px;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #1db954;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.input-wrapper .search-btn:hover {
+    transform: translateY(-50%) scale(1.2);
+}
+
+/* Résultats */
+.recherche h2 {
+    margin-top: 1.5rem;
+}
+
+.recherche ul {
+    margin: 0.5rem 0 1rem 1rem;
+    padding: 0;
+    list-style: disc;
+}

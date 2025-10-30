@@ -1,7 +1,7 @@
 
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
-from .views import ListeFilmViews, RegisterViews, SupprimeView, ProfileView, AjoutFilmview
+from .views import ListeFilmViews, RegisterViews, SupprimeView, ProfileView, AjoutFilmview, ConfirmEmailView
 
 urlpatterns = [
     path('login', TokenObtainPairView.as_view(), name='register'),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('supprimer/<int:pk>', SupprimeView.as_view(), name='supprimer'),
     path('voir_liste', ListeFilmViews.as_view(), name='voir_liste'),
     path('profile', ProfileView.as_view(), name='profile'),
+    path('confirm-email/<int:user_id>/', ConfirmEmailView.as_view(), name='confirm_email')
 ] 

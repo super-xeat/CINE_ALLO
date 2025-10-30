@@ -21,5 +21,8 @@ from . import views
 urlpatterns = [
     path('api/', include('recherche_film.urls')),
     path('api/films/', include('films.urls')),
-    path('auth/', include('users.urls'))
+    path('auth/', include('users.urls')),
+
+    path('api/auth/', include('dj_rest_auth.urls')),
+    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
 ]

@@ -4,11 +4,11 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext()
 
-export function useAuth() {
+export const useAuth = () => {
   return useContext(AuthContext)
 }
 
-function AuthProvider({children}) {
+export default function AuthProvider({children}) {
 
     const [IsAuth, setIsAuth] = useState(false)
     const [loading, setloading] = useState(true)
@@ -37,41 +37,31 @@ function AuthProvider({children}) {
                     password: password
                 })
             })
-            if (!response.ok) {
-                const erreur = await response.text()
-                console.log('erreur', erreur)
-            }
+
             const data = await response.json()
             console.log('data :', data)
 
+            if (!response.ok) {
+                throw new Error(data.detail || 'Identifiants incorrects')
+            }
+            
             localStorage.setItem('token', data.access)
+            localStorage.setItem('refresh_token', data.refresh)
             setIsAuth(true)
             
         } catch (error) {
             console.error('erreur de login', error)
+            throw error
         }
     }
 
-    const Logout = async () => {
-        try {
-            const token = localStorage.getItem('token')
-            await fetch('http://localhost:8000/auth/logout', {
-                method: 'POST',
-                headers: {
-                    'Content-type':'application/json',
-                    'Authorization':`Bearer ${token}`
-                }
-            })
-
-            localStorage.removeItem('token')
-            setIsAuth(false)
-            alert('vous etes deconnecté')
-        } catch(error) {
-            console.error('probleme appel api')
-            localStorage.removeItem('token')
-        }
-        
-    }
+    const Logout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('refresh_token')
+    setIsAuth(false)
+    alert('vous etes deconnecté')
+    console.log('Déconnecté')
+}
 
     return (
         <AuthContext.Provider value={{Login, Logout, IsAuth, setIsAuth, loading, setloading}}>
@@ -80,4 +70,3 @@ function AuthProvider({children}) {
     )
 }
 
-export default AuthProvider

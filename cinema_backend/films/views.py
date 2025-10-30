@@ -122,18 +122,20 @@ class Detail_movie(APIView, Listeview):
     
 class Commentaireview(APIView):
 
-    permission_classes = [IsAuthenticated]
-
+    permission_classes = [AllowAny]
+    
     def get(self, request):
         film_id = request.GET.get('movie_id')
         if not film_id:
             return Response({'erreur film_id introuvable'}, status=400)
         
         queryset = Commentaire.objects.filter(film_id=film_id)
+        if not queryset:
+            return Response([], status=200)
         serializer = CommentaireSerializer(queryset, many=True)
         return Response(serializer.data)
     
-    
+
     def post(self, request):
         serializer = CommentaireSerializer(data=request.data)
         if serializer.is_valid():

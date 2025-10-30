@@ -9,6 +9,7 @@ import Profil from './page/profil';
 import LoginPage from './page/login';
 import AuthProvider from './context/authcontext';
 import Discover from './page/discover'
+import Footer from './components/footer'
 
 
 export default function App() {
@@ -26,7 +27,8 @@ export default function App() {
           <Route path='/profile' element={<Profil/>}/>
           <Route path='/discover' element={<Discover/>}/>
         </Routes>
-      </Router>
+        <Footer/>
+      </Router>   
     </AuthProvider>
   )
 }

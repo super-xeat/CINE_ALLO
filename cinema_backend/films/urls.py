@@ -9,5 +9,6 @@ urlpatterns = [
     path('film_meilleur_note', Film_meilleur_note.as_view(), name='film_meilleur_note'),
     path('discover', DiscoverView.as_view(), name='discover'),
     path('detail_movie', Detail_movie.as_view(), name='detail_movie'),
-    path('commentaires', Commentaireview.as_view(), name='commentaires')
+    path('commentaires', Commentaireview.as_view(), name='commentaires'),
+    
 ]
