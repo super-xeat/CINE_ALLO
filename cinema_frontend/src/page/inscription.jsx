@@ -26,6 +26,8 @@ export default function Register() {
     
     async function Inscription() {
         const formdata = new FormData()
+        formdata.append('confirm_password', confimpassword)
+    
         formdata.append('image', file)
         formdata.append('username', username)
         formdata.append('bio', bio)
@@ -34,7 +36,7 @@ export default function Register() {
         formdata.append('password', password)
 
         try {
-            const response = await fetch('http://localhost:8000/auth/register', {
+            const response = await fetch('http://localhost:8000/auth/register/', {
                 method: 'POST',
                 body: formdata
             })

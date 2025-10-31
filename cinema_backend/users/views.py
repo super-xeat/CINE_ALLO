@@ -10,11 +10,14 @@ import jwt
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.utils import timezone
+from rest_framework.parsers import MultiPartParser
+from django.shortcuts import redirect
 
 
 class RegisterViews(APIView):
     permission_classes = [AllowAny]
-    
+    parser_classes = [MultiPartParser]
+
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -31,28 +34,81 @@ class RegisterViews(APIView):
             send_mail(
                 'Activez votre compte Cine Allo',
                 f'Cliquez ici pour activer votre compte : http://localhost:8000/auth/confirm-email/{token}/',
-                'noreply@cinema.com',
+                'xeatteam@gmail.com',
                 [user.email],
                 fail_silently=False
             )
             return Response({'succé': 'compte créé : vérifiez vos mails'})
         else:
-            return Response('erreur', status=404)
+            return Response(serializer.errors, status=404)
 
 
 class ConfirmEmailView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request, user_id):
+    def get(self, request, token):
         try :
-            user = User.objects.get(id=user_id)
+            decode = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            user = User.objects.get(id=decode['user_id'])
             user.is_active = True
             user.save()
-            return Response({'compte créé avec succés'})
+            return redirect('http://localhost:5173/login?statut=success')
+        
         except User.DoesNotExist:
             return Response({'lien de confirmation invalide'}, status=400)
+        
+        except jwt.ExpiredSignatureError:
+            return Response({'erreur le token a expiré'})
 
 
+class PasswordResetview(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+    
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            token = jwt.encode({
+                'user_id': user.id,
+                'exp': timezone.now() + timedelta(hours=24)
+            }, settings.SECRET_KEY, algorithm='HS256')
+            
+            send_mail(
+                'Réinitialisez votre mot de passe Cine Allo', 
+                f'Cliquez ici pour réinitialiser : http://localhost:8000/auth/passwordreset/confirm/?token={token}',  
+                'noreply@cineallo.com',  
+                [user.email],  
+                fail_silently=False
+            )
+            return Response({'email envoyé avec succé'})
+                
+        else:
+            return Response({'regardez vos mail'})
+
+
+class PasswordResetConfirmview(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        token = request.data.get('token')
+        new_password = request.data.get('password')
+        if new_password:
+            try:
+                decode = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+                user = User.objects.get(id=decode['user_id'])
+                user.set_password(new_password)
+                user.save()
+                return Response({'mot de passe changer'})
+            
+            except jwt.InvalidTokenError:
+                return Response({'erreur pas le bon token'}, status=400)
+            except User.DoesNotExist:
+                return Response({'erreur user introuvable'}, status=400)
+
+        else:
+            return Response({"erreur"})
+        
 
 class AjoutFilmview(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
