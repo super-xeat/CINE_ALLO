@@ -15,7 +15,7 @@ import { useAuth } from '../context/authcontext';
 import Button from '../context/button';
 import Recherche_barre from '../hook/hook_recherche';
 
-// --- Style barre de recherche ---
+
 const Search = styled('form')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -59,11 +59,10 @@ export default function Navbar() {
   const location = useLocation();
   const { fetch_recherche, query, setquery } = Recherche_barre();
 
-  // Menu hamburger (mobile)
+
   const [mobileAnchor, setMobileAnchor] = React.useState(null);
   const isMobileMenuOpen = Boolean(mobileAnchor);
 
-  // Menu profil
   const [profileAnchor, setProfileAnchor] = React.useState(null);
   const isProfileMenuOpen = Boolean(profileAnchor);
 
@@ -78,17 +77,15 @@ export default function Navbar() {
     navigate(-1);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    fetch_recherche(query);
-  };
+  function handleSubmit(e) {
+      e.preventDefault()
+      navigate(`/page_result?q=${encodeURIComponent(query)}`)
+    }
 
   const links = [
     { label: 'Accueil', to: '/' },
     { label: 'Liste Films', to: '/liste_films' },
     { label: 'Découverte', to: '/discover' },
-    { label: 'Contact', to: '/contact' },
-    { label: 'À propos', to: '/a_propos' },
   ];
 
   return (
@@ -101,7 +98,6 @@ export default function Navbar() {
         }}
       >
         <Toolbar>
-          {/* --- Icône menu hamburger (mobile) --- */}
           <IconButton
             size="large"
             edge="start"
@@ -113,7 +109,6 @@ export default function Navbar() {
             <MenuIcon />
           </IconButton>
 
-          {/* --- Logo --- */}
           <Typography
             variant="h6"
             noWrap
@@ -130,7 +125,6 @@ export default function Navbar() {
             🎬 CINE ALLO
           </Typography>
 
-          {/* --- Barre de recherche (uniquement si pas sur '/') --- */}
           {location.pathname !== '/' && (
             <Search onSubmit={handleSubmit}>
               <SearchIconWrapper>
@@ -144,11 +138,7 @@ export default function Navbar() {
               />
             </Search>
           )}
-
-          {/* --- Espace flexible --- */}
           <Box sx={{ flexGrow: 1 }} />
-
-          {/* --- Liens desktop --- */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
             {links.map((link) => (
               <Typography
@@ -209,7 +199,6 @@ export default function Navbar() {
             )}
           </Box>
 
-          {/* --- Icône profil (à droite, toujours visible) --- */}
           <IconButton
             size="large"
             color="inherit"
@@ -221,7 +210,6 @@ export default function Navbar() {
         </Toolbar>
       </AppBar>
 
-      {/* --- Menu hamburger (mobile) --- */}
       <Menu
         anchorEl={mobileAnchor}
         id="menu-mobile"
@@ -260,7 +248,6 @@ export default function Navbar() {
             ]}
       </Menu>
 
-      {/* --- Menu du profil --- */}
       <Menu
         anchorEl={profileAnchor}
         id="menu-profile"

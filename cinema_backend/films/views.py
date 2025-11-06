@@ -29,7 +29,6 @@ class Listeview:
     
 
 class Liste_movie(APIView, Listeview):
-    
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -67,16 +66,55 @@ class Film_meilleur_note(APIView, Listeview):
             'top_rated': result
         })     
 
-class DiscoverView(APIView, Listeview):
 
+class Serie_meilleur_note(APIView, Listeview):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+
+        meilleur_serie = self.appel_tmdb(
+            endpoint='tv/top_rated',
+            params={'include_adult': False}
+        )
+        if not meilleur_serie:
+            return Response({'erreur de liste'})
+        
+        response = meilleur_serie.json().get('results', [])
+        return Response({
+            'Serie_meilleur_note': response
+        })
+    
+
+class Serie_popular(APIView, Listeview):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+
+        popular_serie = self.appel_tmdb(
+            endpoint='tv/popular',
+            params={'include_adult': False}
+        )
+        if not popular_serie:
+            return Response({'erreur de liste'})
+        
+        meilleur_serie = popular_serie.json().get('results', [])
+        return Response({
+            'Serie_meilleur': meilleur_serie
+        })
+
+
+class DiscoverView(APIView, Listeview):
     permission_classes = [AllowAny]
     
     def get(self, request):
-        
+         
         genre = request.GET.get('with_genres') 
         sort_by = request.GET.get('sort_by', 'popularity.desc')  
         release_year = request.GET.get('year') 
-        
+        vote_average1 = request.GET.get('vote_average.gte')
+        vote_average2 = request.GET.get('vote_average.lte')
+        pays = request.GET.get('with_origin_country')
+
         params = {
             'include_adult': False,
             'sort_by': sort_by
@@ -84,7 +122,14 @@ class DiscoverView(APIView, Listeview):
         if genre:
             params['with_genres'] = genre  
         if release_year:
-            params['primary_release_year'] = release_year       
+            params['primary_release_year'] = release_year   
+        if vote_average1:
+            params['vote_average.gte'] = vote_average1
+        if vote_average2:
+            params['vote_average.lte'] = vote_average2    
+        if pays:
+            params['with_average_country'] = pays
+            
         movie_genre = self.appel_tmdb(
             endpoint='discover/movie',
             params=params
@@ -99,7 +144,6 @@ class DiscoverView(APIView, Listeview):
         })
     
 class Detail_movie(APIView, Listeview):
-
     permission_classes = [AllowAny]
     
     def get(self, request):

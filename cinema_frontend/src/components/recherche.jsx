@@ -1,67 +1,105 @@
-
-import { useState, useEffect } from "react";
 import Button from "../context/button";
 import Recherche_barre from "../hook/hook_recherche";
-import { FaSearch } from "react-icons/fa";
-import './recherche.css'
-
+import './recherche.css';
+import { useState } from "react";
+import CardFilmAccueil from "../components/film_card_accueil";
+import { motion } from "framer-motion";
+import { Grid, Typography } from "@mui/material";
 
 export default function Recherche() {
 
-    const {fetch_recherche, query, setquery, result, loading} = Recherche_barre()
-    
-    function handlesubmit(e) {
-        e.preventDefault()
-        console.log('bouton cliqué', query)
-        fetch_recherche(query)
+  const { fetch_recherche, query, setquery, result, loading } = Recherche_barre();
+  const [change1, setchange1] = useState(false);
+  const [change2, setchange2] = useState(false);
+  const [liste, setliste] = useState([]);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  function handlesubmit(e) {
+    e.preventDefault();
+    fetch_recherche(query);
+    setchange1(true);
+    setchange2(false);
+    setHasSearched(true);
+  }
+
+  async function handleproposition(params) {
+      try {
+          const response = await fetch(`http://localhost:8000/api/films/discover?${params}`);
+          const data = await response.json();
+          setliste(data.liste_discover_filtre || []);
+          setchange1(false);
+          setchange2(true);
+          setHasSearched(true);
+      } catch (error) {
+        console.error('Erreur de fetch', error)
+        setliste([])
+      }
     }
-    console.log('data :', result)
-    return(
-        <div className="recherche">
-            <form onSubmit={handlesubmit} className="formulaire">
-                <div className="input-wrapper">
-                    <input 
-                        value={query} 
-                        type="text" 
-                        onChange={(e) => setquery(e.target.value)} 
-                        placeholder="Rechercher un film..." 
-                    />
-                    <Button type="submit" className="search-btn">
-                        <FaSearch />
-                    </Button>
-                </div>              
-            </form>
-            {loading && <p>Chargement...</p>}
-            {result && (
-            <>
-            {result.film_detail && (
-                <div>
-                    <h2>Film_detail</h2>
-                    <p>{result.film_detail.title}</p>
-                    <p>{result.film_detail.overview}</p>
-                </div>
-            )}
 
-            {result.film_similaire && result.film_similaire.length > 0 && (
-                <>
-                <h2>Films similaire</h2>
+  return ( 
+    <div className={`recherche ${hasSearched ? "recherche-active" : ""}`}>
+      <div className={`search-container ${hasSearched ? "search-top" : "search-center"}`}>
+        <form onSubmit={handlesubmit} className="formulaire">
+          <div className="input-wrapper">
+            <input
+              value={query}
+              type="text"
+              onChange={(e) => setquery(e.target.value)}
+              placeholder="Rechercher un film..."
+              className="search-input"
+            />
+          </div>
+        </form>
 
-                    {result.film_similaire.map((item)=> ( 
-                        <li key={item.id}>{item.original_title}</li>
-                    ))}
-                </>
-            )}
-
-            {result.film_recommande && result.film_recommande.length > 0 && (
-                <>
-                <h2>film recommandé</h2>
-                    {result.film_recommande.map((item)=>(
-                        <li key={item.id}>{item.title}</li>
-                    ))}
-                </>
-            )}
-            </>
-            )}
+        <div className="suggestions">
+          <Button onClick={() => handleproposition("with_genres=35&year=1980&with_origin_country=US")}>
+            Meilleur comédies des années 80
+          </Button>
+          <Button onClick={() => handleproposition("with_genres=27&year_gte=2000&with_origin_country=US")}>
+            Meilleur films horreur des 20 dernières années
+          </Button>
+          <Button onClick={() => handleproposition("with_genres=28&year=2000&with_origin_country=US")}>
+            Meilleur action années 2000
+          </Button>
+          <Button onClick={() => handleproposition("with_genres=10749&with_origin_country=US")}>
+            Comédies romantiques
+          </Button>
+          <Button onClick={() => handleproposition("with_genres=10752&with_origin_country=US")}>
+            Films de guerre
+          </Button>
+          <Button onClick={() => handleproposition("with_genres=10402&year=1980&with_origin_country=US")}>
+            Comédies musicales 80s
+          </Button>
         </div>
-    )
+      </div>
+
+      {loading && <Typography variant="body1">Chargement...</Typography>}
+
+      <Grid container spacing={2} justifyContent="center" sx={{ mt: 3 }} className="resultats-liste">
+        {change1 && result?.film_similaire?.map((film, index) => (
+          <Grid key={film.id} xs={12} sm={10} md={8}>
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+            >
+              <CardFilmAccueil film={film} horizontal />
+            </motion.div>
+          </Grid>
+        ))}
+
+        {change2 && liste?.map((film, index) => (
+          <Grid key={film.id} xs={12} sm={10} md={8}>
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+            >
+              <CardFilmAccueil film={film} horizontal />
+            </motion.div>
+          </Grid>
+        ))}
+      </Grid>
+    </div>
+  );
 }

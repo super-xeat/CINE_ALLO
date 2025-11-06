@@ -10,10 +10,9 @@ import IconButton from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import Button from '@mui/material/Button';
-import { motion } from 'framer-motion';
 import Hook_favori from "../hook/hook_favori";
 
-export default function CardFilm({ film }) {
+export default function CardFilmAccueil({ film }) {
   const { Favori } = Hook_favori();
   const [isFav, setIsFav] = React.useState(false);
 
@@ -109,19 +108,13 @@ export default function CardFilm({ film }) {
           Voir plus
         </Button>
 
-        <motion.div
-          whileTap={{ scale: 0.8 }}
-          whileHover={{ scale: 1.1 }}
-          transition={{ type: 'spring', stiffness: 300 }}
+        <IconButton
+          onClick={handleFavoriClick}
+          color={isFav ? 'error' : 'default'}
+          aria-label="ajouter aux favoris"
         >
-          <IconButton
-            onClick={handleFavoriClick}
-            color={isFav ? 'error' : 'default'}
-            aria-label="ajouter aux favoris"
-          >
-            {isFav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          </IconButton>
-        </motion.div>
+          {isFav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        </IconButton>
       </CardActions>
     </Card>
   );

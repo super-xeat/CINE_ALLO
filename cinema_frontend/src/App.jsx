@@ -10,6 +10,7 @@ import LoginPage from './page/login';
 import AuthProvider from './context/authcontext';
 import Discover from './page/discover'
 import Footer from './components/footer'
+import Page_result from './components/resultat_page';
 
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
           <Route path='/login' element={<LoginPage/>}/>
           <Route path='/profile' element={<Profil/>}/>
           <Route path='/discover' element={<Discover/>}/>
+          <Route path='/page_result' element={<Page_result/>}/>
         </Routes>
         <Footer/>
       </Router>   
