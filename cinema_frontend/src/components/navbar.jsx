@@ -119,7 +119,7 @@ export default function Navbar() {
               textDecoration: 'none',
               fontWeight: 'bold',
               fontSize: '1.5rem',
-              '&:hover': { color: '#4caf50' },
+              '&:hover': { color: '#0a1c80ff' },
             }}
           >
             🎬 CINE ALLO
@@ -149,7 +149,7 @@ export default function Navbar() {
                   color: 'white',
                   textDecoration: 'none',
                   fontWeight: 500,
-                  '&:hover': { color: '#4caf50' },
+                  '&:hover': { color: '#0a1c80ff' },
                 }}
               >
                 {link.label}
@@ -164,7 +164,7 @@ export default function Navbar() {
                   sx={{
                     color: 'white',
                     textDecoration: 'none',
-                    '&:hover': { color: '#4caf50' },
+                    '&:hover': { color: '#0a1c80ff' },
                   }}
                 >
                   Profil
@@ -179,7 +179,7 @@ export default function Navbar() {
                   sx={{
                     color: 'white',
                     textDecoration: 'none',
-                    '&:hover': { color: '#4caf50' },
+                    '&:hover': { color: '#0a1c80ff' },
                   }}
                 >
                   Connexion
@@ -190,7 +190,7 @@ export default function Navbar() {
                   sx={{
                     color: 'white',
                     textDecoration: 'none',
-                    '&:hover': { color: '#4caf50' },
+                    '&:hover': { color: '#0a1c80ff' },
                   }}
                 >
                   S’inscrire

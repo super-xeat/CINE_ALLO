@@ -12,6 +12,7 @@ from django.conf import settings
 from django.utils import timezone
 from rest_framework.parsers import MultiPartParser
 from django.shortcuts import redirect
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class RegisterViews(APIView):
@@ -41,6 +42,17 @@ class RegisterViews(APIView):
             return Response({'succé': 'compte créé : vérifiez vos mails'})
         else:
             return Response(serializer.errors, status=404)
+
+
+class RefreshTokenView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        refresh = RefreshToken.for_user(request.user)
+        
+        return Response({
+            'access': str(refresh.access_token),
+        }, status=200)
 
 
 class ConfirmEmailView(APIView):

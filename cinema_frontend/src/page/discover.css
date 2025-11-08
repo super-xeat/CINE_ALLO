@@ -1,0 +1,6 @@
+
+.discover {
+    background: linear-gradient(-45deg, #000000, #4d4c4c, #050505, #0d0d0d);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+}

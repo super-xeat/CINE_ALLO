@@ -117,7 +117,9 @@ class DiscoverView(APIView, Listeview):
 
         params = {
             'include_adult': False,
-            'sort_by': sort_by
+            'sort_by': sort_by,
+            'vote_count.gte': 500,
+            'language': 'fr-FR'
         }  
         if genre:
             params['with_genres'] = genre  
@@ -128,7 +130,7 @@ class DiscoverView(APIView, Listeview):
         if vote_average2:
             params['vote_average.lte'] = vote_average2    
         if pays:
-            params['with_average_country'] = pays
+            params['with_origin_country'] = pays
             
         movie_genre = self.appel_tmdb(
             endpoint='discover/movie',
@@ -138,11 +140,53 @@ class DiscoverView(APIView, Listeview):
             return Response({'erreur': 'TMDB indisponible'}, status=503)
         
         result = movie_genre.json().get('results', []) 
-
+        print(result)
         return Response({
             'liste_discover_filtre': result
         })
+
+class DiscoverTvView(APIView, Listeview):
+    permission_classes = [AllowAny]
     
+    def get(self, request):
+         
+        genre = request.GET.get('with_genres') 
+        sort_by = request.GET.get('sort_by', 'popularity.desc')  
+        release_year = request.GET.get('year') 
+        vote_average1 = request.GET.get('vote_average.gte')
+        vote_average2 = request.GET.get('vote_average.lte')
+        pays = request.GET.get('with_origin_country')
+
+        params = {
+            'include_adult': False,
+            'sort_by': sort_by,
+            'vote_count.gte': 500,
+            'language': 'fr-FR'
+        }  
+        if genre:
+            params['with_genres'] = genre  
+        if release_year:
+            params['primary_release_year'] = release_year   
+        if vote_average1:
+            params['vote_average.gte'] = vote_average1
+        if vote_average2:
+            params['vote_average.lte'] = vote_average2    
+        if pays:
+            params['with_origin_country'] = pays
+            
+        tv_genre = self.appel_tmdb(
+            endpoint='discover/tv',
+            params=params
+        )
+        if not tv_genre or tv_genre.status_code != 200:
+            return Response({'erreur': 'TMDB indisponible'}, status=503)
+        
+        result = tv_genre.json().get('results', []) 
+        print(result)
+        return Response({
+            'liste_discover_filtre': result
+        })
+
 class Detail_movie(APIView, Listeview):
     permission_classes = [AllowAny]
     

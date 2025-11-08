@@ -1,9 +1,18 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Card_film from "../components/film_card";
-import Grid from "@mui/material/Grid";
-
-import Typography from "@mui/material/Typography";
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
+import Chip from '@mui/material/Chip';
+import Alert from '@mui/material/Alert';
+import './discover.css'
 
 
 export default function Discover() {
@@ -11,151 +20,277 @@ export default function Discover() {
   const [result, setresult] = useState([]);
   const [searchparams, setsearchparams] = useSearchParams();
   const [loading, setloading] = useState(false);
+  const [media, setmedia] = useState('movie');
 
-  const genres = searchparams.get('with_genres') || ''
-  const year = searchparams.get('realised_date') || ''
-  const country = searchparams.get('with_origin_country') || ''
+  const genres = searchparams.get('with_genres') || '';
+  const year = searchparams.get('year') || '';
+  const country = searchparams.get('with_origin_country') || '';
 
   const Decouverte = async () => {
     setloading(true);
+    
+    let endpoint;
+
+    if (media === 'movie') {
+      endpoint = 'http://localhost:8000/api/films/discover';
+    } else {
+      endpoint = 'http://localhost:8000/api/series/discover';
+    }
+
     try {
-      const response = await fetch(`http://localhost:8000/api/films/discover?${searchparams.toString()}`);
-      if (!response.ok) console.log('erreur dans la reponse');
+      const response = await fetch(`${endpoint}?${searchparams.toString()}`);
+      
+      if (!response.ok) {
+        console.log('erreur dans la reponse')
+      }
       const data = await response.json();
-      setresult(data.liste_discover_filtre)
+      setresult(data.liste_discover_filtre || []);
 
     } catch (error) {
       console.error('erreur de fetch', error);
     } finally {
       setloading(false);
     }
+  }
+
+  const handletruc = (event) => {
+    setmedia(event.target.value);
   };
 
-  const handlegenre = (e) => {
-    const newgenre = e.target.value;
+
+  const handlegenre = (event) => {
+    const newgenre = event.target.value;
     const new_params = new URLSearchParams(searchparams);
     if (newgenre) new_params.set('with_genres', newgenre);
     else new_params.delete('with_genres');
     setsearchparams(new_params);
   };
 
-  const handledate = (e) => {
-    const newdate = e.target.value;
+  
+  const handledate = (event) => {
+    const newdate = event.target.value;
     const new_params = new URLSearchParams(searchparams);
     if (newdate) new_params.set('year', newdate);
     else new_params.delete('year');
     setsearchparams(new_params);
   };
 
-const handlenote = (e) => {
-    const choix = e.target.value;
+  
+  const handlenote = (event) => {
+    const choix = event.target.value;
     const newparams = new URLSearchParams(searchparams);
     
     newparams.delete('vote_average.gte');
     newparams.delete('vote_average.lte');
-    newparams.delete('sort_by')
+    newparams.delete('sort_by');
  
     if (choix === 'excellent') {
-        newparams.set('vote_average.gte', '8');
-        newparams.set('sort_by', 'vote_average.desc');
-          
-      } else if (choix === 'bon') {   
         newparams.set('vote_average.gte', '7');
         newparams.set('sort_by', 'vote_average.desc');
-          
-      } else if (choix === 'nul_culte') {
-        newparams.set('vote_average.lte', '4');
+    } else if (choix === 'bon') {   
+        newparams.set('vote_average.gte', '6');
+        newparams.set('sort_by', 'vote_average.desc');
+    } else if (choix === 'nul_culte') {
+        newparams.set('vote_average.lte', '5');
         newparams.set('sort_by', 'vote_average.asc');
-          
-      } else if (choix === 'tres_mauvais') {
-        newparams.set('vote_average.lte', '2');
+    } else if (choix === 'tres_mauvais') {
+        newparams.set('vote_average.lte', '3');
         newparams.set('sort_by', 'vote_average.asc');
-      }
-      setsearchparams(newparams)
     }
+    setsearchparams(newparams);
+  };
 
-  const NoteFilter = () => {
-    if (searchparams.get('vote_average.gte') === '8') return 'excellent';
-    if (searchparams.get('vote_average.gte') === '7') return 'bon';
-    if (searchparams.get('vote_average.lte') === '4') return 'nul_culte';
-    if (searchparams.get('vote_average.lte') === '2') return 'tres_mauvais';
-    return ''
-  }
+  const NoteFilter = () => { 
+    if (searchparams.get('vote_average.gte') === '7') return 'excellent';
+    if (searchparams.get('vote_average.gte') === '6') return 'bon';
+    if (searchparams.get('vote_average.lte') === '5') return 'nul_culte';
+    if (searchparams.get('vote_average.lte') === '3') return 'tres_mauvais';
+    return '';
+  };
 
-  const handlepays = (e) => {
-    const newpays = e.target.value
-    const params = new URLSearchParams(searchparams)
-    if (newpays) params.set('with_origin_country', newpays)
-    else params.delete('with_origin_country')
-    setsearchparams(params)
-  }
+  
+  const handlepays = (event) => {
+    const newpays = event.target.value;
+    const params = new URLSearchParams(searchparams);
+    if (newpays) params.set('with_origin_country', newpays);
+    else params.delete('with_origin_country');
+    setsearchparams(params);
+  };
 
   useEffect(() => {
     if (searchparams) Decouverte();
-  }, [searchparams]);
+  }, [searchparams, media]);
 
   return (
-    <div>
-      <h1>Découvrir des films</h1>
+  <Container maxWidth="xl" sx={{ py: 4 }} className="discover">
+    <Box sx={{ 
+      display: 'flex', 
+      justifyContent: 'space-between', 
+      alignItems: 'center', 
+      mb: 4,
+      flexWrap: 'wrap',
+      gap: 2
+    }}>
+      <Typography
+      variant="h3"
+      component="h1"
+      sx={{
+        fontWeight: "bold",
+        textAlign: "center",
+        background: "linear-gradient(45deg, #007bff, #0056b3)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        mb: 3, 
+      }}
+      >
+        Découvrir des {media === "movie" ? "films" : "séries"}
+      </Typography>
+
+    </Box>
+
+    <Paper elevation={3} sx={{ p: 4, mb: 4, borderRadius: 3, backgroundColor: "#93a5a0ff" }}>
+      <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold' }}>
+        Filtres de recherche
+      </Typography>
       
-      <div className="filters">
-        <h2>Genre</h2>
-        <select onChange={handlegenre} value={genres}>
-          <option value="">Tous les genres</option>
-          <option value="28">Action</option>
-          <option value="12">Aventure</option>
-          <option value="18">Drame</option>
-          <option value="35">Comédie</option>
-          <option value="27">Horreur</option>
-          <option value="10749">Romance</option>
-          <option value="80">Policier</option>
-        </select>
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel id="media-type-label">Type de contenu</InputLabel>
+              <Select
+                labelId="media-type-label"
+                id="media-type-select"
+                value={media}
+                label="Type de contenu"
+                onChange={handletruc}
+              >
+                <MenuItem value="movie">Films</MenuItem>
+                <MenuItem value="tv">Séries</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Grid>
 
-        <h2>Année de sortie</h2>
-        <select onChange={handledate} value={year}>
-          <option value="">Toutes les années</option>
-          <option value="2024">2024</option>
-          <option value="2023">2023</option>
-          <option value="2022">2022</option>
-          <option value="2021">2021</option>
-          <option value="2020">2020</option>
-        </select>
+        <Grid item xs={12} sm={6} md={3}>
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel id="genre-label">Genre</InputLabel>
+              <Select
+                labelId="genre-label"
+                id="genre-select"
+                value={genres}
+                label="Genre"
+                onChange={handlegenre}
+              >
+                <MenuItem value="">Tous les genres</MenuItem>
+                <MenuItem value="28">Action</MenuItem>
+                <MenuItem value="12">Aventure</MenuItem>
+                <MenuItem value="18">Drame</MenuItem>
+                <MenuItem value="35">Comédie</MenuItem>
+                <MenuItem value="27">Horreur</MenuItem>
+                <MenuItem value="10749">Romance</MenuItem>
+                <MenuItem value="80">Policier</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Grid>
 
-        <h2>les mieux notés</h2>
-        <select onChange={handlenote} value={NoteFilter()}>
-            <option value="">Toutes notes</option>
-            <option value="excellent">Excellent</option>
-            <option value="bon">Bon</option>
-            <option value="nul_culte">Nul mais culte</option>
-            <option value="tres_mauvais">Très mauvais</option>
-        </select>
+        <Grid item xs={12} sm={6} md={3}>
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel id="year-label">Année</InputLabel>
+              <Select
+                labelId="year-label"
+                id="year-select"
+                value={year}
+                label="Année"
+                onChange={handledate}
+              >
+                <MenuItem value="">Toutes les années</MenuItem>
+                <MenuItem value="2024">2024</MenuItem>
+                <MenuItem value="2023">2023</MenuItem>
+                <MenuItem value="2022">2022</MenuItem>
+                <MenuItem value="2021">2021</MenuItem>
+                <MenuItem value="2020">2020</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Grid>
 
-        <h2>par pays</h2>
-        <select onChange={handlepays} value={country}>
-          <option value="">Tous les pays</option>
-          <option value="FR">France</option>
-          <option value="US">États-Unis</option>
-          <option value="JP">Japon</option>
-          <option value="KR">Corée du Sud</option>
-          <option value="GB">Royaume-Uni</option>
-        </select>
-      </div>
- 
-      {loading && <p>Chargement...</p>}
+        <Grid item xs={12} sm={6} md={3}>
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel id="note-label">Note</InputLabel>
+              <Select
+                labelId="note-label"
+                id="note-select"
+                value={NoteFilter()}
+                label="Note"
+                onChange={handlenote}
+              >
+                <MenuItem value="">Toutes notes</MenuItem>
+                <MenuItem value="excellent">Excellent</MenuItem>
+                <MenuItem value="bon">Bon</MenuItem>
+                <MenuItem value="nul_culte">Nul mais culte</MenuItem>
+                <MenuItem value="tres_mauvais">Très mauvais</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Grid>
 
-      <Grid container spacing={3} justifyContent="center" columns={{ xs: 4, sm: 8, md: 12 }}>
-        {result.length > 0 ? (
-          result.map((movie) => (
-            <Grid item key={movie.id} xs={12} sm={6} md={4} lg={3}>
-              <Card_film film={movie} />
-            </Grid>
-          ))
-        ) : (
-          <Typography variant="body1" sx={{ color: "gray", mt: 2 }}>
-            Aucun résultat pour cette recherche.
-          </Typography>
-        )}
+        <Grid item xs={12} sm={6} md={3}>
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel id="country-label">Pays</InputLabel>
+              <Select
+                labelId="country-label"
+                id="country-select"
+                value={country}
+                label="Pays"
+                onChange={handlepays}
+              >
+                <MenuItem value="">Tous les pays</MenuItem>
+                <MenuItem value="FR">France</MenuItem>
+                <MenuItem value="US">États-Unis</MenuItem>
+                <MenuItem value="JP">Japon</MenuItem>
+                <MenuItem value="KR">Corée du Sud</MenuItem>
+                <MenuItem value="GB">Royaume-Uni</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Grid>
       </Grid>
-    </div>
-  );
+    </Paper>
+
+    {loading && (
+      <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }}>
+        Chargement...
+      </Alert>
+    )}
+
+    <Grid container spacing={3} justifyContent="center">
+      {result.length > 0 ? (
+        result.map((movie) => (
+          <Grid item key={movie.id} xs={12} sm={6} md={4} lg={3}>
+            <Card_film film={movie} />
+          </Grid>
+        ))
+      ) : (
+        <Grid item xs={12}>
+          <Paper sx={{ p: 4, textAlign: 'center', backgroundColor: 'grey.50' }}>
+            <Typography variant="h6" sx={{ color: 'text.secondary', mb: 1 }}>
+              Aucun résultat trouvé
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Essayez de modifier vos critères de recherche
+            </Typography>
+          </Paper>
+        </Grid>
+      )}
+    </Grid>
+  </Container>
+)
+    
 }
+
