@@ -38,7 +38,7 @@ export default function CardFilm({ film }) {
       <CardActionArea component={Link} to={`/detail_film/${film.id}`}>
         <CardMedia
           component="img"
-          height="400"
+          height="350"
           image={
             film.poster_path
               ? `https://image.tmdb.org/t/p/w500${film.poster_path}`

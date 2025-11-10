@@ -45,8 +45,14 @@ export default function AuthProvider({children}) {
                 throw new Error(data.detail || 'Identifiants incorrects')
             }
             
+            // ✅ CORRECTION DÉFINITIVE - mêmes noms partout
             localStorage.setItem('token', data.access)
-            localStorage.setItem('refresh_token', data.refresh)
+            localStorage.setItem('refreshToken', data.refresh)  // ← refreshToken avec T majuscule
+            
+            // ✅ NETTOYAGE des anciens formats
+            localStorage.removeItem('refreshtoken')
+            localStorage.removeItem('refresh_token')
+        
             setIsAuth(true)
             
         } catch (error) {

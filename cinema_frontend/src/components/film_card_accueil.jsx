@@ -30,14 +30,14 @@ export default function CardFilmAccueil({ film }) {
         transition: 'transform 0.25s ease, box-shadow 0.25s ease',
         '&:hover': {
           transform: 'scale(1.04)',
-          boxShadow: 6,
+          boxShadow: 20,
         },
       }}
     >
       <CardActionArea component={Link} to={`/detail_film/${film.id}`}>
         <CardMedia
           component="img"
-          height="400"
+          height="350"
           image={
             film.poster_path
               ? `https://image.tmdb.org/t/p/w500${film.poster_path}`
@@ -56,6 +56,7 @@ export default function CardFilmAccueil({ film }) {
               color: 'text.primary',
               textAlign: 'center',
               fontWeight: 600,
+              background: '#f9f9eae1',
               mb: 1,
             }}
           >

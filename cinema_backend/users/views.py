@@ -44,16 +44,6 @@ class RegisterViews(APIView):
             return Response(serializer.errors, status=404)
 
 
-class RefreshTokenView(APIView):
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request):
-        refresh = RefreshToken.for_user(request.user)
-        
-        return Response({
-            'access': str(refresh.access_token),
-        }, status=200)
-
 
 class ConfirmEmailView(APIView):
     permission_classes = [AllowAny]

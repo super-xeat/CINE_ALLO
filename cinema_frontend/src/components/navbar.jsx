@@ -14,6 +14,9 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import { useAuth } from '../context/authcontext';
 import Button from '../context/button';
 import Recherche_barre from '../hook/hook_recherche';
+import { Avatar } from '@mui/material';
+import Hook_profil from '../hook/hook_profil';
+import { useEffect } from 'react';
 
 
 const Search = styled('form')(({ theme }) => ({
@@ -58,7 +61,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { fetch_recherche, query, setquery } = Recherche_barre();
-
+  const {fetchProfil, result, loading} = Hook_profil()
 
   const [mobileAnchor, setMobileAnchor] = React.useState(null);
   const isMobileMenuOpen = Boolean(mobileAnchor);
@@ -88,6 +91,12 @@ export default function Navbar() {
     { label: 'Découverte', to: '/discover' },
   ];
 
+  useEffect(()=> {
+    if (IsAuth) {
+      fetchProfil()
+    }
+  }, [IsAuth])
+  
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -200,13 +209,24 @@ export default function Navbar() {
           </Box>
 
           <IconButton
-            size="large"
-            color="inherit"
-            onClick={handleProfileMenuOpen}
-            sx={{ ml: 1 }}
-          >
-            <AccountCircle />
-          </IconButton>
+              size="large"
+              color="inherit"
+              onClick={handleProfileMenuOpen}
+              sx={{ ml: 1 }}
+            >
+              {IsAuth && result?.image ? (
+                <Avatar
+                  alt={result.username}
+                  src={result.image.startsWith('http') ? 
+                    result.image : 
+                    `http://localhost:8000/media/${result.image}`
+                  }
+                  sx={{ width: 32, height: 32 }}
+                />
+              ) : (
+                <AccountCircle />
+              )}
+            </IconButton>
         </Toolbar>
       </AppBar>
 
