@@ -15,6 +15,7 @@ from django.shortcuts import redirect
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
+
 class RegisterViews(APIView):
     permission_classes = [AllowAny]
     parser_classes = [MultiPartParser]
@@ -63,30 +64,33 @@ class ConfirmEmailView(APIView):
             return Response({'erreur le token a expiré'})
 
 
-class PasswordResetview(APIView):
+class PasswordResetView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
         email = request.data.get('email')
-    
-        if User.objects.filter(email=email).exists():
+        
+        try:
             user = User.objects.get(email=email)
             token = jwt.encode({
                 'user_id': user.id,
                 'exp': timezone.now() + timedelta(hours=24)
             }, settings.SECRET_KEY, algorithm='HS256')
             
+            reset_url = f"http://localhost:5173/reset-password?token={token}"
+            
             send_mail(
-                'Réinitialisez votre mot de passe Cine Allo', 
-                f'Cliquez ici pour réinitialiser : http://localhost:8000/auth/passwordreset/confirm/?token={token}',  
-                'noreply@cineallo.com',  
-                [user.email],  
+                'Réinitialisez votre mot de passe Cine Allo',
+                f'Cliquez ici pour réinitialiser : {reset_url}',
+                'noreply@cineallo.com',
+                [user.email],
                 fail_silently=False
-            )
-            return Response({'email envoyé avec succé'})
-                
-        else:
-            return Response({'regardez vos mail'})
+            ) 
+        except User.DoesNotExist:
+            pass
+            
+        return Response({'message': 'Si cet email existe, un lien de réinitialisation a été envoyé'})
+        
 
 
 class PasswordResetConfirmview(APIView):

@@ -118,7 +118,7 @@ export default function Liste_films() {
         {getFilms().length > 0 ? (
           getFilms().map((film) => (
             <Grid key={film.id} size={{ xs: 4, sm: 4, md: 3 }}>
-              <CardFilm film={film} />
+              <CardFilm film={film}/>
             </Grid>
           ))
         ) : (

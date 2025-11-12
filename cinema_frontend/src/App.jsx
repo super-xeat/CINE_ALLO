@@ -11,23 +11,28 @@ import AuthProvider from './context/authcontext';
 import Discover from './page/discover'
 import Footer from './components/footer'
 import Page_result from './components/resultat_page';
+import Oubli_mdp from './page/oubli_mdp';
+import Rest_password from './page/resetpassword';
 
 
 export default function App() {
 
+  
   return (
     <AuthProvider>
       <Router>
         <Navbar/>
         <Routes>
           <Route path="/" element={<Recherche/>}/>
-          <Route path="/detail_film/:id" element={<Detail/>}/>
+          <Route path="/detail_film/:type/:id" element={<Detail/>}/>
           <Route path='/liste_films' element={<Liste_films/>}/>
           <Route path='/register' element={<Register/>}/>
           <Route path='/login' element={<LoginPage/>}/>
           <Route path='/profile' element={<Profil/>}/>
           <Route path='/discover' element={<Discover/>}/>
           <Route path='/page_result' element={<Page_result/>}/>
+          <Route path='/reset-password' element={<Rest_password/>}/>
+          <Route path='/oubli-mdp' element={<Oubli_mdp/>}/>
         </Routes>
         <Footer/>
       </Router>   

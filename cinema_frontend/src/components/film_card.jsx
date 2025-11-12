@@ -13,9 +13,12 @@ import Button from '@mui/material/Button';
 import { motion } from 'framer-motion';
 import Hook_favori from "../hook/hook_favori";
 
+
 export default function CardFilm({ film }) {
   const { Favori } = Hook_favori();
   const [isFav, setIsFav] = React.useState(false);
+
+  const type = film.type
 
   const handleFavoriClick = () => {
     Favori(film.id);
@@ -35,7 +38,7 @@ export default function CardFilm({ film }) {
         },
       }}
     >
-      <CardActionArea component={Link} to={`/detail_film/${film.id}`}>
+      <CardActionArea component={Link} to={`/detail_film/${type}/${film.id}`}>
         <CardMedia
           component="img"
           height="350"
@@ -104,7 +107,7 @@ export default function CardFilm({ film }) {
           variant="outlined"
           color="primary"
           component={Link}
-          to={`/detail_film/${film.id}`}
+          to={`/detail_film/${type}/${film.id}`}
         >
           Voir plus
         </Button>

@@ -2,7 +2,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
 from .views import (ListeFilmViews, RegisterViews, SupprimeView, 
-                    ProfileView, AjoutFilmview, ConfirmEmailView, PasswordResetview,
+                    ProfileView, AjoutFilmview, ConfirmEmailView, PasswordResetView,
                     PasswordResetConfirmview)
 
 
@@ -16,6 +16,6 @@ urlpatterns = [
     path('voir_liste', ListeFilmViews.as_view(), name='voir_liste'),
     path('profile', ProfileView.as_view(), name='profile'),
     path('confirm-email/<str:token>/', ConfirmEmailView.as_view(), name='confirm_email'),
-    path('passwordreset', PasswordResetview.as_view(), name='passwordreset'),
-    path('passwordreset/confirm', PasswordResetConfirmview.as_view(), name='confirm_reset')
+    path('oubli-mdp', PasswordResetView.as_view(), name='passwordreset'),
+    path('passwordreset/confirm', PasswordResetConfirmview.as_view(), name='confirm_reset') 
 ] 

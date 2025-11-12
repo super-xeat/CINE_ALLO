@@ -8,12 +8,13 @@ import CommentItem from "./commentItem";
 export default function CommentListe() {
 
     const {id} = useParams()
-    const [loading, setloading] = useState(true)
+    const [loading, setloading] = useState(false)
     const [liste, setliste] = useState([])
 
 
     useEffect(()=> {
         async function Liste() {
+            setloading(true)
             try {
                 const response = await fetch(`http://localhost:8000/api/films/commentaires?movie_id=${id}`)
                 if (!response.ok) {
@@ -33,6 +34,7 @@ export default function CommentListe() {
         Liste()
     }, [id])
 
+    if (loading) return <p>chargement...</p>
     return(
         <div>
             <h1>Commentaires</h1>

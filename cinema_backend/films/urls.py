@@ -6,7 +6,7 @@ from .views import (Liste_movie, Film_meilleur_note, DiscoverView,
                     Serie_popular, DiscoverTvView)
 
  
-urlpatterns = [
+urlpatterns = [ 
     path('liste_movie', Liste_movie.as_view(), name='liste_movie'),
     path('film_meilleur_note', Film_meilleur_note.as_view(), name='film_meilleur_note'),
     path('serie_meilleur_note', Serie_meilleur_note.as_view(), name='serie_meilleur_note' ),

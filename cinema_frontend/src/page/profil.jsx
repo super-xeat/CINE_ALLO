@@ -115,7 +115,7 @@ export default function Profil() {
 
   return (
   <Box display="flex" justifyContent="center" className="discover" sx={{ minHeight: '70vh'}} padding={3}>
-    <Card sx={{ maxWidth: 600, width: '90%', p: 2, boxShadow: 4 }}>
+    <Card sx={{ maxWidth: 600, width: '90%', p: 2, boxShadow: 4, backgroundColor:"rgba(137, 140, 137, 1)"}}>
       <CardContent>
 
         <Stack direction="row" spacing={2} alignItems="center" mb={2}>
@@ -162,13 +162,15 @@ export default function Profil() {
               Bienvenu {result.username}
             </Typography>
             {modiusername ? (
-              <Stack direction="row" spacing={1} mt={1}>
-                <TextField size="small" value={username} onChange={(e) => setUsername(e.target.value)} label="Modifier nom" />
+              <Stack direction="row" spacing={1} mt={1} >
+                <TextField size="small" sx={{ backgroundColor:"#f1ececf0" }} value={username} onChange={(e) => setUsername(e.target.value)} label="Modifier nom" />
                 <Button variant="contained" onClick={() => { envoyer('username', username); setUsername(''); }}>Envoyer</Button>
-                <Button variant="outlined" color="secondary" onClick={() => setModiUsername(false)}>Annuler</Button>
+                <Button variant="outlined" color="secondary" sx={{ backgroundColor: '#ece6e6'}}
+                onClick={() => setModiUsername(false)}>Annuler</Button>
               </Stack>
             ) : (
-              <Button variant="outlined" onClick={() => setModiUsername(true)}>Modifier le nom</Button>
+              <Button sx={{ backgroundColor:"#1380b3f0", color:"#f8f3f3" , boxShadow:"2", ":hover": {backgroundColor: '#0c648df0'}}} 
+              variant="outlined" onClick={() => setModiUsername(true)}>Modifier le nom</Button>
             )}
           </Stack>
         </Stack>
@@ -177,7 +179,7 @@ export default function Profil() {
 
         {modifimage && (
           <>
-            <Typography variant="subtitle1" fontWeight="bold" mb={1}>
+            <Typography variant="subtitle1" fontWeight="bold" mb={1} >
               Modifier la photo de profil
             </Typography>
             <Stack direction="row" spacing={1} mb={2} alignItems="center">
@@ -202,7 +204,8 @@ export default function Profil() {
               >
                 Envoyer
               </Button>
-              <Button variant="outlined" color="secondary" onClick={() => { setModifImage(false); setFile(null); }}>
+              <Button variant="outlined" sx={{ backgroundColor: '#ece6e6'}}
+              color="secondary" onClick={() => { setModifImage(false); setFile(null); }}>
                 Annuler
               </Button>
             </Stack>
@@ -214,12 +217,15 @@ export default function Profil() {
         <Typography variant="body1" mb={1}>{result.bio}</Typography>
         {modifbio ? (
           <Stack direction="row" spacing={1} mb={2}>
-            <TextField size="small" value={bio} onChange={(e) => setBio(e.target.value)} label="Modifier bio" fullWidth />
+            <TextField size="small" sx={{ backgroundColor: '#ece6e6'}}
+            value={bio} onChange={(e) => setBio(e.target.value)} label="Modifier bio" fullWidth />
             <Button variant="contained" onClick={() => { envoyer('bio', bio); setBio(''); }}>Envoyer</Button>
-            <Button variant="outlined" color="secondary" onClick={() => setModifBio(false)}>Annuler</Button>
+            <Button variant="outlined" sx={{ backgroundColor: '#ece6e6'}}
+            color="secondary" onClick={() => setModifBio(false)}>Annuler</Button>
           </Stack>
         ) : (
-          <Button variant="outlined" onClick={() => setModifBio(true)}>Modifier la bio</Button>
+          <Button variant="outlined" sx={{ backgroundColor:"#1380b3f0", color:"#f8f3f3" , boxShadow:"2", ":hover": {backgroundColor: '#0c648df0'}}}
+           onClick={() => setModifBio(true)}>Modifier la bio</Button>
         )}
 
         <Divider sx={{ my: 2 }} />
@@ -229,7 +235,7 @@ export default function Profil() {
           <Button variant="contained" onClick={() => { fetchListeFavori(); setCache(true); }}>Voir ma liste de favoris</Button>
         ) : (
           <>
-            <Button variant="outlined" color="secondary" onClick={() => setCache(false)}>Cacher</Button>
+            <Button variant="outlined" color="secondary" sx={{ backgroundColor: '#ece6e6'}} onClick={() => setCache(false)}>Cacher</Button>
             <Stack spacing={1} mt={2}>
               {liste.map((item) => (
                 <Card key={item.id} variant="outlined" sx={{ p: 1 }}>

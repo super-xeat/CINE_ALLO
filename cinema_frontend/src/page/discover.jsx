@@ -148,22 +148,42 @@ export default function Discover() {
 
     </Box>
 
-    <Paper elevation={3} sx={{ p: 4, mb: 4, borderRadius: 3, backgroundColor: "#93a5a0ff" }}>
-      <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold' }}>
+    <Paper elevation={3} sx={{ p: 4, mb: 4, borderRadius: 3, background: "linear-gradient(135deg, #000000, #1c1c1c, #2d2d2d)", 
+      border: '2px solid #0c90b8ff'
+     }}>
+      <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold', color: '#0c90b8ff' }}>
         Filtres de recherche
       </Typography>
       
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} md={3}>
-          <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
-              <InputLabel id="media-type-label">Type de contenu</InputLabel>
+          <Box sx={{ minWidth: 120 }} >
+            <FormControl 
+            fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#0c90b8ff',      
+                },
+                '&:hover fieldset': {
+                  borderColor: '#0c90b8ff',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#0c90b8ff',               
+              },
+            }}>
+              <InputLabel id="media-type-label" sx={{ color: '#0c90b8ff'}}>Type de contenu</InputLabel>
               <Select
                 labelId="media-type-label"
                 id="media-type-select"
                 value={media}
                 label="Type de contenu"
                 onChange={handletruc}
+                sx={{ color: '#0c90b8ff'}}
               >
                 <MenuItem value="movie">Films</MenuItem>
                 <MenuItem value="tv">Séries</MenuItem>
@@ -174,8 +194,24 @@ export default function Discover() {
 
         <Grid item xs={12} sm={6} md={3}>
           <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
-              <InputLabel id="genre-label">Genre</InputLabel>
+            <FormControl fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+                '&:hover fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#0c90b8ff',              
+              },
+            }}>
+              <InputLabel id="genre-label" sx={{ color: '#0c90b8ff'}}>Genre</InputLabel>
               <Select
                 labelId="genre-label"
                 id="genre-select"
@@ -198,14 +234,31 @@ export default function Discover() {
 
         <Grid item xs={12} sm={6} md={3}>
           <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
-              <InputLabel id="year-label">Année</InputLabel>
+            <FormControl fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+                '&:hover fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#0c90b8ff',              
+              },
+            }}>
+              <InputLabel id="year-label" sx={{ color: '#0c90b8ff'}}>Année</InputLabel>
               <Select
                 labelId="year-label"
                 id="year-select"
                 value={year}
                 label="Année"
                 onChange={handledate}
+              
               >
                 <MenuItem value="">Toutes les années</MenuItem>
                 <MenuItem value="2024">2024</MenuItem>
@@ -220,8 +273,24 @@ export default function Discover() {
 
         <Grid item xs={12} sm={6} md={3}>
           <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
-              <InputLabel id="note-label">Note</InputLabel>
+            <FormControl fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+                '&:hover fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#0c90b8ff',              
+              },
+            }}>
+              <InputLabel id="note-label" sx={{ color: '#0c90b8ff'}}>Note</InputLabel>
               <Select
                 labelId="note-label"
                 id="note-select"
@@ -241,8 +310,24 @@ export default function Discover() {
 
         <Grid item xs={12} sm={6} md={3}>
           <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
-              <InputLabel id="country-label">Pays</InputLabel>
+            <FormControl fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+                '&:hover fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#0c90b8ff',       
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#0c90b8ff',              
+              },
+            }}>
+              <InputLabel id="country-label" sx={{ color: '#0c90b8ff'}}>Pays</InputLabel>
               <Select
                 labelId="country-label"
                 id="country-select"

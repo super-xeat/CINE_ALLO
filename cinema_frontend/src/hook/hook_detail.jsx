@@ -9,16 +9,17 @@ export default function Detail_movie() {
     const [result, setresult] = useState(null)
 
 
-    async function Detail(item) {
-        if (!item) return
+    async function Details(item, item2) {
+        if (!item || !item2) return
 
         setloading(true)
 
         try {
-            const response = await fetch(`http://localhost:8000/api/films/detail_movie?movie_id=${encodeURIComponent(item)}`)
+            const response = await fetch(`http://localhost:8000/api/films/detail_movie?movie_id=${encodeURIComponent(item)}&type=${item2}`)
             const data = await response.json()
             
             setresult(data)
+            console.log('data_detail :', data)
         } catch {
             console.log('erreur pas de films trouvé')
             setresult(null)
@@ -26,5 +27,5 @@ export default function Detail_movie() {
             setloading(false)
         }
 
-    } return {Detail, loading, result}
+    } return {Details, loading, result}
 }

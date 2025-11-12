@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react"
-import Button from '../context/button'
+import { Card, CardContent, TextField, Button, Stack, Typography, Box } from "@mui/material";
 
 
 export default function Register() {
@@ -11,7 +11,7 @@ export default function Register() {
     const [email, setemail] = useState('')
     const [password, setpassword] = useState('')
     const [file, setfile] = useState(null)
-    const [confimpassword, setconfirmpassword] = useState('')
+    const [confirmpassword, setconfirmpassword] = useState('')
 
     function handlesubmit(e) {
         e.preventDefault()
@@ -50,30 +50,143 @@ export default function Register() {
     
     
     return(
-        <div>
-            <form onSubmit={handlesubmit}>
-                <input onChange={(e)=>setusername(e.target.value)} 
-                type="text" value={username} placeholder="name"/>
+        <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #464545ff, #616060ff)",
+      }}
+    >
+      <Card
+        sx={{
+          maxWidth: 450,
+          width: "90%",
+          p: 3,
+          boxShadow: 6,
+          borderRadius: 3,
+          backgroundColor: "#2c2b2bff",
+          color: "#fff",
+        }}
+      >
+        <CardContent>
+          <Typography
+            variant="h5"
+            component="h1"
+            textAlign="center"
+            mb={3}
+            sx={{ fontWeight: "bold", color: "#1d92b9ff" }}
+          >
+            Crée ton compte 
+          </Typography>
 
-                <input onChange={(e)=>setbio(e.target.value)} 
-                type="text" value={bio} placeholder="bio"/>
+          <form onSubmit={handlesubmit}>
+            <Stack spacing={2}>
+              <TextField
+                label="Nom d'utilisateur"
+                variant="outlined"
+                size="small"
+                fullWidth
+                value={username}
+                onChange={(e) => setusername(e.target.value)}
+                InputLabelProps={{ style: { color: "#ccc" } }}
+                InputProps={{ style: { color: "white" } }}
+              />
 
-                <input onChange={(e)=>setidentifiant(e.target.value)} 
-                type="text" value={identifiant} placeholder="identifiant"/>
-                
-                <input onChange={(e)=>setemail(e.target.value)} 
-                type="email" value={email} placeholder="email"/>
+              <TextField
+                label="Bio"
+                variant="outlined"
+                size="small"
+                fullWidth
+                value={bio}
+                onChange={(e) => setbio(e.target.value)}
+                multiline
+                minRows={2}
+                InputLabelProps={{ style: { color: "#ccc" } }}
+                InputProps={{ style: { color: "white" } }}
+              />
 
-                <input onChange={(e)=>setpassword(e.target.value)} 
-                type="password" value={password} placeholder="password"/>
+              <TextField
+                label="Identifiant"
+                variant="outlined"
+                size="small"
+                fullWidth
+                value={identifiant}
+                onChange={(e) => setidentifiant(e.target.value)}
+                InputLabelProps={{ style: { color: "#ccc" } }}
+                InputProps={{ style: { color: "white" } }}
+              />
 
-                <input onChange={(e)=>setconfirmpassword(e.target.value)} 
-                type="password" value={confimpassword} placeholder="confirm"/>
+              <TextField
+                label="Email"
+                type="email"
+                variant="outlined"
+                size="small"
+                fullWidth
+                value={email}
+                onChange={(e) => setemail(e.target.value)}
+                InputLabelProps={{ style: { color: "#ccc" } }}
+                InputProps={{ style: { color: "white" } }}
+              />
 
-                <input type="file" onChange={(e)=>setfile(e.target.files[0])}/>
-                       
-            <Button type='submit'>envoyer</Button>
-            </form>
-        </div>
-    )
+              <TextField
+                label="Mot de passe"
+                type="password"
+                variant="outlined"
+                size="small"
+                fullWidth
+                value={password}
+                onChange={(e) => setpassword(e.target.value)}
+                InputLabelProps={{ style: { color: "#ccc" } }}
+                InputProps={{ style: { color: "white" } }}
+              />
+
+              <TextField
+                label="Confirmer le mot de passe"
+                type="password"
+                variant="outlined"
+                size="small"
+                fullWidth
+                value={confirmpassword}
+                onChange={(e) => setconfirmpassword(e.target.value)}
+                InputLabelProps={{ style: { color: "#ccc" } }}
+                InputProps={{ style: { color: "white" } }}
+              />
+
+              <Button
+                variant="contained"
+                component="label"
+                sx={{
+                  backgroundColor: "#1d80b9ff",
+                  color: "#fff",
+                  "&:hover": { backgroundColor: "#176795ff" },
+                }}
+              >
+                Importer une image
+                <input
+                  type="file"
+                  hidden
+                  onChange={(e) => setfile(e.target.files[0])}
+                />
+              </Button>
+
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  backgroundColor: "#1d80b9ff",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  "&:hover": { backgroundColor: "#176795ff" },
+                }}
+              >
+                Envoyer
+              </Button>
+            </Stack>
+          </form>
+        </CardContent>
+      </Card>
+    </Box>
+  )
 }

@@ -42,6 +42,9 @@ class Liste_movie(APIView, Listeview):
             return Response({'erreur pas de film'}, status=400)
          
         result = liste_movie.json().get('results', [])
+        for item in result:
+            item['type'] = "films"
+
         return Response({
            'liste_movie': result  
         })
@@ -62,6 +65,9 @@ class Film_meilleur_note(APIView, Listeview):
         
         result = meilleure_note.json().get('results', [])
 
+        for item in result:
+            item['type'] = "films"
+            
         return Response({
             'top_rated': result
         })     
@@ -80,6 +86,10 @@ class Serie_meilleur_note(APIView, Listeview):
             return Response({'erreur de liste'})
         
         response = meilleur_serie.json().get('results', [])
+
+        for item in response:
+            item['type'] = "serie"
+            
         return Response({
             'Serie_meilleur_note': response
         })
@@ -98,6 +108,9 @@ class Serie_popular(APIView, Listeview):
             return Response({'erreur de liste'})
         
         meilleur_serie = popular_serie.json().get('results', [])
+        for item in meilleur_serie:
+            item['type'] = "serie"
+            
         return Response({
             'Serie_meilleur': meilleur_serie
         })
@@ -140,7 +153,9 @@ class DiscoverView(APIView, Listeview):
             return Response({'erreur': 'TMDB indisponible'}, status=503)
         
         result = movie_genre.json().get('results', []) 
-        print(result)
+        for item in result:
+            item['type'] = "films"
+            
         return Response({
             'liste_discover_filtre': result
         })
@@ -182,7 +197,9 @@ class DiscoverTvView(APIView, Listeview):
             return Response({'erreur': 'TMDB indisponible'}, status=503)
         
         result = tv_genre.json().get('results', []) 
-        print(result)
+        for item in result:
+            item['type'] = "serie"
+            
         return Response({
             'liste_discover_filtre': result
         })
@@ -192,11 +209,16 @@ class Detail_movie(APIView, Listeview):
     
     def get(self, request):
 
-        movie_id = request.GET.get('movie_id')
-
+        movie_serie_id = request.GET.get('movie_id')
+        type = request.GET.get('type')
+        
+        if type == 'films':
+            type = 'movie'
+        else:
+            type = 'tv'
         detail_movie = self.appel_tmdb(
-            endpoint=f'movie/{movie_id}',
-            params={'include_adult': False}
+            endpoint=f'{type}/{movie_serie_id}',
+            params={'include_adult': False, 'language': 'fr-FR'}
         )
 
         if not detail_movie:
@@ -204,8 +226,31 @@ class Detail_movie(APIView, Listeview):
         
         response = detail_movie.json()
 
+        credit_movie = self.appel_tmdb(
+            endpoint=f"{type}/{movie_serie_id}/credits",
+            params={'include_adult': False, 'language': 'fr-FR'}
+        )
+
+        if not credit_movie:
+            return Response({'erreur ps de credit'})
+        
+        response_credit = credit_movie.json()
+
+        similaire_movie = self.appel_tmdb(
+            endpoint=f'{type}/{movie_serie_id}/similar',
+            params={'include_adult': False}
+        )
+
+        if not similaire_movie:
+            return Response({'erreur pas de film similaire'})
+        
+        film_similaire = similaire_movie.json().get('results', [])
+
         return Response({
-            'detail_film': response
+            'detail_film_serie': response,
+            'credit_film_serie': response_credit,
+            'film_similaire_serie': film_similaire,
+            'type': type
         })
     
 class Commentaireview(APIView):
@@ -230,3 +275,5 @@ class Commentaireview(APIView):
             serializer.save(utilisateur=request.user)
             return Response(serializer.data)
         return Response(serializer.errors)
+
+
