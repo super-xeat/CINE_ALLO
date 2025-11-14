@@ -1,4 +1,3 @@
-
 import Detail_movie from '../hook/hook_detail'
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
@@ -8,7 +7,8 @@ import Hook_favori from '../hook/hook_favori'
 import Button from '../context/button'
 import {useAuth} from  '../context/authcontext'
 import CardFilm from "../components/film_card"
-
+import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 export default function Detail() {
 
@@ -16,6 +16,9 @@ export default function Detail() {
     const {IsAuth} = useAuth()
     const {Favori} = Hook_favori()
     const {Details, loading, result} = Detail_movie()
+    const navigate = useNavigate()
+
+    const director = result?.credit_film_serie?.crew?.find(person => person.job === 'Director')
 
     useEffect(()=> {
         if (id && type) {
@@ -36,12 +39,13 @@ export default function Detail() {
         await Favori(id, type)
     }
 
+    
     return (
         <div>
             {result && result.detail_film_serie && (
             <>
                 <h1>{result.detail_film_serie.title}</h1>
-                <h2>{result.detail_film_serie.tagline}</h2>_serie
+                <h2>{result.detail_film_serie.tagline}</h2>
                 <p>{result.detail_film_serie.overview}</p>
 
                 <img 
@@ -55,18 +59,22 @@ export default function Detail() {
 
                 <h2>Casting</h2>
                     <ul>
-                        {result.credit_film_serie?.cast?.slice(0, 10).map((actor) => ( // ⬅️ CORRIGÉ
+                        {result.credit_film_serie?.cast?.slice(0, 10).map((actor) => ( 
                             <li key={actor.id}>
-                                {actor.name} - {actor.character}
+                                <Link to={`/page_result?q=${encodeURIComponent(actor.name)}`}>{actor.name}</Link> - {actor.character}
                             </li>
                         ))}
                     </ul>
 
                 <h3>Réalisateur</h3>
-                    {result.credit_film_serie?.crew?.find(person => person.job === 'Director') && (
-                        <p>{result.credit_film_serie.crew.find(person => person.job === 'Director').name}</p>
+                    
+                    {director ? (
+                        <Link to={`/page_result?q=${encodeURIComponent(director.name)}`}>
+                            {director.name}
+                        </Link>
+                    ) : (
+                        <p>pas de realisateur spécifié</p>
                     )}
-
                     <h3>Sortie : {result.detail_film_serie.release_date}</h3>
                     <h5>Note : {result.detail_film_serie.vote_average}/10</h5>
                     

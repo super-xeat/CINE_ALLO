@@ -63,7 +63,7 @@ export default function Page_result() {
                         </div>
                     )}
                 </div>
-            )}
+            )} 
 
             {result.films && !result.films.erreur && (
                 <div>

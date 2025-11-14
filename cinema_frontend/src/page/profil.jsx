@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { Card, IconButton, CardContent, Button, Typography, TextField, Stack, Avatar, Divider, Box } from "@mui/material";
 import Hook_profil from "../hook/hook_profil";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/authcontext";
 import useToken from "../hook/hook_token";
-import { Edit } from "@mui/icons-material";
+import { Edit, Key } from "@mui/icons-material";
+import Card_favori from "../components/card_favorie";
 import './profil.css'
 
 export default function Profil() {
@@ -22,8 +21,6 @@ export default function Profil() {
 
   const { fetchProfil, result, loading} = Hook_profil()
   const {Refresh_token} = useToken()
-  const {IsAuth} = useAuth()
-  const navigate = useNavigate()
 
 
   useEffect(()=> {
@@ -60,6 +57,7 @@ export default function Profil() {
         if (response.ok) {
             const data = await response.json();
             setListe(data || []);
+            console.log('data :', data)
         } else {       
             console.error('Erreur serveur:', response.status);
             setListe([]);
@@ -108,6 +106,23 @@ export default function Profil() {
     setModifImage(true);
   };
 
+  const supprimer = async(tmdb_id) => {
+        const token = localStorage.getItem('token')
+        try {
+            const response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
+                method:'DELETE',
+                headers: {'Authorization': `Bearer ${token}`}
+            })
+
+            if (response.ok) {
+              alert('element supprimé')
+              console.log('element supprimé')
+              await fetchListeFavori()
+            }
+        } catch(error) {
+            console.error('impossible de supprimer', error)
+        }
+    }
   
 
   console.log("image URL:", result.image)
@@ -238,11 +253,14 @@ export default function Profil() {
             <Button variant="outlined" color="secondary" sx={{ backgroundColor: '#ece6e6'}} onClick={() => setCache(false)}>Cacher</Button>
             <Stack spacing={1} mt={2}>
               {liste.map((item) => (
-                <Card key={item.id} variant="outlined" sx={{ p: 1 }}>
-                  <Typography variant="subtitle1">{item.film}</Typography>
-                  <Typography variant="body2">Statut: {item.statut}</Typography>
-                  <Typography variant="body2">Ajouté le: {item.date_ajout}</Typography>
-                </Card>
+                <div key={item.id}>
+                  <Card_favori 
+                    tmdb_id={item.tmdb_id}
+                    statutActuel={item.statut}
+                    liste={fetchListeFavori}
+                  />
+                  <Button onClick={() => supprimer(item.tmdb_id)}>supprimer</Button>
+                </div>
               ))}
             </Stack>
           </>

@@ -212,10 +212,12 @@ class Detail_movie(APIView, Listeview):
         movie_serie_id = request.GET.get('movie_id')
         type = request.GET.get('type')
         
-        if type == 'films':
-            type = 'movie'
-        else:
-            type = 'tv'
+        if type not in ['movie', 'tv']:
+            if type == 'films':
+                type = 'movie'
+            else:
+                type = 'tv'
+
         detail_movie = self.appel_tmdb(
             endpoint=f'{type}/{movie_serie_id}',
             params={'include_adult': False, 'language': 'fr-FR'}
@@ -245,7 +247,12 @@ class Detail_movie(APIView, Listeview):
             return Response({'erreur pas de film similaire'})
         
         film_similaire = similaire_movie.json().get('results', [])
-
+        for item in film_similaire:
+            if type == 'movie':
+                item['type'] = 'movie'
+            else:
+                item['type'] = 'tv'
+                
         return Response({
             'detail_film_serie': response,
             'credit_film_serie': response_credit,

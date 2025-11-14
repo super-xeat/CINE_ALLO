@@ -47,7 +47,6 @@ class Liste_film_Serializer(serializers.ModelSerializer):
         return value
     
     
-    
 
 class AjoutFilmSerializer(serializers.ModelSerializer):
     class Meta:
@@ -68,8 +67,9 @@ class AjoutFilmSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
     
     
-
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'bio', 'image']
+
+

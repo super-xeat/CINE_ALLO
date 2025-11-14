@@ -1,4 +1,5 @@
-from .serializer import RegisterSerializer, Liste_film_Serializer, ProfileSerializer, AjoutFilmSerializer
+from .serializer import (RegisterSerializer, Liste_film_Serializer, ProfileSerializer, 
+                         AjoutFilmSerializer)
 from .models import User, Liste_film
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
@@ -13,6 +14,8 @@ from django.utils import timezone
 from rest_framework.parsers import MultiPartParser
 from django.shortcuts import redirect
 from rest_framework_simplejwt.tokens import RefreshToken
+import requests
+from django.conf import settings
 
 
 
@@ -147,16 +150,39 @@ class ProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
     
-    def update(self, request, *args, **kwargs):
-        serializer = self.get_serializer(
-            self.get_object(),
-            data=request.data,
-            partial=True
-        )
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
+
+class UpdateFilmListeView(generics.RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = Liste_film_Serializer
+    
+    def get_object(self):
+        tmdb_id = self.kwargs.get('tmdb_id')
+        return Liste_film.objects.get(user=self.request.user, tmdb_id=tmdb_id)
     
     
-    
-    
+class Recup_filmViews(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, tmdb_id):
+        if not tmdb_id:
+            return Response({'erreur il manque le tmdb_id'})
+        
+        response = requests.get(
+            f'https://api.themoviedb.org/3/movie/{tmdb_id}',
+            params={
+                'api_key': settings.API_KEY,
+                'language':"fr-FR"
+                }                   
+            )
+        
+        if not response:
+            return Response({'error pas de reponse pour appel tmdb_id'})
+        
+        result = response.json()
+
+        return Response({
+            'titre': result['title'],
+            'image': f"https://image.tmdb.org/t/p/w500{result['poster_path']}",
+            'synopsis': result['overview'],
+            'date_sortie': result['release_date']
+        })
