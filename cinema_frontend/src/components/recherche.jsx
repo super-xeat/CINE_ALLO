@@ -76,8 +76,46 @@ export default function Recherche() {
       {loading && <Typography variant="body1">Chargement...</Typography>}
 
       <Grid container spacing={2} justifyContent="center" sx={{ mt: 3 }} className="resultats-liste">
-        {change1 && result?.film_similaire?.map((film, index) => (
-          <Grid key={film.id} xs={12} sm={10} md={8}>
+        
+        {change1 && result?.result_film?.film_similaire?.map((film, index) => (
+          <Grid key={film.id} item xs={12} sm={10} md={8}>
+            <Typography>Films Similaire</Typography>
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+            >
+              <CardFilmAccueil film={film} horizontal />
+            </motion.div>
+          </Grid>
+        ))}
+
+        {change1 && result?.result_film?.film_recommande?.map((film, index) => (
+          <Grid key={film.id} item xs={12} sm={10} md={8}>
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+            >
+              <CardFilmAccueil film={film} horizontal />
+            </motion.div>
+          </Grid>
+        ))}
+
+        {change1 && result?.result_serie?.serie_recommandation?.map((film, index) => (
+          <Grid key={film.id} item xs={12} sm={10} md={8}>
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+            >
+              <CardFilmAccueil film={film} horizontal />
+            </motion.div>
+          </Grid>
+        ))}
+
+        {change1 && result?.result_serie?.serie_similaire?.map((film, index) => (
+          <Grid key={film.id} item xs={12} sm={10} md={8}>
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
@@ -89,6 +127,7 @@ export default function Recherche() {
         ))}
 
         {change2 && liste?.map((film, index) => (
+          
           <Grid key={film.id} xs={12} sm={10} md={8}>
             <motion.div
               initial={{ opacity: 0, y: 40 }}

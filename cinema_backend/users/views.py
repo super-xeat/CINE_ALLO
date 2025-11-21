@@ -1,5 +1,4 @@
-from .serializer import (RegisterSerializer, Liste_film_Serializer, ProfileSerializer, 
-                         AjoutFilmSerializer)
+from .serializer import (RegisterSerializer, Liste_film_Serializer, ProfileSerializer, AjoutFilmSerializer)
 from .models import User, Liste_film
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
@@ -16,8 +15,13 @@ from django.shortcuts import redirect
 from rest_framework_simplejwt.tokens import RefreshToken
 import requests
 from django.conf import settings
+from rest_framework.pagination import PageNumberPagination
 
 
+class Pagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'limit'
+    max_page_size = 5
 
 class RegisterViews(APIView):
     permission_classes = [AllowAny]
@@ -129,21 +133,26 @@ class ListeFilmViews(generics.ListAPIView):
     queryset = Liste_film.objects.all()
     serializer_class = Liste_film_Serializer
     permission_classes = [IsAuthenticated]
+    pagination_class = Pagination
 
     def get_queryset(self):
         queryset = super().get_queryset() 
         return queryset.filter(user=self.request.user)
     
 
-class SupprimeView(generics.RetrieveDestroyAPIView):
-
-    queryset = Liste_film.objects.all()
-    serializer_class = Liste_film_Serializer
+class SupprimeView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def delete(self, request, tmdb_id):
+        try:
+            film = Liste_film.objects.get(tmdb_id=tmdb_id, user=request.user)
+            film.delete()
+            return Response({'le film a correctement été supprimé'}, status=200)
+        except Liste_film.DoesNotExist:
+            return Response({'le film existe pas'})
 
 
 class ProfileView(generics.RetrieveUpdateAPIView):
-
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
 
@@ -161,28 +170,51 @@ class UpdateFilmListeView(generics.RetrieveUpdateAPIView):
     
     
 class Recup_filmViews(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request, tmdb_id):
         if not tmdb_id:
-            return Response({'erreur il manque le tmdb_id'})
-        
-        response = requests.get(
-            f'https://api.themoviedb.org/3/movie/{tmdb_id}',
-            params={
-                'api_key': settings.API_KEY,
-                'language':"fr-FR"
-                }                   
-            )
-        
-        if not response:
-            return Response({'error pas de reponse pour appel tmdb_id'})
-        
-        result = response.json()
+            return Response({'erreur': 'il manque le tmdb_id'}, status=400)
+        try:
+            response_film = requests.get(
+                f'https://api.themoviedb.org/3/movie/{tmdb_id}',
+                params={
+                    'api_key': settings.TMDB_API_KEY,
+                    'language': "fr-FR"
+                })
+            
+            if response_film.status_code == 200:
+                result = response_film.json()
+                print('result', result)
+                return Response({
+                    'titre': result.get('title'),
+                    'image': f"https://image.tmdb.org/t/p/w500{result.get('poster_path')}" ,
+                    'synopsis': result.get('overview'),
+                    'date_sortie': result.get('release_date'),
+                    'type': 'movie'
+                })
+        except:
+            pass  
 
-        return Response({
-            'titre': result['title'],
-            'image': f"https://image.tmdb.org/t/p/w500{result['poster_path']}",
-            'synopsis': result['overview'],
-            'date_sortie': result['release_date']
-        })
+        try:
+            response_serie = requests.get(
+                f'https://api.themoviedb.org/3/tv/{tmdb_id}',
+                params={
+                    'api_key': settings.TMDB_API_KEY,
+                    'language': "fr-FR"
+                })
+            
+            if response_serie.status_code == 200:
+                result = response_serie.json()
+                print('result', result)
+                return Response({
+                    'titre': result.get('name'),
+                    'image': f"https://image.tmdb.org/t/p/w500{result.get('poster_path')}",
+                    'synopsis': result.get('overview'),
+                    'date_sortie': result.get('first_air_date'),
+                    'type': 'tv' 
+                })
+        except:
+            pass
+
+        return Response({'error': 'Contenu non trouvé'}, status=404)

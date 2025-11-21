@@ -31,60 +31,82 @@ class Recommandationview(APIView, Appel_TMDB):
     
     def get(self, request):
         query = request.GET.get('q', '').strip()
+        
         if not query:
-            return Response({'erreur dans la barre de recherche'})
+            return Response({'erreur': 'Requête vide'})
         
-        result = self.appel_tmdb(
-            endpoint='search/movie',
-            params={'query':query, 'include_adult': False}
-        )
-        if not result:
-            return Response({'erreur de recherche'})
+        try:
+            result_multi = self.appel_tmdb(
+                endpoint='search/multi',
+                params={'query': query, 'include_adult': False, 'language': 'fr-FR'}
+            )
+            
+            if not result_multi:
+                return Response({'erreur': 'Aucun résultat trouvé'})
+            
+            multi_results = result_multi.json().get('results', [])
+            if not multi_results:
+                return Response({'erreur': 'Aucun résultat trouvé'})
+            
         
-        response_recherche = result.json().get('results', [])
-        if not response_recherche:
-            return Response({'pas de film'})
+            first_result = multi_results[0]
+            media_type = first_result.get('media_type')
+            media_id = first_result.get('id')
+            
+            result_film = {}
+            result_serie = {}  
+            
+            if media_type == 'movie':
+                film_similar = self.appel_tmdb(
+                    endpoint=f'movie/{media_id}/similar',
+                    params={'language': 'fr-FR'}
+                )
+                response_similar = film_similar.json().get('results', []) if film_similar else []
+                
+                film_recommandation = self.appel_tmdb(
+                    endpoint=f'movie/{media_id}/recommendations',
+                    params={'language': 'fr-FR'}
+                )
+                response_recommandation = film_recommandation.json().get('results', []) if film_recommandation else []
+                
+                result_film = {
+                    'film_similaire': response_similar,
+                    'film_recommande': response_recommandation
+                }
+                result_serie = {'message': 'Recherche de film - pas de séries'}
+                
+            elif media_type == 'tv':
+                tv_recommandation = self.appel_tmdb(
+                    endpoint=f"tv/{media_id}/recommendations",
+                    params={'language': 'fr-FR'}
+                )
+                recommandation_tv = tv_recommandation.json().get('results', []) if tv_recommandation else []
+                
+                tv_similaire = self.appel_tmdb(
+                    endpoint=f'tv/{media_id}/similar',
+                    params={'language': 'fr-FR'}
+                )
+                reponse_similaire = tv_similaire.json().get('results', []) if tv_similaire else []
+                
+                result_serie = {
+                    'serie_recommandation': recommandation_tv,
+                    'serie_similaire': reponse_similaire
+                }
+                result_film = {'message': 'Recherche de série - pas de films'}
+                
+            else:
+                result_film = {'erreur': 'no resultat'}
+                result_serie = {'erreur': 'no resultat'}
+                
+        except:
+            return Response({'erreur dans recommandationview'})
         
-        film = response_recherche[0]
-        film_id = film['id']
+        return Response({
+            'result_film': result_film,
+            'result_serie': result_serie,
+            'type': media_type 
+        })
 
-        film_similar = self.appel_tmdb(
-            endpoint= f'movie/{film_id}/similar',
-            params={'language': 'fr-FR'}
-        )
-
-        if not film_similar:
-            return Response({'pas de films similaires'})
-        
-        response_similar = film_similar.json().get('results', [])
-
-        film_recommandation = self.appel_tmdb(
-            endpoint= f'movie/{film_id}/recommendations',
-            params={'language': 'fr-FR'}
-        )
-
-        if not film_recommandation:
-            return Response({'erreur pas de films recommandé'})
-        
-        response_recommandation = film_recommandation.json().get('results', [])
-
-        film_detail = self.appel_tmdb(
-            endpoint= f'movie/{film_id}',
-            params={'language': 'fr-FR'}
-        )
-
-        if not film_detail:
-            return Response({'pas de film trouvé'})
-        
-        response_detail = film_detail.json()
-
-        response_data = {
-            'film_detail': response_detail,
-            'film_similaire': response_similar,
-            'film_recommande': response_recommandation
-        }
-        return Response(response_data)
-    
 
 class Recherche_navbar(APIView, Appel_TMDB):
     permission_classes = [AllowAny]
@@ -126,15 +148,18 @@ class Recherche_navbar(APIView, Appel_TMDB):
                             data_person = {'erreur': 'Pas de filmographie'}
                         else:
                             result_filmographie = filmographie.json()       
-
+                            
+                            tri = sorted(result_filmographie['cast'], key=lambda x: x['vote_average'], reverse=True)   
+                                      
                             data_person = { 
                                 'actor': result,
                                 'detail': result_personne,
-                                'filmographie': result_filmographie
-                           }
+                                'top_filmographie': tri
+                           } 
+                            
                 else:
                     data_person = {'erreur':'aucune personne find  '}
-        except:
+        except:           
             data_person = {'erreur data_person':'aucune personne trouvé'}
         
         try:

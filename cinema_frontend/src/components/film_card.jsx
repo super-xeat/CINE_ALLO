@@ -12,6 +12,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import Button from '@mui/material/Button';
 import { motion } from 'framer-motion';
 import Hook_favori from "../hook/hook_favori";
+import { Box } from '@mui/material';
 
 
 export default function CardFilm({ film }) {
@@ -26,16 +27,18 @@ export default function CardFilm({ film }) {
   };
 
   return (
+    <Box sx={{m:1, border: '3px solid #0a88aeff', borderRadius: 3, width: 250, mx: 'auto'}}>
     <Card
       sx={{
-        maxWidth: 280,
+        height: '100%',
+        Width: '100%',
         borderRadius: 3,
         boxShadow: 4,
         transition: 'transform 0.25s ease, box-shadow 0.25s ease',
         '&:hover': {
           transform: 'scale(1.04)',
           boxShadow: 6,
-        },
+        }, 
       }}
     >
       <CardActionArea component={Link} to={`/detail_film/${type}/${film.id}`}>
@@ -43,8 +46,8 @@ export default function CardFilm({ film }) {
           component="img"
           height="350"
           image={
-            film.poster_path
-              ? `https://image.tmdb.org/t/p/w500${film.poster_path}`
+            film?.poster_path
+              ? `https://image.tmdb.org/t/p/w500${film?.poster_path}`
               : '/placeholder-poster.jpg'
           }
           alt={film.original_title}
@@ -127,5 +130,6 @@ export default function CardFilm({ film }) {
         </motion.div>
       </CardActions>
     </Card>
+    </Box>
   );
 }

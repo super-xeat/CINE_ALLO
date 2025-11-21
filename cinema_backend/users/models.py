@@ -24,7 +24,7 @@ class Liste_film(models.Model):
     ('FAVORI', 'favori'),  
     ]
     tmdb_id = models.IntegerField()
-    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     date_ajout = models.DateField(auto_now_add=True)
     statut = models.CharField(choices=STATUT, max_length=20, default='FAVORI')
     note_personnel = models.DecimalField(blank=True, max_digits=3, null=True, decimal_places=1)

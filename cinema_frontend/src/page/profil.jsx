@@ -19,6 +19,10 @@ export default function Profil() {
   const [modifbio, setModifBio] = useState(false);
   const [modifimage, setModifImage] = useState(false);
 
+  const [loader, setloader] = useState(false)
+  const [page, setpage] = useState(1)
+  const [pageSuivante, setpageSuivante] = useState(true)
+
   const { fetchProfil, result, loading} = Hook_profil()
   const {Refresh_token} = useToken()
 
@@ -27,13 +31,42 @@ export default function Profil() {
     fetchProfil()
   }, [])
 
-  async function fetchListeFavori() {
+  const Recup_film = async(recup_liste) => {
     try {
+      const films = await Promise.all(
+        recup_liste.map(async(item)=> {
+          try {
+            const response = await fetch(`http://localhost:8000/auth/recup_film/${item.tmdb_id}`)
+            if (response.ok) {
+              const data = await response.json()
+              console.log('data recup :', data)
+              return {...item, tmdb_champ: data}
+            } else {
+              console.log('erreur recup item', response.status)
+              return item
+            }
+          } catch(error) {
+            console.log('erreur recup item', error)
+            return item
+          }
+        })
+      )
+      return films
+      
+    } catch(error) {
+      console.error('erreur de la demande recup_film')
+      return recup_liste
+    }
+  }
+
+  async function fetchListeFavori(pagenum = 1) {
+    try {
+      setloader(true)
       const token = localStorage.getItem('token');
       if (token) {
         console.log('token recu')
       }
-      let response = await fetch('http://localhost:8000/auth/voir_liste', {
+      let response = await fetch(`http://localhost:8000/auth/voir_liste?page=${pagenum}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       
@@ -42,7 +75,7 @@ export default function Profil() {
 
         if (newtoken) {
             console.log('newtoken liste obtenu')
-            response = await fetch('http://localhost:8000/auth/voir_liste', {
+            response = await fetch(`http://localhost:8000/auth/voir_liste?page=${pagenum}`, {
             headers: { 
               Authorization: `Bearer ${newtoken}`,
               'Content-Type': 'application/json'
@@ -50,22 +83,37 @@ export default function Profil() {
           })
           } else {
             console.log('Refresh failed - redirection login');
-            setListe([]);
-            return;
-        }
+            setListe([])
+            return
+        }}
 
-        if (response.ok) {
-            const data = await response.json();
-            setListe(data || []);
-            console.log('data :', data)
+      if (response.ok) {
+          const data = await response.json();
+          console.log('data :', data)
+
+          let recup_liste
+          if (pagenum === 1) {
+            recup_liste = data.results
+            const newliste = await Recup_film(recup_liste)
+            setListe(newliste)
+          } else {
+            recup_liste = data.results
+            const newliste = await Recup_film(recup_liste)
+            setListe(liste => [...liste, ...newliste])
+            
+          }
+                 
+          setpage(pagenum)
+          console.log('data :', data)
         } else {       
             console.error('Erreur serveur:', response.status);
-            setListe([]);
         }
 
-    }} catch (error) {
+    } catch (error) {
       console.error(error);
       console.log('erreur de refresh')
+    } finally {
+      setloader(false)
     }
   }
 
@@ -109,15 +157,20 @@ export default function Profil() {
   const supprimer = async(tmdb_id) => {
         const token = localStorage.getItem('token')
         try {
-            const response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
+            let response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
                 method:'DELETE',
                 headers: {'Authorization': `Bearer ${token}`}
             })
-
+            if (response.status === 401) {
+              const newtoken = await Refresh_token()
+              response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
+              method:'DELETE',
+              headers: {'Authorization': `Bearer ${newtoken}`}})
+            }
             if (response.ok) {
               alert('element supprimé')
               console.log('element supprimé')
-              await fetchListeFavori()
+              await fetchListeFavori(1)
             }
         } catch(error) {
             console.error('impossible de supprimer', error)
@@ -127,7 +180,12 @@ export default function Profil() {
 
   console.log("image URL:", result.image)
   if (loading) return <Typography>Chargement...</Typography>;
-
+  
+  const chargerplus = () => {
+    if (!loader) {
+      fetchListeFavori(page + 1)
+    }
+  }
   return (
   <Box display="flex" justifyContent="center" className="discover" sx={{ minHeight: '70vh'}} padding={3}>
     <Card sx={{ maxWidth: 600, width: '90%', p: 2, boxShadow: 4, backgroundColor:"rgba(137, 140, 137, 1)"}}>
@@ -247,24 +305,38 @@ export default function Profil() {
 
         <Typography variant="h6" fontWeight="bold" mb={1}>Mes favoris</Typography>
         {!cache ? (
-          <Button variant="contained" onClick={() => { fetchListeFavori(); setCache(true); }}>Voir ma liste de favoris</Button>
+          <Button variant="contained" onClick={() => { fetchListeFavori(1); setCache(true); }}>Voir ma liste de favoris</Button>
         ) : (
           <>
             <Button variant="outlined" color="secondary" sx={{ backgroundColor: '#ece6e6'}} onClick={() => setCache(false)}>Cacher</Button>
             <Stack spacing={1} mt={2}>
-              {liste.map((item) => (
+            {liste.map((item) => { 
+              console.log("Item avec infos TMDB:", item)
+              return(
                 <div key={item.id}>
                   <Card_favori 
                     tmdb_id={item.tmdb_id}
                     statutActuel={item.statut}
-                    liste={fetchListeFavori}
+                    liste={()=>fetchListeFavori(1)}
+                    film={item.tmdb_champ || item}
+                    supprimer={() => supprimer(item.tmdb_id)}
                   />
-                  <Button onClick={() => supprimer(item.tmdb_id)}>supprimer</Button>
                 </div>
-              ))}
-            </Stack>
+              )
+            })}
+          </Stack>
           </>
         )}
+          
+          <Box display="flex" justifyContent="center" mt={2}>
+            <Button 
+              variant="outlined" 
+              onClick={chargerplus}
+              disabled={loader}
+            >
+              {loader ? 'Chargement...' : 'Charger plus de films'}
+            </Button>
+          </Box>
 
       </CardContent>
     </Card>

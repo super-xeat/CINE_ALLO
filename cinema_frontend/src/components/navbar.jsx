@@ -1,24 +1,29 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  Menu,
+  MenuItem,
+  Avatar,
+  Button
+} from '@mui/material';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+
 import { useAuth } from '../context/authcontext';
-import Button from '../context/button';
 import Recherche_barre from '../hook/hook_recherche';
-import { Avatar } from '@mui/material';
 import Hook_profil from '../hook/hook_profil';
-import { useEffect } from 'react';
 
 
+// 🔍 SEARCH BAR STYLÉE
 const Search = styled('form')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -56,68 +61,81 @@ const StyledInputBase = styled('input')(({ theme }) => ({
   fontSize: '1rem',
 }));
 
+
 export default function Navbar() {
+
+  // AUTH + PROFIL
   const { IsAuth, Logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { fetch_recherche, query, setquery } = Recherche_barre();
-  const {fetchProfil, result, loading} = Hook_profil()
+  const { query, setquery } = Recherche_barre();
+  const { fetchProfil, result } = Hook_profil();
 
-  const [mobileAnchor, setMobileAnchor] = React.useState(null);
-  const isMobileMenuOpen = Boolean(mobileAnchor);
 
+  // MENUS
+  const [mobileAnchor, setMobileAnchor] = React.useState(null); 
   const [profileAnchor, setProfileAnchor] = React.useState(null);
+
+  const isMobileMenuOpen = Boolean(mobileAnchor);
   const isProfileMenuOpen = Boolean(profileAnchor);
 
-  const handleMobileMenuOpen = (event) => setMobileAnchor(event.currentTarget);
-  const handleMobileMenuClose = () => setMobileAnchor(null);
 
-  const handleProfileMenuOpen = (event) => setProfileAnchor(event.currentTarget);
-  const handleProfileMenuClose = () => setProfileAnchor(null);
+  // OPEN/CLOSE MENU MOBILE
+  const openMobileMenu = (e) => setMobileAnchor(e.currentTarget);
+  const closeMobileMenu = () => setMobileAnchor(null);
 
+  // OPEN/CLOSE MENU PROFIL
+  const openProfileMenu = (e) => setProfileAnchor(e.currentTarget);
+  const closeProfileMenu = () => setProfileAnchor(null);
+
+
+  // LOGOUT
   const handleLogout = () => {
     Logout();
-    navigate(-1);
+    closeProfileMenu();
+    navigate('/login');
   };
 
-  function handleSubmit(e) {
-      e.preventDefault()
-      navigate(`/page_result?q=${encodeURIComponent(query)}`)
-    }
 
+  // FORM SUBMIT
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    navigate(`/page_result?q=${encodeURIComponent(query)}`);
+  };
+
+
+  // LINKS
   const links = [
     { label: 'Accueil', to: '/' },
     { label: 'Liste Films', to: '/liste_films' },
     { label: 'Découverte', to: '/discover' },
   ];
 
-  useEffect(()=> {
-    if (IsAuth) {
-      fetchProfil()
-    }
-  }, [IsAuth])
-  
+
+  useEffect(() => {
+    if (IsAuth) fetchProfil();
+  }, [IsAuth]);
+
+
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar
-        position="static"
-        sx={{
-          background: 'linear-gradient(90deg, #0a0a0a, #1b1b1b)',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
-        }}
-      >
+
+      {/* 🌑 NAVBAR */}
+      <AppBar position="static" sx={{ background: 'linear-gradient(90deg, #0a0a0a, #1b1b1b)' }}>
         <Toolbar>
+
+          {/* MENU MOBILE (hamburger) */}
           <IconButton
             size="large"
             edge="start"
             color="inherit"
-            aria-label="menu"
             sx={{ mr: 2, display: { md: 'none' } }}
-            onClick={handleMobileMenuOpen}
+            onClick={openMobileMenu}
           >
             <MenuIcon />
           </IconButton>
 
+          {/* LOGO */}
           <Typography
             variant="h6"
             noWrap
@@ -128,17 +146,20 @@ export default function Navbar() {
               textDecoration: 'none',
               fontWeight: 'bold',
               fontSize: '1.5rem',
-              '&:hover': { color: '#0a1c80ff' },
+              '&:hover': { color: '#0a80ff' },
             }}
           >
             🎬 CINE ALLO
           </Typography>
 
+          
+          {/* 🔎 BARRE DE RECHERCHE */}
           {location.pathname !== '/' && (
             <Search onSubmit={handleSubmit}>
               <SearchIconWrapper>
                 <SearchIcon />
               </SearchIconWrapper>
+
               <StyledInputBase
                 type="text"
                 value={query}
@@ -147,7 +168,10 @@ export default function Navbar() {
               />
             </Search>
           )}
+
           <Box sx={{ flexGrow: 1 }} />
+
+          {/* NAVIGATION DESKTOP */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
             {links.map((link) => (
               <Typography
@@ -157,131 +181,83 @@ export default function Navbar() {
                 sx={{
                   color: 'white',
                   textDecoration: 'none',
-                  fontWeight: 500,
-                  '&:hover': { color: '#0a1c80ff' },
+                  fontWeight: 'bold',
+                  '&:hover': { color: '#0c90b8ff' },
                 }}
               >
                 {link.label}
               </Typography>
             ))}
-
-            {IsAuth ? (
-              <>
-                <Typography
-                  component={Link}
-                  to="/profile"
-                  sx={{
-                    color: 'white',
-                    textDecoration: 'none',
-                    '&:hover': { color: '#0a1c80ff' },
-                  }}
-                >
-                  Profil
-                </Typography>
-                <Button onClick={handleLogout}>Déconnexion</Button>
-              </>
-            ) : (
-              <>
-                <Typography
-                  component={Link}
-                  to="/login"
-                  sx={{
-                    color: 'white',
-                    textDecoration: 'none',
-                    '&:hover': { color: '#0a1c80ff' },
-                  }}
-                >
-                  Connexion
-                </Typography>
-                <Typography
-                  component={Link}
-                  to="/register"
-                  sx={{
-                    color: 'white',
-                    textDecoration: 'none',
-                    '&:hover': { color: '#0a1c80ff' },
-                  }}
-                >
-                  S’inscrire
-                </Typography>
-              </>
-            )}
           </Box>
 
-          <IconButton
-              size="large"
-              color="inherit"
-              onClick={handleProfileMenuOpen}
-              sx={{ ml: 1 }}
-            >
-              {IsAuth && result?.image ? (
-                <Avatar
-                  alt={result.username}
-                  src={result.image.startsWith('http') ? 
-                    result.image : 
-                    `http://localhost:8000/media/${result.image}`
-                  }
-                  sx={{ width: 32, height: 32 }}
-                />
-              ) : (
-                <AccountCircle />
-              )}
-            </IconButton>
+          {/* AVATAR / COMPTE */}
+          <IconButton color="inherit" onClick={openProfileMenu} sx={{ ml: 1 }}>
+            {IsAuth && result?.image ? (
+              <Avatar
+                alt={result.username}
+                src={result.image.startsWith('http') 
+                      ? result.image 
+                      : `http://localhost:8000/media/${result.image}`}
+                sx={{ width: 32, height: 32 }}
+              />
+            ) : (
+              <AccountCircle />
+            )}
+          </IconButton>
+
         </Toolbar>
       </AppBar>
 
-      <Menu
-        anchorEl={mobileAnchor}
-        id="menu-mobile"
-        keepMounted
-        open={isMobileMenuOpen}
-        onClose={handleMobileMenuClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-      >
+
+      {/* 🍔 MENU MOBILE */}
+      <Menu anchorEl={mobileAnchor} open={isMobileMenuOpen} onClose={closeMobileMenu}>
         {links.map((link) => (
-          <MenuItem
-            key={link.to}
-            onClick={handleMobileMenuClose}
-            component={Link}
-            to={link.to}
-          >
+          <MenuItem key={link.to} onClick={closeMobileMenu} component={Link} to={link.to}>
             {link.label}
           </MenuItem>
         ))}
-        {IsAuth
-          ? [
-              <MenuItem key="profile" component={Link} to="/profile">
-                Profil
-              </MenuItem>,
-              <MenuItem key="logout" onClick={handleLogout}>
-                Déconnexion
-              </MenuItem>,
-            ]
-          : [
-              <MenuItem key="login" component={Link} to="/login">
-                Connexion
-              </MenuItem>,
-              <MenuItem key="register" component={Link} to="/register">
-                S’inscrire
-              </MenuItem>,
-            ]}
+
+        {IsAuth ? (
+          <>
+            <MenuItem onClick={closeMobileMenu} component={Link} to="/profile">
+              Profil
+            </MenuItem>
+            <MenuItem onClick={handleLogout}>Déconnexion</MenuItem>
+          </>
+        ) : (
+          <>
+            <MenuItem onClick={closeMobileMenu} component={Link} to="/login">
+              Connexion
+            </MenuItem>
+            <MenuItem onClick={closeMobileMenu} component={Link} to="/register">
+              S’inscrire
+            </MenuItem>
+          </>
+        )}
       </Menu>
 
-      <Menu
-        anchorEl={profileAnchor}
-        id="menu-profile"
-        keepMounted
-        open={isProfileMenuOpen}
-        onClose={handleProfileMenuClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <MenuItem onClick={handleProfileMenuClose} component={Link} to="/profile">
-          Profil
-        </MenuItem>
-        <MenuItem onClick={handleLogout}>Déconnexion</MenuItem>
+
+      {/* 👤 MENU PROFIL (DESKTOP) */}
+      <Menu anchorEl={profileAnchor} open={isProfileMenuOpen} onClose={closeProfileMenu}>
+        {IsAuth ? (
+          <>
+            <MenuItem onClick={closeProfileMenu} component={Link} to="/profile">
+              Profil
+            </MenuItem>
+            <MenuItem onClick={handleLogout}>Déconnexion</MenuItem>
+          </>
+        ) : (
+          <>
+            <MenuItem onClick={closeProfileMenu} component={Link} to="/login">
+              Connexion
+            </MenuItem>
+            <MenuItem onClick={closeProfileMenu} component={Link} to="/register">
+              S’inscrire
+            </MenuItem>
+          </>
+        )}
       </Menu>
+
     </Box>
   );
 }

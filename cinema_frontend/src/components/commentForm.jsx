@@ -1,13 +1,21 @@
 
 import { useState } from "react";
-import Button from '../context/button'
 import { useParams } from 'react-router-dom'
+import {
+  Box,
+  Card,
+  Typography,
+  TextField, 
+  Button
+} from "@mui/material";
+import { useAuth } from "../context/authcontext";
 
 
 export default function CommentForm() {
 
     const [texte, settexte] = useState('')
     const {id} = useParams()
+    const {IsAuth} = useAuth()
 
     async function Comment() {
         const token = localStorage.getItem('token')
@@ -35,12 +43,42 @@ export default function CommentForm() {
     const handlesubmit = (e) => (e.preventDefault(), Comment(), settexte(''))
 
     return(
-        <div>
+        <Box sx={{ mt: 4 }}>
+        {IsAuth ? (
+            <Card sx={{ backgroundColor: "#1e1e1e", p: 2, borderRadius: 3 }}>
             <form onSubmit={handlesubmit}>
-                <input type="text" onChange={(e)=>settexte(e.target.value)}
-                value={texte} placeholder="entrez votre commentaire"/>
-                <Button type='submit'>envoyer</Button>
+                <TextField
+                fullWidth
+                placeholder="Écrivez votre commentaire..."
+                value={texte}
+                onChange={(e) => settexte(e.target.value)}
+                variant="outlined"
+                sx={{
+                    input: { color: "white" },
+                    mb: 2,
+                    "& .MuiOutlinedInput-root": {
+                    "& fieldset": { borderColor: "#0c90b8ff" },
+                    "&:hover fieldset": { borderColor: "#0c90b8ff" }
+                    }
+                }}
+                />
+
+                <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                    backgroundColor: "#0c90b8ff",
+                    "&:hover": { backgroundColor: "#0a7a9b" }
+                }}
+                >
+                Envoyer
+                </Button>
             </form>
-        </div>
+            </Card>
+        ) : (
+            <Typography>Vous devez vous connecter pour commenter</Typography>
+        )}
+        </Box>
+
     )
 }

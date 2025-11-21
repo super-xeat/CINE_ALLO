@@ -11,6 +11,8 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import Button from '@mui/material/Button';
 import Hook_favori from "../hook/hook_favori";
+import { Box } from '@mui/material';
+
 
 export default function CardFilmAccueil({ film }) {
   const { Favori } = Hook_favori();
@@ -22,10 +24,16 @@ export default function CardFilmAccueil({ film }) {
   };
 
   return (
+    <Box sx={{ 
+      border: '3px solid #0a88aeff', 
+      width: 280, 
+      mx: 'auto', 
+      borderRadius: 2
+    }}>
     <Card
       sx={{
-        maxWidth: 280,
-        borderRadius: 3,
+        maxWidth: '100%',
+        borderRadius: 2,
         boxShadow: 4,
         transition: 'transform 0.25s ease, box-shadow 0.25s ease',
         '&:hover': {
@@ -34,7 +42,7 @@ export default function CardFilmAccueil({ film }) {
         },
       }}
     >
-      <CardActionArea component={Link} to={`/detail_film/${film.id}`}>
+      <CardActionArea component={Link} to={`/detail_film/${film.type}/${film.id}`}>
         <CardMedia
           component="img"
           height="350"
@@ -104,7 +112,7 @@ export default function CardFilmAccueil({ film }) {
           variant="outlined"
           color="primary"
           component={Link}
-          to={`/detail_film/${film.id}`}
+          to={`/detail_film/${film.type}/${film.id}`}
         >
           Voir plus
         </Button>
@@ -118,5 +126,6 @@ export default function CardFilmAccueil({ film }) {
         </IconButton>
       </CardActions>
     </Card>
+  </Box>
   );
 }

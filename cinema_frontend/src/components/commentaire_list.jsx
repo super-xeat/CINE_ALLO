@@ -2,8 +2,12 @@
 import { useState, useEffect } from "react";
 import {useParams} from 'react-router-dom'
 import CommentItem from "./commentItem";
-
-
+import {
+  Box,
+  Typography,
+  List,
+  ListItem,
+} from "@mui/material";
 
 export default function CommentListe() {
 
@@ -36,17 +40,22 @@ export default function CommentListe() {
 
     if (loading) return <p>chargement...</p>
     return(
-        <div>
-            <h1>Commentaires</h1>
-            <ul>
-                {liste.length !== 0  ? (liste.map((comment)=> (
-                    <li key={comment.id}>
-                        <CommentItem item={comment}/>
-                    </li>
-                ))) : (
-                    <p>pas de commentaire</p>
-                )}
-            </ul>
-        </div>
+        <Box sx={{ mt: 5 }}>
+        <Typography variant="h4" sx={{ color: "#0c90b8ff", mb: 2, fontWeight: 'bold' }}>
+            Commentaires :
+        </Typography>
+
+        <List sx={{ backgroundColor: "#1e1e1e", borderRadius: 3, p: 2 }}>
+            {liste.length !== 0 ? (
+            liste.map((comment) => (
+                <ListItem key={comment.id}>
+                <CommentItem item={comment} />
+                </ListItem>
+            ))
+            ) : (
+            <Typography>Aucun commentaire</Typography>
+            )}
+        </List>
+        </Box>
     )
 }

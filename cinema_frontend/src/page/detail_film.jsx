@@ -4,11 +4,12 @@ import { useParams } from 'react-router-dom'
 import CommentListe from '../components/commentaire_list'
 import CommentForm from '../components/commentForm'
 import Hook_favori from '../hook/hook_favori'
-import Button from '../context/button'
 import {useAuth} from  '../context/authcontext'
 import CardFilm from "../components/film_card"
 import { useNavigate } from 'react-router-dom'
+import { Typography, Grid, CardMedia, List, ListItem, Button, Box } from '@mui/material'
 import { Link } from 'react-router-dom'
+
 
 export default function Detail() {
 
@@ -38,57 +39,109 @@ export default function Detail() {
         }
         await Favori(id, type)
     }
-
-    
+ 
     return (
-        <div>
+        <Box sx={{ 
+            background: "linear-gradient(-45deg, #000000, #4d4c4c, #050505, #0d0d0d)",
+            backgroundSize: "400% 400%",
+            animation: "gradientBG 15s ease infinite",
+            p: 3,
+            width: '100%'
+            }}>
             {result && result.detail_film_serie && (
-            <>
-                <h1>{result.detail_film_serie.title}</h1>
-                <h2>{result.detail_film_serie.tagline}</h2>
-                <p>{result.detail_film_serie.overview}</p>
-
-                <img 
-                        src={result.detail_film_serie.poster_path 
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={6} display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}
+                    sx={{ border: '2px solid #0c90b8ff', borderRadius: '10px',
+                        background: "linear-gradient(-45deg, #000000, #4d4c4c, #050505, #0d0d0d)",
+                        backgroundSize: "400% 400%",
+                        animation: "gradientBG 10s ease infinite",
+                        p: 2
+                    }}
+                >
+                    <Typography variant='h4' sx={{fontWeight: 'bold', color: '#0c90b8ff'}}>{result.detail_film_serie.title}</Typography>
+                    <Typography variant='h6' sx={{color: '#0c90b8ff', fontWeight: 'bold'}}>{result.detail_film_serie.tagline}</Typography>
+                    <Typography variant='body2' sx={{fontWeight: 'bold', color: '#0c90b8ff'}}>{result.detail_film_serie.overview}</Typography>
+                    <Button onClick={handlefavori} sx={{mt: 2, border: '2px solid #0c90b8ff', '&:hover': {color: '#acbec4ff', cursor: 'pointer'} }}>❤️ Ajouter aux Favoris</Button>
+                </Grid>
+                
+                <Grid item display={'flex'} justifyContent={'center'}>
+                    <CardMedia
+                        component="img"
+                        image={
+                            result.detail_film_serie.poster_path
                             ? `https://image.tmdb.org/t/p/w500${result.detail_film_serie.poster_path}`
                             : '/placeholder-image.jpg'
-                        } 
-                        alt={result.detail_film_serie.title}
-                        style={{width: '300px'}}
-                    />
+                        }
+                        alt={result.detail_film_serie.title || "Affiche indisponible"}
+                        sx={{ width: 300, borderRadius: 5, border: '4px solid #0c90b8ff' }}
+                        />                   
+                </Grid>
 
-                <h2>Casting</h2>
-                    <ul>
-                        {result.credit_film_serie?.cast?.slice(0, 10).map((actor) => ( 
-                            <li key={actor.id}>
-                                <Link to={`/page_result?q=${encodeURIComponent(actor.name)}`}>{actor.name}</Link> - {actor.character}
-                            </li>
+                <Grid>
+                    <Typography variant='h5' sx={{ fontWeight: 'bold', color: '#0a88aeff' }}>
+                        Casting
+                    </Typography>
+
+                    <List sx={{ p: 0 }}>
+                        {result.credit_film_serie?.cast?.slice(0, 10).map((actor) => (
+                            <ListItem 
+                                key={actor.id} 
+                                sx={{ fontWeight: 'bold', display: 'flex', gap: 1 }}
+                            >
+                                <Typography
+                                    component={Link}
+                                    to={`/page_result?q=${encodeURIComponent(actor.name)}`}
+                                    sx={{
+                                        textDecoration: 'none',
+                                        color: '#0a88aeff',
+                                        '&:hover': {
+                                        color: '#acbec4ff',
+                                        cursor: 'pointer'
+                                        }
+                                    }}
+                                >
+                                    {actor.name}
+                                </Typography>
+
+                                <Typography sx={{ color: '#f5f1f1ff' }}>
+                                    - {actor.character}
+                                </Typography>
+                            </ListItem>
                         ))}
-                    </ul>
+                    </List>
+                </Grid>
 
-                <h3>Réalisateur</h3>
-                    
+
+                <Grid >
+                    <Typography variant='h5' sx={{ fontWeight: 'bold', color: '#0a88aeff'}}>Réalisateur</Typography>             
                     {director ? (
-                        <Link to={`/page_result?q=${encodeURIComponent(director.name)}`}>
-                            {director.name}
-                        </Link>
+                        <ListItem>
+                        <Typography
+                        component={Link}
+                        to={`/page_result?q=${encodeURIComponent(director.name)}`}
+                        sx={{listStyle: 'None', fontWeight: 'bold', '&:hover': {color: '#acbec4ff', cursor: 'pointer'}}}
+                        >
+                        {director.name}
+                        </Typography>
+                        </ListItem>
                     ) : (
                         <p>pas de realisateur spécifié</p>
                     )}
-                    <h3>Sortie : {result.detail_film_serie.release_date}</h3>
-                    <h5>Note : {result.detail_film_serie.vote_average}/10</h5>
-                    
-                    <p>{result.type === 'tv' ? 'Série' : 'Films'} qui pourraient vous plaire</p>
-                    <ul style={{display: 'flex', flexWrap: 'wrap', gap: '20px'}}>
-                        {result.film_similaire_serie?.slice(0, 4).map((item) => (
-                            <CardFilm key={item.id} film={item}/>
-                        ))}
-                    </ul>
-            </> 
+                    <Typography sx={{marginTop: '5rem', fontWeight: 'bold', color:'#f2efef'}}>Sortie : {result.detail_film_serie.release_date}</Typography>
+                    <Typography sx={{fontWeight: 'bold', color: '#f3ebebff'}}>Note : {result.detail_film_serie.vote_average}/10</Typography>
+                </Grid>
+                
+            </Grid>      
             )}
-
+             
+            <Typography variant='h5' sx={{color: '#0a88aeff', fontWeight: 'bold', mt: 5}}>{result && result.type === 'tv' ? 'Série' : 'Films'} qui pourraient vous plaire:</Typography>
+                <ul style={{display: 'flex', flexWrap: 'wrap', gap: '20px'}}>
+                    {result?.film_similaire_serie?.slice(0, 4).map((item) => (
+                        <CardFilm key={item.id} film={item}/>
+                    ))}
+                </ul>
             {!loading && !result && (<p>aucun détail trouvé</p>)}
-            <Button onClick={handlefavori}>❤️ Ajouter aux Favoris</Button>
+            
             
             <div>
                 <CommentListe/>
@@ -100,7 +153,7 @@ export default function Detail() {
                 <p>Vous devez vous connecter pour commenter</p>
             )
             }      
-        </div>
+        </Box>
     )
 }
 

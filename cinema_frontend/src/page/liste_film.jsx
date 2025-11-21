@@ -117,8 +117,16 @@ export default function Liste_films() {
       <Grid container spacing={3} justifyContent="center" columns={{ xs: 4, sm: 8, md: 12 }}>
         {getFilms().length > 0 ? (
           getFilms().map((film) => (
-            <Grid key={film.id} size={{ xs: 4, sm: 4, md: 3 }}>
-              <CardFilm film={film}/>
+            <Grid 
+              key={film.id} 
+              item 
+              xs={4}  
+              sm={4}  
+              md={3}  
+            >
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <CardFilm film={film}/>
+              </Box>
             </Grid>
           ))
         ) : (

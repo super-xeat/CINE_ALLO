@@ -38,7 +38,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class Liste_film_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Liste_film
-        fields = ['id', 'user' ,'statut', 'note_personnel', 'date_ajout']
+        fields = ['id', 'user' ,'statut', 'note_personnel', 'date_ajout', 'tmdb_id']
 
     
     def validate_note_personnel(self, value):

@@ -1,32 +1,19 @@
 import { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
+import { Card, Grid, Typography, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-export default function Card_favori({tmdb_id, statutActuel, liste}) {
+export default function Card_favori({tmdb_id, statutActuel, liste, film, supprimer}) {
 
     const [loading, setloading] = useState(false)
-    const [film, setfilm] = useState(null)
     const [statut, setstatut] = useState(statutActuel) 
 
-    useEffect(()=> {
-        async function Prendre_Film_tmdb() {
-            setloading(true)
-            try {
-                const response = await fetch(`http://localhost:8000/auth/recup_film/${tmdb_id}`)
-                if (!response.ok) {
-                    return
-                }
-                const data = await response.json()
-                setfilm(data)
-            } catch(error) {
-                console.log('erreur dans la demande de film tmdb', error)
-            } finally {
-                setloading(false)
-            }        
-        }
-        Prendre_Film_tmdb()
-        }, [tmdb_id])
+    console.log("Card_favori - tmdb_id:", tmdb_id) 
+    console.log("Card_favori - statutActuel:", statutActuel) 
 
     const modify_statut = async(newstatu) => {
         const token = localStorage.getItem('token')
+        setloading(true)
         try {
             const response = await fetch(`http://localhost:8000/auth/modifier/${tmdb_id}`, {
                 method: 'PATCH',
@@ -44,27 +31,122 @@ export default function Card_favori({tmdb_id, statutActuel, liste}) {
             liste()
         } catch(error) {
             console.log('modification impossible', error)
+        } finally {
+            setloading(false)
         }
     }
 
     if (!film) return <p>Film non trouvé</p>
     if (loading) return <p>Chargement...</p>
 
-    return (
-        <div>
-            <img src={film.image} alt={film.titre} />
-            <h3>{film.titre}</h3>
-            <p>{film.synopsis}</p>
-            <p>{statutActuel}</p>
-            <select 
-                value={statut} 
-                onChange={(e) => modify_statut(e.target.value)} 
+    
+        return (
+         <Card
+    sx={{
+      width: 250,
+      p: 2,
+      borderRadius: 3,
+      backgroundColor: "#1e1e1e",
+      color: "white",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+      margin: "20px auto"
+    }}
+  >
+    <Grid container spacing={2}>
+      
+      {/* IMAGE */}
+      <Grid item xs={4}>
+        <img
+          src={
+            film.poster_path
+              ? `https://image.tmdb.org/t/p/w500${film.poster_path}`
+              : film.image || "/placeholder.jpg"
+          }
+          alt={film.title}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            borderRadius: "10px"
+          }}
+        />
+      </Grid>
+
+      <Grid item xs={8} display="flex" flexDirection="column" justifyContent="space-between">
+
+        
+        <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
+          {film.title || film.titre || "Titre non disponible"}
+        </Typography>
+
+        
+        <Typography variant="body2" sx={{ opacity: 0.7, mb: 2 }}>
+          {(film.overview || film.synopsis || "Synopsis indisponible").slice(0, 100)}...
+        </Typography>
+
+        <Grid container spacing={1}>
+
+          <Grid item xs={12}>
+            <Select
+              fullWidth
+              size="small"
+              value={statut}
+              onChange={(e) => modify_statut(e.target.value)}
+              sx={{
+                bgcolor: "#121212",
+                color: "#0c90b8ff",
+                "& .MuiOutlinedInput-notchedOutline": { borderColor: "#0c90b8ff" },
+                "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#0c90b8ff" }
+              }}
             >
-                <option value="VOIR">à voir</option>
-                <option value="VU">vu</option>
-                <option value="FAVORI">favori</option>
-            </select>
-            
-        </div>
-    )
+              <MenuItem value="VOIR">À voir</MenuItem>
+              <MenuItem value="VU">Vu</MenuItem>
+              <MenuItem value="FAVORI">Favori</MenuItem>
+            </Select>
+          </Grid>
+
+          <Grid item xs={8}>
+            <Button
+              component={Link}
+              to={`/detail_film/${film.type || "film"}/${tmdb_id}`}
+              variant="contained"
+              fullWidth
+              sx={{
+                bgcolor: "#0c90b8ff",
+                "&:hover": { bgcolor: "#0a7a9b" },
+                textTransform: "none",
+                borderRadius: 2,
+                fontSize: "0.75rem",
+
+              }}
+            >
+              Voir détail
+            </Button>
+          </Grid>
+
+          <Grid item xs={4}>
+            <Button
+              variant="outlined"
+              fullWidth
+              color="error"
+              onClick={() => supprimer(film.id)} 
+              sx={{
+                borderRadius: 2,
+                minWidth: 0,
+                padding: "6px 0",
+                color: '#0c90b8ff',
+                marginLeft: '10px',
+                borderColor: '#0c90b8ff'
+              }}
+            >
+              <DeleteIcon />
+            </Button>
+          </Grid>
+
+        </Grid>
+
+      </Grid>
+    </Grid>
+  </Card>
+    ) 
 }
