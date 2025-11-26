@@ -26,7 +26,7 @@ export default function Register() {
     
     async function Inscription() {
         const formdata = new FormData()
-        formdata.append('confirm_password', confimpassword)
+        formdata.append('confirm_password', confirmpassword)
     
         formdata.append('image', file)
         formdata.append('username', username)

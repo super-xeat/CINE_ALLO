@@ -9,11 +9,12 @@ class CommentaireSerializer(serializers.ModelSerializer):
     nb_dislike = serializers.SerializerMethodField()
     deja_like = serializers.SerializerMethodField()
     deja_dislike = serializers.SerializerMethodField()
+    username = serializers.CharField(source='utilisateur.username', read_only=True)
 
     class Meta:
         model = Commentaire
-        fields = ['film_id', 'texte', 'avatar', 'nb_like', 'nb_dislike', 'deja_like', 'deja_dislike']  
-        read_only_fields = ['id', 'utilisateur', 'date']
+        fields = ['id','texte', 'username', 'nb_like', 'nb_dislike', 'deja_like', 'deja_dislike']  
+        read_only_fields = ['id', 'utilisateur', 'date', 'film_id']
 
     def get_nb_like(self, obj):
         return obj.like.count()
@@ -22,13 +23,15 @@ class CommentaireSerializer(serializers.ModelSerializer):
         return obj.dislike.count()
 
     def get_deja_like(self, obj):
-        user = self.context['request'].user
+        request = self.context['request']
+        user = request.user
         if obj.like.filter(id=user.id).exists():
             return True
         return False
         
     def get_deja_dislike(self, obj):
-        user = self.context['request'].user
+        request = self.context['request']
+        user = request.user
         if obj.dislike.filter(id=user.id).exists():
             return True
         return False
@@ -40,13 +43,15 @@ class CommentaireSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('erreur votre commentaire dépasse la limite autorisé')
         return value
     
-    def validate(self, attrs):        
-        user = self.context['request'].user
+    def validate(self, attrs):    
+        request = self.context.get('request')    
+        user = request.user
+        film_id = request.GET.get('movie_id')
         if Commentaire.objects.filter(utilisateur=user, 
             texte=attrs['texte'], 
-            film_id=attrs['film_id']).exists():
+            film_id=film_id).exists():
             raise serializers.ValidationError('erreur vous avez deja fait ce commentaire')
-        return attrs
+        return attrs 
     
 
 

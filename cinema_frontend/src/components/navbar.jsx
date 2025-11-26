@@ -23,7 +23,6 @@ import Recherche_barre from '../hook/hook_recherche';
 import Hook_profil from '../hook/hook_profil';
 
 
-// 🔍 SEARCH BAR STYLÉE
 const Search = styled('form')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -64,7 +63,6 @@ const StyledInputBase = styled('input')(({ theme }) => ({
 
 export default function Navbar() {
 
-  // AUTH + PROFIL
   const { IsAuth, Logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -72,7 +70,6 @@ export default function Navbar() {
   const { fetchProfil, result } = Hook_profil();
 
 
-  // MENUS
   const [mobileAnchor, setMobileAnchor] = React.useState(null); 
   const [profileAnchor, setProfileAnchor] = React.useState(null);
 

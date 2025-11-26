@@ -11,24 +11,13 @@ export default function Hook_profil() {
     const navigate = useNavigate()
 
     const fetchProfil = async() => {
-        console.log('🔐 === DÉBUT FETCH PROFILE ===')
+        console.log('🍪 Cookies before request:', document.cookie)
         try {
-            let token = localStorage.getItem('token')
-            console.log('📝 Current token exists:', !!token)
-            
-            if (!token) {
-                console.log('❌ No token - redirecting to login')
-                navigate('/login')
-                setIsAuth(false)
-                return
-            }
-
-            console.log('🚀 First profile request...')
             let response = await fetch('http://localhost:8000/auth/profile', {
                 headers: { 
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'  // ✅ Correction: 'Content-Type' avec majuscule
+                    'Content-Type': 'application/json'  
                 },
+                credentials:'include'
             })
 
             console.log('📡 First response status:', response.status)
@@ -40,11 +29,12 @@ export default function Hook_profil() {
                 
                 if (newToken) {
                     console.log('🚀 Second profile request with new token...')
+                    await new Promise(resolve => setTimeout(resolve, 500))
                     response = await fetch('http://localhost:8000/auth/profile', {
                         headers: { 
-                            'Authorization': `Bearer ${newToken}`,
                             'Content-Type': 'application/json'
                         },
+                        credentials:'include'
                     })
                     console.log('📡 Second response status:', response.status)
                 } else {
@@ -68,8 +58,6 @@ export default function Hook_profil() {
         } catch (error) {
             console.error('💥 Profile fetch error:', error)
             setIsAuth(false)
-            localStorage.removeItem('token')
-            localStorage.removeItem('refreshToken')
             navigate('/login')
         } finally {
             setLoading(false)

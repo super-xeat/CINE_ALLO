@@ -1,5 +1,4 @@
-
-
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated
 from .models import User, Liste_film
@@ -35,6 +34,19 @@ class RegisterSerializer(serializers.ModelSerializer):
         return new_user
     
 
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+        user = authenticate(username=username, password=password)
+        if not user:
+            raise serializers.ValidationError('email ou mot de passe incorrect')
+        return user
+
+
 class Liste_film_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Liste_film
@@ -45,8 +57,7 @@ class Liste_film_Serializer(serializers.ModelSerializer):
         if value < 0 or value > 5:
             raise serializers.ValidationError('erreur')
         return value
-    
-    
+       
 
 class AjoutFilmSerializer(serializers.ModelSerializer):
     class Meta:

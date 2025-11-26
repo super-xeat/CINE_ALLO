@@ -62,12 +62,8 @@ export default function Profil() {
   async function fetchListeFavori(pagenum = 1) {
     try {
       setloader(true)
-      const token = localStorage.getItem('token');
-      if (token) {
-        console.log('token recu')
-      }
       let response = await fetch(`http://localhost:8000/auth/voir_liste?page=${pagenum}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials:'include'
       })
       
       if (response.status === 401) {
@@ -76,10 +72,7 @@ export default function Profil() {
         if (newtoken) {
             console.log('newtoken liste obtenu')
             response = await fetch(`http://localhost:8000/auth/voir_liste?page=${pagenum}`, {
-            headers: { 
-              Authorization: `Bearer ${newtoken}`,
-              'Content-Type': 'application/json'
-             },
+            credentials:'include'
           })
           } else {
             console.log('Refresh failed - redirection login');
@@ -118,13 +111,12 @@ export default function Profil() {
   }
 
   async function envoyer(champ, valeur) {
-    const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append(champ, valeur);
     try {
       let response = await fetch('http://localhost:8000/auth/profile', {
         method: 'PUT',
-        headers: { Authorization: `Bearer ${token}` },
+        credentials:'include',
         body: formData,
       })
 
@@ -133,11 +125,11 @@ export default function Profil() {
         const newtoken = await Refresh_token()
 
         if (newtoken) {
-          console.log('nouveau token succès')
-          response = await fetch('http://localhost:8000/auth/profile', {
-          method: 'PUT',
-          headers: { Authorization: `Bearer ${newtoken}` },
-          body: formData,
+            console.log('nouveau token succès')
+            response = await fetch('http://localhost:8000/auth/profile', {
+            method: 'PUT',
+            credentials:'include',
+            body: formData,
           })} else {
             console.log('Refresh failed - redirection login');
             return
@@ -155,17 +147,21 @@ export default function Profil() {
   };
 
   const supprimer = async(tmdb_id) => {
-        const token = localStorage.getItem('token')
         try {
             let response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
                 method:'DELETE',
-                headers: {'Authorization': `Bearer ${token}`}
+                credentials:'include'
             })
             if (response.status === 401) {
               const newtoken = await Refresh_token()
-              response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
-              method:'DELETE',
-              headers: {'Authorization': `Bearer ${newtoken}`}})
+              if (newtoken) {
+                response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
+                method:'DELETE',
+                credentials:'include'})
+              } else {
+                console.log('erreur de refresh')
+                return
+              }
             }
             if (response.ok) {
               alert('element supprimé')

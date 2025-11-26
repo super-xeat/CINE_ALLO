@@ -12,18 +12,8 @@ export default function AuthProvider({children}) {
 
     const [IsAuth, setIsAuth] = useState(false)
     const [loading, setloading] = useState(true)
+    const [userauth, setuserauth] = useState('')
 
-
-    useEffect(()=>{
-        const token = localStorage.getItem('token')
-        if (token) {
-            setIsAuth(true)
-        } else {
-            setloading(false)
-            console.log('pas de token connecté')
-        }
-    }, [])
-    
     
     const Login = async(username, password) => {
         try {           
@@ -32,12 +22,14 @@ export default function AuthProvider({children}) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials:'include',
                 body: JSON.stringify({
                     username: username,
                     password: password
                 })
             })
-
+            
+            
             const data = await response.json()
             console.log('data :', data)
 
@@ -45,13 +37,7 @@ export default function AuthProvider({children}) {
                 throw new Error(data.detail || 'Identifiants incorrects')
             }
             
-            
-            localStorage.setItem('token', data.access)
-            localStorage.setItem('refreshToken', data.refresh)  
-            
-            localStorage.removeItem('refreshtoken')
-            localStorage.removeItem('refresh_token')
-        
+            setuserauth(username)
             setIsAuth(true)
             
         } catch (error) {
@@ -60,16 +46,24 @@ export default function AuthProvider({children}) {
         }
     }
 
-    const Logout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('refresh_token')
-    setIsAuth(false)
-    alert('vous etes deconnecté')
-    console.log('Déconnecté')
-}
+    const Logout = async () => {
+        try {
+            await fetch('http://localhost:8000/auth/logout', {
+                method: 'POST',
+                credentials: 'include' 
+            })
+        } catch (error) {
+            console.error('❌ Erreur lors du logout:', error)
+        } finally {
+            setIsAuth(false)
+            setuserauth('')
+            console.log('Déconnecté')
+        }
+    }
+
 
     return (
-        <AuthContext.Provider value={{Login, Logout, IsAuth, setIsAuth, loading, setloading}}>
+        <AuthContext.Provider value={{userauth, Login, Logout, IsAuth, setIsAuth, loading, setloading}}>
             {children}
         </AuthContext.Provider>
     )

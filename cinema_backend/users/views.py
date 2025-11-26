@@ -1,4 +1,5 @@
-from .serializer import (RegisterSerializer, Liste_film_Serializer, ProfileSerializer, AjoutFilmSerializer)
+from .serializer import (RegisterSerializer, Liste_film_Serializer, 
+ProfileSerializer, AjoutFilmSerializer,LoginSerializer)
 from .models import User, Liste_film
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
@@ -13,10 +14,14 @@ from django.utils import timezone
 from rest_framework.parsers import MultiPartParser
 from django.shortcuts import redirect
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 import requests
 from django.conf import settings
 from rest_framework.pagination import PageNumberPagination
-
+from django.contrib.auth import authenticate
+from django.http import HttpResponse
+from users.authentification import JWTcookieAuth
+  
 
 class Pagination(PageNumberPagination):
     page_size = 5
@@ -51,6 +56,64 @@ class RegisterViews(APIView):
         else:
             return Response(serializer.errors, status=404)
 
+
+class LoginViews(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data
+
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+
+            response = Response({'message': 'connexion réussi', 'username': user.username })
+
+            response.set_cookie(
+                key=settings.SIMPLE_JWT['AUTH_COOKIE'],
+                value=access_token,
+                httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                max_age=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
+                path='/'
+            )
+            response.set_cookie(
+                key=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
+                value=refresh_token,
+                httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                max_age=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
+                path='/'
+            )
+            print('cookie dans la reponse')
+            return response
+        
+        print('serializer invalide')
+        return Response(serializer.errors, status=400)
+    
+
+class RefreshViews(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get('refresh_token')
+        if not refresh_token:
+            return Response({'erreur':'le token est introuvable'}, status=401)
+        try:
+            new_token = RefreshToken(refresh_token)
+            new_access_token = str(new_token.access_token)
+            response = Response({'succée': 'nouveau token'})
+            response.set_cookie(
+                key=settings.SIMPLE_JWT['AUTH_COOKIE'],
+                value=new_access_token,
+                httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                max_age=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
+                path='/'
+            )
+            print('refresh cest bon')
+            return response
+        except TokenError as e:
+            return Response({'erreur':'token invalide'}, status=401)
 
 
 class ConfirmEmailView(APIView):
@@ -99,6 +162,16 @@ class PasswordResetView(APIView):
         return Response({'message': 'Si cet email existe, un lien de réinitialisation a été envoyé'})
         
 
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        response = Response({'message': 'deconnexion réussie'})
+        response.delete_cookie('COOKIE_ACCESS')
+        response.delete_cookie('COOKIE_REFRESH')
+        
+        return response
+
 
 class PasswordResetConfirmview(APIView):
     permission_classes = [AllowAny]
@@ -126,6 +199,7 @@ class PasswordResetConfirmview(APIView):
 class AjoutFilmview(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = AjoutFilmSerializer
+    authentication_classes = [JWTcookieAuth]
 
 
 class ListeFilmViews(generics.ListAPIView):
@@ -133,6 +207,7 @@ class ListeFilmViews(generics.ListAPIView):
     queryset = Liste_film.objects.all()
     serializer_class = Liste_film_Serializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTcookieAuth]
     pagination_class = Pagination
 
     def get_queryset(self):
@@ -152,17 +227,19 @@ class SupprimeView(APIView):
             return Response({'le film existe pas'})
 
 
-class ProfileView(generics.RetrieveUpdateAPIView):
-    serializer_class = ProfileSerializer
+class ProfileView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
-
+    authentication_classes = [JWTcookieAuth]
+    queryset = User.objects.all()
+    serializer_class = ProfileSerializer
+    
     def get_object(self):
         return self.request.user
-    
 
 class UpdateFilmListeView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = Liste_film_Serializer
+    authentication_classes = [JWTcookieAuth]
     
     def get_object(self):
         tmdb_id = self.kwargs.get('tmdb_id')

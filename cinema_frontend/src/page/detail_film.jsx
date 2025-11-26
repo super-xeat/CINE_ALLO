@@ -2,7 +2,6 @@ import Detail_movie from '../hook/hook_detail'
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import CommentListe from '../components/commentaire_list'
-import CommentForm from '../components/commentForm'
 import Hook_favori from '../hook/hook_favori'
 import {useAuth} from  '../context/authcontext'
 import CardFilm from "../components/film_card"
@@ -146,13 +145,7 @@ export default function Detail() {
             <div>
                 <CommentListe/>
             </div>
-            
-            {IsAuth ? (
-                <CommentForm/> 
-            ) : (
-                <p>Vous devez vous connecter pour commenter</p>
-            )
-            }      
+                
         </Box>
     )
 }

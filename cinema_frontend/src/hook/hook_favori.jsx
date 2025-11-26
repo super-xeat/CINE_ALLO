@@ -12,21 +12,12 @@ export default function Hook_favori() {
         setloading(true)
         try {
 
-            console.log('id', id)
-            const token = localStorage.getItem('token')
-            console.log('token', token)
-
-            if (!token) {
-                alert('Vous devez être connecté')
-                return false
-            }
-
             let response = await fetch('http://localhost:8000/auth/ajout_film', {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials:'include',
                 body: JSON.stringify({
                     tmdb_id: parseInt(id)
                 })
@@ -43,8 +34,8 @@ export default function Hook_favori() {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json',
-                        'Authorization': `Bearer ${newtoken}`
                     },
+                    credentials:"include",
                     body: JSON.stringify({
                         tmdb_id: parseInt(id)
                     })             

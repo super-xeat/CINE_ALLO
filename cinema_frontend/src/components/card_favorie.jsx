@@ -8,19 +8,15 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film, supprim
     const [loading, setloading] = useState(false)
     const [statut, setstatut] = useState(statutActuel) 
 
-    console.log("Card_favori - tmdb_id:", tmdb_id) 
-    console.log("Card_favori - statutActuel:", statutActuel) 
-
     const modify_statut = async(newstatu) => {
-        const token = localStorage.getItem('token')
         setloading(true)
         try {
             const response = await fetch(`http://localhost:8000/auth/modifier/${tmdb_id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials:'include',
                 body: JSON.stringify({'statut': newstatu})
             })
             if (!response.ok) {
@@ -54,7 +50,6 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film, supprim
   >
     <Grid container spacing={2}>
       
-      {/* IMAGE */}
       <Grid item xs={4}>
         <img
           src={

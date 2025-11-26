@@ -9,29 +9,49 @@ import {
   Button
 } from "@mui/material";
 import { useAuth } from "../context/authcontext";
+import useToken from "../hook/hook_token";
 
-
-export default function CommentForm() {
+export default function CommentForm({id, Refresh}) {
 
     const [texte, settexte] = useState('')
-    const {id} = useParams()
     const {IsAuth} = useAuth()
+    const {Refresh_token} = useToken()
 
     async function Comment() {
-        const token = localStorage.getItem('token')
         try {
-            const response = await fetch('http://localhost:8000/api/films/commentaires', {
+            let response = await fetch(`http://localhost:8000/api/films/commentaires?movie_id=${id}`, {
                 method:'POST',
                 headers: {
                     'Content-type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials:'include',
                 body: JSON.stringify({
-                    film_id: id,
                     texte: texte
                 })
             })
-
+            if (response.status === 401) {
+                const newtoken = await Refresh_token()
+                if (newtoken) {
+                    response = await fetch(`http://localhost:8000/api/films/commentaires?movie_id=${id}`, {
+                    method:'POST',
+                    headers: {
+                        'Content-type': 'application/json',
+                    },
+                    credentials:'include',
+                    body: JSON.stringify({
+                        texte: texte
+                    })})
+                }
+            }
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Erreur serveur:', errorData);
+                throw new Error(errorData.error || `Erreur HTTP: ${response.status}`);
+            }
+            if (response.ok) {
+                Refresh()
+                settexte('')
+            }
             const data = await response.json()
             console.log('data :', data)
 

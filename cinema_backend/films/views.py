@@ -1,4 +1,3 @@
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
@@ -8,6 +7,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from .serializer import CommentaireSerializer
 from .models import Commentaire
 from rest_framework.pagination import PageNumberPagination
+from rest_framework import status
+from users.authentification import JWTcookieAuth
 
 
 class CommentairePagination(PageNumberPagination):
@@ -273,24 +274,40 @@ class Detail_movie(APIView, Listeview):
         })
     
 class CommentaireFilmView(APIView):
-    
+    authentication_classes = [JWTcookieAuth]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        else:
+            return [IsAuthenticated()]
+        
     def get(self, request):
         movie_id = request.GET.get('movie_id')
         queryset = Commentaire.objects.filter(film_id=movie_id)
-        serializer = CommentaireSerializer(queryset, many=True)
+        serializer = CommentaireSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
         
         
     def post(self, request):
-        user = self.request.user
-        serializer = CommentaireSerializer(data=request.data)
+        movie_id = request.GET.get('movie_id')
+        serializer = CommentaireSerializer(
+            data=request.data,
+            context={
+                'request': request,
+            })
         if serializer.is_valid():
-            serializer.save(utilisateur=request.user)
+            print('Serializer validé')
+            serializer.save(utilisateur=request.user, film_id=movie_id)
             return Response(serializer.data, status=200)
-        return Response()
+        else:
+            print('serializer invalide')
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CommentaireUpdateDeleteView(APIView):
+    authentication_classes = [JWTcookieAuth]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:
@@ -325,29 +342,43 @@ class CommentaireUpdateDeleteView(APIView):
 
 class LikeCommentaire(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTcookieAuth]
 
     def post(self, request, pk):
         try:
             commentaire = Commentaire.objects.get(id=pk)
-            if commentaire.like.filter(id=request.user_id).exists():
-                return Response({'erreur': 'vous avez deja liké ce post'}, status=400)
-            commentaire.like.add(request.user)
-            serializer = CommentaireSerializer(commentaire)           
-            return Response(serializer.data, status=200)
+            if commentaire.like.filter(id=request.user.id).exists():
+                commentaire.like.remove(request.user)
+                serializer = CommentaireSerializer(commentaire, context={'request': request})           
+                return Response(serializer.data, status=200)
+            else:
+                if commentaire.dislike.filter(id=request.user.id).exists():
+                    commentaire.dislike.remove(request.user.id)
+
+                commentaire.like.add(request.user.id)
+                serializer = CommentaireSerializer(commentaire, context={'request': request})           
+                return Response(serializer.data, status=200)
         except Commentaire.DoesNotExist:
             return Response({'erreur':'ce commentaire existe pas'}, status=404)
 
 
 class DislikeCommentaire(APIView):
     permission_classes = [IsAuthenticated]
-
+    authentication_classes = [JWTcookieAuth]
+    
     def post(self, request, pk):
         try:
             commentaire = Commentaire.objects.get(id=pk)
-            if commentaire.dislike.filter(id=request.user_id).exists():
-                return Response({'erreur': 'vous avez deja disliké ce post'}, status=400)
-            commentaire.dislike.add(request.user)
-            serializer = CommentaireSerializer(commentaire)           
-            return Response(serializer.data, status=200)
+            if commentaire.dislike.filter(id=request.user.id).exists():
+                commentaire.dislike.remove(request.user.id)
+                serializer = CommentaireSerializer(commentaire, context={'request': request})           
+                return Response(serializer.data, status=200)
+            else:
+                if commentaire.like.filter(id=request.user.id).exists():
+                    commentaire.like.remove(request.user.id)
+               
+                commentaire.dislike.add(request.user.id)
+                serializer = CommentaireSerializer(commentaire, context={'request':request})           
+                return Response(serializer.data, status=200)
         except Commentaire.DoesNotExist:
             return Response({'erreur':'ce commentaire existe pas'}, status=404)

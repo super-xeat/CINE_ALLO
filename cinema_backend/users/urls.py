@@ -1,16 +1,16 @@
 
 from django.urls import path
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
 from .views import (ListeFilmViews, RegisterViews, SupprimeView, 
                     ProfileView, AjoutFilmview, ConfirmEmailView, PasswordResetView,
-                    PasswordResetConfirmview, UpdateFilmListeView, Recup_filmViews)
+                    PasswordResetConfirmview, UpdateFilmListeView, Recup_filmViews,
+                    LoginViews, LogoutView, RefreshViews)
 
 
 urlpatterns = [
-    path('login', TokenObtainPairView.as_view(), name='register'),
-    path('logout', TokenBlacklistView.as_view(), name='logout'), 
+    path('login', LoginViews.as_view(), name='register'),
+    path('logout', LogoutView.as_view(), name='logout'), 
     path('register/', RegisterViews.as_view(), name='register'),
-    path('refresh', TokenRefreshView.as_view()),
+    path('refresh', RefreshViews.as_view()),
     path('ajout_film', AjoutFilmview.as_view(), name='ajouter_film'),
     path('recup_film/<int:tmdb_id>', Recup_filmViews.as_view(), name='recup_film'),
     path('supprimer/<int:tmdb_id>', SupprimeView.as_view(), name='supprimer'),
