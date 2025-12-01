@@ -1,14 +1,11 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useAuth } from "../context/authcontext"
 import useToken from "./hook_token"
 
-export default function Hook_profil() {
+export default function Hook_profil(setIsAuth) {
     const [result, setResult] = useState({})
     const [loading, setLoading] = useState(true)
-    const {setIsAuth} = useAuth()
     const {Refresh_token} = useToken()
-    const navigate = useNavigate()
 
     const fetchProfil = async() => {
         console.log('🍪 Cookies before request:', document.cookie)
@@ -29,7 +26,7 @@ export default function Hook_profil() {
                 
                 if (newToken) {
                     console.log('🚀 Second profile request with new token...')
-                    await new Promise(resolve => setTimeout(resolve, 500))
+                
                     response = await fetch('http://localhost:8000/auth/profile', {
                         headers: { 
                             'Content-Type': 'application/json'
@@ -40,7 +37,6 @@ export default function Hook_profil() {
                 } else {
                     console.log('❌ Refresh completely failed')
                     setIsAuth(false)
-                    navigate('/login')
                     return
                 }
             }
@@ -58,7 +54,6 @@ export default function Hook_profil() {
         } catch (error) {
             console.error('💥 Profile fetch error:', error)
             setIsAuth(false)
-            navigate('/login')
         } finally {
             setLoading(false)
         }

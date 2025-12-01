@@ -70,7 +70,7 @@ class LoginViews(APIView):
             refresh_token = str(refresh)
 
             response = Response({'message': 'connexion réussi', 'username': user.username })
-
+ 
             response.set_cookie(
                 key=settings.SIMPLE_JWT['AUTH_COOKIE'],
                 value=access_token,
@@ -164,11 +164,12 @@ class PasswordResetView(APIView):
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTcookieAuth]
 
     def post(self, request):
         response = Response({'message': 'deconnexion réussie'})
-        response.delete_cookie('COOKIE_ACCESS')
-        response.delete_cookie('COOKIE_REFRESH')
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
         
         return response
 
@@ -196,10 +197,17 @@ class PasswordResetConfirmview(APIView):
             return Response({"erreur"})
         
 
-class AjoutFilmview(generics.CreateAPIView):
+class AjoutFilmview(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = AjoutFilmSerializer
     authentication_classes = [JWTcookieAuth]
+
+    def post(self, request):
+        serializer = Liste_film_Serializer(data=request.data, context={'request':request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'succé':'film ajouté au favorie'}, status=400)
+        else:
+            return Response(serializer.errors, status=400)
 
 
 class ListeFilmViews(generics.ListAPIView):

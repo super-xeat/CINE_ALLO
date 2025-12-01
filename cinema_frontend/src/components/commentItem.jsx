@@ -1,30 +1,31 @@
-import { Box, Typography } from "@mui/material";
+
 import { useState } from "react";
-import {Button} from "@mui/material";
 import { useAuth } from "../context/authcontext";
 import useToken from "../hook/hook_token";
+import { Box, Typography, Button, TextField, IconButton } from '@mui/material';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 
 
 export default function CommentItem({item, Refresh}) {
 
     console.log('item :', item)
-    
+
     const [loading, setloading] = useState(false)
     const [newtexte, setnewtexte] = useState('')
     const {IsAuth, userauth} = useAuth()
     const [cache, setcache] = useState(false)
     const {Refresh_token} = useToken()
+    const [msg, setmsg] = useState([])
 
-
-    const Like = async(commentId) => {
-    
+    const Like = async(commentId) => {   
         setloading(true)
         try {
             let response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}/like`,{
                 method: 'POST',
                 credentials:'include'
             })
-            await response.json()
+            const data = await response.json()
             if (response.status === 401) {
                 const newtoken = await Refresh_token()
 
@@ -40,6 +41,8 @@ export default function CommentItem({item, Refresh}) {
             }
             if (response.ok) {
                 alert('like ajouté')
+                setmsg(data.message)
+                Refresh()
             }
             
         } catch(error) {
@@ -49,31 +52,59 @@ export default function CommentItem({item, Refresh}) {
         }
     }
 
-    const Dislike = async(commentId) => {
-        const token = localStorage.getItem('token')
+    const Dislike = async(commentId) => {      
         try {
             const response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}/dislike`,{
                 method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                credentials: 'include'
             })
             await response.json()
-            alert('dislike ajouté')
+
+            if (response.status === 401) {
+                const newtoken = await Refresh_token()
+
+                if (newtoken) {
+                    response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}/dislike`,{
+                    method: 'POST',
+                    credentials:'include'
+                })
+                } else {
+                    console.log('erreur de refresh')
+                    return
+                }
+            }
+            if (response.ok) {
+                alert('dislike ajouté')
+                Refresh()
+            }
         } catch(error) {
             console.error('erreur')
         }
     }
 
     const Delete = async(commentId) => {
-        const token = localStorage.getItem('token')
+    
         try {
             const response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}`, {
                 method: 'DELETE',
-                headers : {Authorization: `Bearer ${token}`}
+                credentials: 'include'
             })
+
             await response.json()
+
+            if (response.status === 401) {
+                const newtoken = await Refresh_token()
+                if (newtoken) {
+                    response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                    })
+                } else {
+                    console.log('erreur de refresh')
+                    return
+                }}
             if (response.ok) {
+                alert('commentaire supprimé')
                 Refresh()
             }
         } catch(error) {
@@ -81,22 +112,37 @@ export default function CommentItem({item, Refresh}) {
         }
     }
 
-    const Modify = async(commentId) => {
-        const token = localStorage.getItem('token')
+    const Modify = async(commentId) => {     
         try {
             const response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}`, {
                 method: 'PUT',
-                headers : {Authorization: `Bearer ${token}`},
+                credentials: 'include',
                 body: JSON.stringify({
                     texte: newtexte
                 })
             })
             await response.json()
+
+            if (response.status === 401) {
+                const newtoken = await Refresh_token()
+
+                if (newtoken) {
+                    response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}`, {
+                        method: 'PUT',
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            texte: newtexte
+                        })
+                    })
+                } else {
+                    console.log('erreur de refresh')
+                    return
+                }
+            }
             if (response.ok) {
                 Refresh()
                 console.log('commentaire modifier')
-            }
-               
+            }              
         } catch(error) {
             console.error('erreur')
         }
@@ -105,6 +151,7 @@ export default function CommentItem({item, Refresh}) {
     const handlelike = () => {
         if (IsAuth) {
             Like(item.id)
+
         } else {
             alert('vous devez etre connecté pour liker')
             return
@@ -114,6 +161,7 @@ export default function CommentItem({item, Refresh}) {
     const handledislike = () => {
         if (IsAuth) {
             Dislike(item.id)
+        
         } else {
             alert('vous devez etre connecté pour liker')
             return
@@ -132,23 +180,46 @@ export default function CommentItem({item, Refresh}) {
     return(
         <Box sx={{ backgroundColor: "#2a2a2a", p: 2, borderRadius: 2, width: "100%" }}>
             <Typography variant="h6" sx={{ color: "#0c90b8ff" }}>
-                {item.autor}
+                {item.username}
             </Typography>
-            <Typography sx={{ mb: 1 }}>{item.texte}</Typography>
+            <Typography sx={{ mb: 1, color:'#c6bdbdff' }}>{item.texte}</Typography>
             <Typography variant="caption" sx={{ opacity: 0.7 }}>
                 {item.date}
             </Typography>
         
             <Box>
-                <button onClick={()=>handlelike(item.id)}>Like</button>
-                <button onClick={()=>handledislike(item.id)}>Dislike</button>
+                <IconButton 
+                    onClick={handlelike} 
+                    aria-label="like"
+                    sx={{color : item.deja_like ? "#f5f1f1ff" : '#878383ff'}}
+                    size="small">
+                    <ThumbUpAltIcon />
+                </IconButton>
+                
+                <IconButton 
+                    onClick={handledislike} 
+                    aria-label="dislike"
+                    size="small"
+                    sx={{color : item.deja_dislike ? "#f5f1f1ff" : '#878383ff'}}
+                    >
+                    
+                    <ThumbDownAltIcon />
+                </IconButton>
             </Box>
             
             {IsAuth  && item.username === userauth && (
                 cache ? (
                 <Box>
                     <form onSubmit={handlemodify}>
-                        <input onChange={(e)=>setnewtexte(e.target.value)} value={newtexte} type="text"/>
+                        <TextField 
+                            onChange={(e) => setnewtexte(e.target.value)} 
+                            value={newtexte} 
+                            type="text"
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            sx={{ mr: 1, backgroundColor: '#706d6dff', borderRadius: 1 }}
+                        />
                         <button type="submit">envoyer</button>
                     </form>
                     <Button onClick={()=>handlecache}>cacher</Button>

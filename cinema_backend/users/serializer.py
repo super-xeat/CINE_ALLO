@@ -51,7 +51,6 @@ class Liste_film_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Liste_film
         fields = ['id', 'user' ,'statut', 'note_personnel', 'date_ajout', 'tmdb_id']
-
     
     def validate_note_personnel(self, value):
         if value < 0 or value > 5:

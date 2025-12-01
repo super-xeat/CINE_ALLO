@@ -21,7 +21,10 @@ export default function CommentListe() {
     async function Liste() {
         setloading(true)
         try {
-            const response = await fetch(`http://localhost:8000/api/films/commentaires?movie_id=${id}`)
+            const response = await fetch(`http://localhost:8000/api/films/commentaires?movie_id=${id}`, {
+                method:'GET',
+                credentials:'include'
+            })
             if (!response.ok) {
                 console.log('erreur de fetch')
                 alert('erreur de liste')

@@ -1,9 +1,7 @@
 
-import { useNavigate } from "react-router-dom"
 
 
 export default function useToken() {
-    const navigate = useNavigate()
 
     const Refresh_token = async() => {
     try {
@@ -28,7 +26,6 @@ export default function useToken() {
         
     } catch(error) {
         console.error('erreur de refresh', error)
-        navigate('/login')
         return false
     }
 }

@@ -1,7 +1,7 @@
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.conf import settings
 
 class User(AbstractUser):
 
@@ -23,7 +23,7 @@ class Liste_film(models.Model):
     ('VU', 'vu'), 
     ('FAVORI', 'favori'),  
     ]
-    tmdb_id = models.IntegerField()
+    tmdb_id = models.IntegerField(max_length=25)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date_ajout = models.DateField(auto_now_add=True)
     statut = models.CharField(choices=STATUT, max_length=20, default='FAVORI')

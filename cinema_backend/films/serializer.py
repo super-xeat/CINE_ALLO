@@ -19,18 +19,30 @@ class CommentaireSerializer(serializers.ModelSerializer):
     def get_nb_like(self, obj):
         return obj.like.count()
     
-    def get_nb_dislike(self, obj):
+    def get_nb_dislike(self, obj): 
         return obj.dislike.count()
 
     def get_deja_like(self, obj):
-        request = self.context['request']
-        user = request.user
-        if obj.like.filter(id=user.id).exists():
-            return True
+        print("=== DEBUG get_deja_like ===")
+        print("Contexte disponible:", hasattr(self, 'context'))
+        
+        if hasattr(self, 'context') and self.context is not None:
+            request = self.context.get('request')
+            print("Request dans contexte:", request)
+            print("User authentifié:", request.user.is_authenticated if request else "No request")
+            
+            if request and request.user.is_authenticated:
+                user = request.user
+                print(f"Vérification like: user={user.id}, commentaire={obj.id}")
+                exists = obj.like.filter(id=user.id).exists()
+                print(f"Résultat exists: {exists}")
+                return exists
+        
+        print("Return False par défaut")
         return False
         
     def get_deja_dislike(self, obj):
-        request = self.context['request']
+        request = self.context.get('request')
         user = request.user
         if obj.dislike.filter(id=user.id).exists():
             return True

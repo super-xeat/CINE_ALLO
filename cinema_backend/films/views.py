@@ -3,24 +3,20 @@ from rest_framework.response import Response
 from rest_framework import generics
 from django.conf import settings
 import requests
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from .serializer import CommentaireSerializer
 from .models import Commentaire
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 from users.authentification import JWTcookieAuth
-
+from users.models import Liste_film
+from users.serializer import Liste_film_Serializer
+from users.authentification import JWTcookieAuth
 
 class CommentairePagination(PageNumberPagination):
     page_size = 5
     page_query_param = 'sizecom'
     max_page_size = 30
-
-class FilmPagination(PageNumberPagination):
-    page_size = 20
-    page_query_param = 'sizefilm'
-    max_page_size = 30
-
 
 class Listeview:
  
@@ -43,46 +39,74 @@ class Listeview:
 
 class Liste_movie(APIView, Listeview):
     permission_classes = [AllowAny]
-
+    authentication_classes = [JWTcookieAuth]
+    
     def get(self, request):
+        page_number = request.GET.get('page')
 
         liste_movie = self.appel_tmdb(
             endpoint='movie/popular',
-            params={'include_adult': False}
+            params={'include_adult': False, 'page': page_number}
         ) 
 
         if not liste_movie:
             return Response({'erreur pas de film'}, status=400)
          
         result = liste_movie.json().get('results', [])
+
+        liste = []
+        if request.user.is_authenticated:
+            liste = Liste_film.objects.filter(user_id=request.user).values_list('tmdb_id', flat=True)
+
         for item in result:
             item['type'] = "films"
+            tmdb_id = item.get('id')
+            if request.user.is_authenticated and len(liste) > 0 and tmdb_id in liste:
+                item['favorie'] = True
+            else:
+                item['favorie'] = False
 
         return Response({
-           'liste_movie': result  
+           'liste_movie': result,
+           'page': liste_movie.json().get('page'),
+           'total_pages': liste_movie.json().get('total_pages'),
+           'total_results': liste_movie.json().get('total_results')
         })
     
-
 class Film_meilleur_note(APIView, Listeview):
-
+    authentication_classes = [JWTcookieAuth]
     permission_classes = [AllowAny]
 
     def get(self, request):
+        page_number = request.GET.get('page')
 
         meilleure_note = self.appel_tmdb(
             endpoint='movie/top_rated',
-            params={'include_adult': False}
+            params={'include_adult': False, 'page': page_number}
         )
         if not meilleure_note:
             return Response({'erreur pas de films'})
         
-        result = meilleure_note.json().get('results', [])
+        response_tmdb = meilleure_note.json()       
+        result = response_tmdb.get('results', [])
+
+        liste = []
+        if request.user.is_authenticated:
+            liste = Liste_film.objects.filter(user_id=request.user).values_list('tmdb_id', flat=True)
 
         for item in result:
             item['type'] = "films"
-            
+            tmdb_id = item.get('id')
+            if request.user.is_authenticated and len(liste) > 0 and tmdb_id in liste:
+                item['favorie'] = True
+            else:
+                item['favorie'] = False
+
         return Response({
-            'top_rated': result
+            'top_rated': result,
+            'page': response_tmdb.get('page'),
+            'total_pages': response_tmdb.get('total_pages'),
+            'total_results': response_tmdb.get('total_results')
         })     
 
 
@@ -98,13 +122,26 @@ class Serie_meilleur_note(APIView, Listeview):
         if not meilleur_serie:
             return Response({'erreur de liste'})
         
-        response = meilleur_serie.json().get('results', [])
+        response_serie = meilleur_serie.json()
+        response = response_serie.get('results', [])
+
+        liste = []
+        if request.user.is_authenticated:
+            liste = Liste_film.objects.filter(user_id=request.user).values_list('tmdb_id', flat=True)
 
         for item in response:
             item['type'] = "serie"
-            
+            tmdb_id = item.get('id')
+            if request.user.is_authenticated and len(liste) > 0 and tmdb_id in liste:
+                item['favorie'] = True
+            else:
+                item['favorie'] = False
+           
         return Response({
-            'Serie_meilleur_note': response
+            'Serie_meilleur_note': response,
+            'page': response_serie.get('page'),
+            'total_pages': response_serie.get('total_pages'),
+            'total_results': response_serie.get('total_results')
         })
     
 
@@ -120,12 +157,27 @@ class Serie_popular(APIView, Listeview):
         if not popular_serie:
             return Response({'erreur de liste'})
         
-        meilleur_serie = popular_serie.json().get('results', [])
+        meilleur_serie_tv = popular_serie.json()
+        meilleur_serie = meilleur_serie_tv.get('results', [])
+
+        liste = []
+        if request.user.is_authenticated:
+            liste = Liste_film.objects.filter(user_id=request.user).values_list('tmdb_id', flat=True)
+
         for item in meilleur_serie:
             item['type'] = "serie"
+            tmdb_id = item.get('id')
+            if request.user.is_authenticated and len(liste) > 0 and tmdb_id in liste:
+                item['favorie'] = True
+            else:
+                item['favorie'] = False
+
             
         return Response({
-            'Serie_meilleur': meilleur_serie
+            'Serie_meilleur': meilleur_serie,
+            'page': meilleur_serie_tv.get('page'),
+            'total_pages': meilleur_serie_tv.get('total_pages'),
+            'total_results': meilleur_serie_tv.get('total_results')
         })
 
 
@@ -141,11 +193,13 @@ class DiscoverView(APIView, Listeview):
         vote_average2 = request.GET.get('vote_average.lte')
         pays = request.GET.get('with_origin_country')
 
+        page_number = request.GET.get('page')
         params = {
             'include_adult': False,
             'sort_by': sort_by,
             'vote_count.gte': 500,
-            'language': 'fr-FR'
+            'language': 'fr-FR',
+            'page': page_number
         }  
         if genre:
             params['with_genres'] = genre  
@@ -165,12 +219,26 @@ class DiscoverView(APIView, Listeview):
         if not movie_genre or movie_genre.status_code != 200:
             return Response({'erreur': 'TMDB indisponible'}, status=503)
         
-        result = movie_genre.json().get('results', []) 
+        response_discover = movie_genre.json()
+        result = response_discover.get('results', []) 
+
+        liste = []
+        if request.user.is_authenticated:
+            liste = Liste_film.objects.filter(user_id=request.user).values_list('tmdb_id', flat=True)
+
         for item in result:
             item['type'] = "films"
+            item_id = item.get('id')
+            if request.user.is_authenticated and len(liste) > 0 and item_id in liste:
+                item['favorie'] = True
+            else:
+                item['favorie'] = False
             
         return Response({
-            'liste_discover_filtre': result
+            'liste_discover_filtre': result,
+            'page': response_discover.get('page'),
+            'total_pages': response_discover.get('total_pages'),
+            'total_results': response_discover.get('total_results')
         })
 
 class DiscoverTvView(APIView, Listeview):
@@ -209,12 +277,26 @@ class DiscoverTvView(APIView, Listeview):
         if not tv_genre or tv_genre.status_code != 200:
             return Response({'erreur': 'TMDB indisponible'}, status=503)
         
-        result = tv_genre.json().get('results', []) 
+        result_tv = tv_genre.json()
+        result = result_tv.get('results', []) 
+
+        liste = []
+        if request.user.is_authenticated:
+            liste = Liste_film.objects.filter(user_id=request.user).values_list('tmdb_id', flat=True)
+
         for item in result:
             item['type'] = "serie"
-            
+            item_id = item.get('id')
+            if request.user.is_authenticated and len(liste) > 0 and item_id in liste:
+                item['favorie'] = True
+            else:
+                item['favorie'] = False
+           
         return Response({
-            'liste_discover_filtre': result
+            'liste_discover_filtre': result,
+            'page': result_tv.get('page'),
+            'total_pages': result_tv.get('total_pages'),
+            'total_results': result_tv.get('total_results')
         })
 
 class Detail_movie(APIView, Listeview):
@@ -275,12 +357,7 @@ class Detail_movie(APIView, Listeview):
     
 class CommentaireFilmView(APIView):
     authentication_classes = [JWTcookieAuth]
-
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            return [AllowAny()]
-        else:
-            return [IsAuthenticated()]
+    permission_classes = [IsAuthenticatedOrReadOnly]
         
     def get(self, request):
         movie_id = request.GET.get('movie_id')
@@ -347,17 +424,22 @@ class LikeCommentaire(APIView):
     def post(self, request, pk):
         try:
             commentaire = Commentaire.objects.get(id=pk)
+
             if commentaire.like.filter(id=request.user.id).exists():
                 commentaire.like.remove(request.user)
-                serializer = CommentaireSerializer(commentaire, context={'request': request})           
-                return Response(serializer.data, status=200)
+                message = "like retiré"
             else:
                 if commentaire.dislike.filter(id=request.user.id).exists():
-                    commentaire.dislike.remove(request.user.id)
+                    commentaire.dislike.remove(request.user)
 
-                commentaire.like.add(request.user.id)
-                serializer = CommentaireSerializer(commentaire, context={'request': request})           
-                return Response(serializer.data, status=200)
+                commentaire.like.add(request.user)
+                message = "like ajouté"
+            print(message)
+            serializer = CommentaireSerializer(commentaire, context={'request': request})  
+               
+            return Response(
+                {'commentaire':serializer.data, 
+                 'message': message}, status=200)
         except Commentaire.DoesNotExist:
             return Response({'erreur':'ce commentaire existe pas'}, status=404)
 
@@ -369,16 +451,21 @@ class DislikeCommentaire(APIView):
     def post(self, request, pk):
         try:
             commentaire = Commentaire.objects.get(id=pk)
+
             if commentaire.dislike.filter(id=request.user.id).exists():
                 commentaire.dislike.remove(request.user.id)
-                serializer = CommentaireSerializer(commentaire, context={'request': request})           
-                return Response(serializer.data, status=200)
+                
+                message = 'dislike retiré'
             else:
                 if commentaire.like.filter(id=request.user.id).exists():
                     commentaire.like.remove(request.user.id)
                
                 commentaire.dislike.add(request.user.id)
-                serializer = CommentaireSerializer(commentaire, context={'request':request})           
-                return Response(serializer.data, status=200)
+                message = 'dislike rajouté'
+
+            serializer = CommentaireSerializer(commentaire, context={'request':request})           
+            return Response(
+                {'commentaire':serializer.data,
+                 'message': message}, status=200)
         except Commentaire.DoesNotExist:
             return Response({'erreur':'ce commentaire existe pas'}, status=404)

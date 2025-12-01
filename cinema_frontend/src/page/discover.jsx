@@ -13,6 +13,10 @@ import Container from '@mui/material/Container';
 import Chip from '@mui/material/Chip';
 import Alert from '@mui/material/Alert';
 import './discover.css'
+import Pagination from '@mui/material/Pagination';
+import PaginationItem from '@mui/material/PaginationItem';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'; 
 
 
 export default function Discover() {
@@ -20,7 +24,10 @@ export default function Discover() {
   const [result, setresult] = useState([]);
   const [searchparams, setsearchparams] = useSearchParams();
   const [loading, setloading] = useState(false);
-  const [media, setmedia] = useState('movie');
+  const [media, setmedia] = useState('movie')
+
+  const [page, setpage] = useState(1)
+  const [totalpage, settotalpage] = useState('')
 
   const genres = searchparams.get('with_genres') || '';
   const year = searchparams.get('year') || '';
@@ -38,13 +45,15 @@ export default function Discover() {
     }
 
     try {
-      const response = await fetch(`${endpoint}?${searchparams.toString()}`);
+      const response = await fetch(`${endpoint}?${searchparams.toString()}&page=${page}`);
       
       if (!response.ok) {
         console.log('erreur dans la reponse')
       }
       const data = await response.json();
       setresult(data.liste_discover_filtre || []);
+
+      if (data.total_pages) settotalpage(data.total_pages)
 
     } catch (error) {
       console.error('erreur de fetch', error);
@@ -57,12 +66,19 @@ export default function Discover() {
     setmedia(event.target.value);
   };
 
+  const handlePageChange = (e, newpage) => {
+      if (setpage) {
+        setpage(newpage)
+      }
+  }
+
 
   const handlegenre = (event) => {
     const newgenre = event.target.value;
     const new_params = new URLSearchParams(searchparams);
     if (newgenre) new_params.set('with_genres', newgenre);
     else new_params.delete('with_genres');
+    setpage(1)
     setsearchparams(new_params);
   };
 
@@ -72,6 +88,7 @@ export default function Discover() {
     const new_params = new URLSearchParams(searchparams);
     if (newdate) new_params.set('year', newdate);
     else new_params.delete('year');
+    setpage(1)
     setsearchparams(new_params);
   };
 
@@ -97,6 +114,7 @@ export default function Discover() {
         newparams.set('vote_average.lte', '3');
         newparams.set('sort_by', 'vote_average.asc');
     }
+    setpage(1)
     setsearchparams(newparams);
   };
 
@@ -108,18 +126,18 @@ export default function Discover() {
     return '';
   };
 
-  
   const handlepays = (event) => {
     const newpays = event.target.value;
     const params = new URLSearchParams(searchparams);
     if (newpays) params.set('with_origin_country', newpays);
     else params.delete('with_origin_country');
+    setpage(1)
     setsearchparams(params);
   };
 
   useEffect(() => {
     if (searchparams) Decouverte();
-  }, [searchparams, media]);
+  }, [searchparams, media, page]);
 
   return (
   <Container maxWidth="xl" sx={{ py: 4 }} className="discover">
@@ -374,6 +392,20 @@ export default function Discover() {
         </Grid>
       )}
     </Grid>
+    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <Pagination
+
+              count={parseInt(totalpage) || 1} 
+              page={page} 
+              onChange={handlePageChange}         
+              renderItem={(item) => (
+                  <PaginationItem
+                      slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+                      {...item}
+                  />
+              )}
+          />
+      </Box>
   </Container>
 )
     
