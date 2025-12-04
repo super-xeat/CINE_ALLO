@@ -2,7 +2,6 @@
 import { useState } from "react";
 import useToken from "./hook_token";
 
-
 export default function Hook_favori() {
     
     const [loading, setloading] = useState(false)
@@ -61,7 +60,33 @@ export default function Hook_favori() {
             setloading(false)
         }
     }
+    const supprimer = async(tmdb_id) => {
+        try {
+            let response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
+                method:'DELETE',
+                credentials:'include'
+            }) 
+            if (response.status === 401) {
+              const newtoken = await Refresh_token()
+              if (newtoken) {
+                response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
+                method:'DELETE',
+                credentials:'include'})
+              } else {
+                console.log('erreur de refresh')
+                return
+              }
+            }
+            if (response.ok) {
+              alert('element supprimé')
+              console.log('element supprimé')
+              
+            }
+        } catch(error) {
+            console.error('impossible de supprimer', error)
+        }
+    }
 
-    return {Favori, loading}
+    return {Favori, loading, supprimer}
 
 }

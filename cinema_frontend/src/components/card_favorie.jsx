@@ -2,11 +2,16 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Card, Grid, Typography, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useLocation } from "react-router-dom";
+import Hook_favori from "../hook/hook_favori";
 
-export default function Card_favori({tmdb_id, statutActuel, liste, film, supprimer}) {
+
+export default function Card_favori({tmdb_id, statutActuel, liste, film}) {
 
     const [loading, setloading] = useState(false)
     const [statut, setstatut] = useState(statutActuel) 
+    const {supprimer} = Hook_favori()
+    const location = useLocation()
 
     const modify_statut = async(newstatu) => {
         setloading(true)
@@ -31,6 +36,13 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film, supprim
             setloading(false)
         }
     }
+    function handlesupprime(filmId) { 
+      return async () => {
+          await supprimer(filmId)
+          if (location.pathname === '/profile') {
+              liste(); 
+          }
+      }}
 
     if (!film) return <p>Film non trouvé</p>
     if (loading) return <p>Chargement...</p>
@@ -38,7 +50,7 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film, supprim
     
         return (
          <Card
-    sx={{
+      sx={{
       width: 250,
       p: 2,
       borderRadius: 3,
@@ -124,7 +136,7 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film, supprim
               variant="outlined"
               fullWidth
               color="error"
-              onClick={() => supprimer(film.id)} 
+              onClick={handlesupprime(tmdb_id)} 
               sx={{
                 borderRadius: 2,
                 minWidth: 0,

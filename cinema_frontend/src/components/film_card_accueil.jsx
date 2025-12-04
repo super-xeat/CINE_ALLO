@@ -15,12 +15,16 @@ import { Box } from '@mui/material';
 
 
 export default function CardFilmAccueil({ film }) {
-  const { Favori } = Hook_favori();
+  const { Favori, supprimer } = Hook_favori();
   const [isFav, setIsFav] = React.useState(false);
 
   const handleFavoriClick = () => {
-    Favori(film.id);
-    setIsFav(!isFav);
+    if (isFav) {
+      supprimer(film.id)
+    } else {
+      Favori(film.id);
+    }
+    setIsFav(!isFav)
   };
 
   return (

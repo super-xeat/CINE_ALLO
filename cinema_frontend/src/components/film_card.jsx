@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -16,14 +16,20 @@ import { Box } from '@mui/material';
 
 
 export default function CardFilm({ film }) {
-  const { Favori } = Hook_favori();
-  const [isFav, setIsFav] = React.useState(false);
+  const { Favori, supprimer } = Hook_favori();
+  const [isFav, setIsFav] = useState(film.favorie);
 
+  
   const type = film.type
-
+  
   const handleFavoriClick = () => {
-    Favori(film.id);
-    setIsFav(!isFav);
+    
+    if (isFav) {
+      supprimer(film.id)
+    } else {
+      Favori(film.id);
+    }
+    setIsFav(!isFav)
   };
 
   return (

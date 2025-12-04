@@ -24,7 +24,7 @@ export default function Recherche() {
 
   async function handleproposition(params) {
       try {
-          const response = await fetch(`http://localhost:8000/api/films/discover?${params}`);
+          const response = await fetch(`http://localhost:8000/api/films/films/discover?${params}`);
           const data = await response.json();
           setliste(data.liste_discover_filtre || []);
           setchange1(false);

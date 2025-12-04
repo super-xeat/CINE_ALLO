@@ -12,15 +12,22 @@ from users.authentification import JWTcookieAuth
 from users.models import Liste_film
 from users.serializer import Liste_film_Serializer
 from users.authentification import JWTcookieAuth
+from asgiref.sync import sync_to_async
+import httpx
+import asyncio
+
 
 class CommentairePagination(PageNumberPagination):
     page_size = 5
     page_query_param = 'sizecom'
     max_page_size = 30
 
+@sync_to_async
+def get_user_favori(user):
+    return list(Liste_film.objects.filter(user_id=user).values_list('tmdb_id', flat=True))
+
 class Listeview:
- 
-    def appel_tmdb(self, endpoint, params=None):
+    async def appel_tmdb(self, endpoint, params=None):
         base_url = "https://api.themoviedb.org/3"
         api_key = settings.TMDB_API_KEY
         url = f'{base_url}/{endpoint}'
@@ -29,34 +36,41 @@ class Listeview:
             'language': 'fr-FR',
             'api_key': api_key
         }
-
         if params: 
             params_base.update(params)
 
-        response = requests.get(url, params=params_base)
-        return response
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url, params=params_base)
+                return response
+        except httpx.RequestError as e:
+            print(f"erreur de requete {e}")
     
 
 class Liste_movie(APIView, Listeview):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     authentication_classes = [JWTcookieAuth]
     
-    def get(self, request):
+    async def get(self, request):
         page_number = request.GET.get('page')
 
-        liste_movie = self.appel_tmdb(
+        liste_movie = await self.appel_tmdb(
             endpoint='movie/popular',
             params={'include_adult': False, 'page': page_number}
         ) 
 
-        if not liste_movie:
+        if not liste_movie.is_success:
             return Response({'erreur pas de film'}, status=400)
          
         result = liste_movie.json().get('results', [])
 
         liste = []
+        
         if request.user.is_authenticated:
-            liste = Liste_film.objects.filter(user_id=request.user).values_list('tmdb_id', flat=True)
+            print('user :', request.user)
+            liste = await get_user_favori(request.user)
+        else:
+            print('user existe pas')
 
         for item in result:
             item['type'] = "films"
@@ -75,16 +89,16 @@ class Liste_movie(APIView, Listeview):
     
 class Film_meilleur_note(APIView, Listeview):
     authentication_classes = [JWTcookieAuth]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get(self, request):
-        page_number = request.GET.get('page')
+    async def get(self, request):
+        page_number = request.GET.get('page', 1)
 
-        meilleure_note = self.appel_tmdb(
+        meilleure_note = await self.appel_tmdb(
             endpoint='movie/top_rated',
             params={'include_adult': False, 'page': page_number}
         )
-        if not meilleure_note:
+        if not meilleure_note.is_success:
             return Response({'erreur pas de films'})
         
         response_tmdb = meilleure_note.json()       
@@ -92,7 +106,7 @@ class Film_meilleur_note(APIView, Listeview):
 
         liste = []
         if request.user.is_authenticated:
-            liste = Liste_film.objects.filter(user_id=request.user).values_list('tmdb_id', flat=True)
+            liste = await get_user_favori(request.user)
 
         for item in result:
             item['type'] = "films"
@@ -101,7 +115,7 @@ class Film_meilleur_note(APIView, Listeview):
                 item['favorie'] = True
             else:
                 item['favorie'] = False
-
+            
         return Response({
             'top_rated': result,
             'page': response_tmdb.get('page'),
@@ -111,15 +125,18 @@ class Film_meilleur_note(APIView, Listeview):
 
 
 class Serie_meilleur_note(APIView, Listeview):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [JWTcookieAuth]
 
-    def get(self, request):
+    async def get(self, request):
+        
+        page_number = request.GET.get('page', 1)
 
-        meilleur_serie = self.appel_tmdb(
+        meilleur_serie = await self.appel_tmdb(
             endpoint='tv/top_rated',
-            params={'include_adult': False}
+            params={'include_adult': False, 'page': page_number}
         )
-        if not meilleur_serie:
+        if not meilleur_serie.is_success:
             return Response({'erreur de liste'})
         
         response_serie = meilleur_serie.json()
@@ -127,7 +144,7 @@ class Serie_meilleur_note(APIView, Listeview):
 
         liste = []
         if request.user.is_authenticated:
-            liste = Liste_film.objects.filter(user_id=request.user).values_list('tmdb_id', flat=True)
+            liste = await get_user_favori(request.user)
 
         for item in response:
             item['type'] = "serie"
@@ -146,15 +163,18 @@ class Serie_meilleur_note(APIView, Listeview):
     
 
 class Serie_popular(APIView, Listeview):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [JWTcookieAuth]
 
-    def get(self, request):
+    async def get(self, request):
 
-        popular_serie = self.appel_tmdb(
+        page_number = request.GET.get('page', 1)
+
+        popular_serie = await self.appel_tmdb(
             endpoint='tv/popular',
-            params={'include_adult': False}
+            params={'include_adult': False, 'page': page_number}
         )
-        if not popular_serie:
+        if not popular_serie.is_success:
             return Response({'erreur de liste'})
         
         meilleur_serie_tv = popular_serie.json()
@@ -162,7 +182,7 @@ class Serie_popular(APIView, Listeview):
 
         liste = []
         if request.user.is_authenticated:
-            liste = Liste_film.objects.filter(user_id=request.user).values_list('tmdb_id', flat=True)
+            liste = await get_user_favori(request.user)
 
         for item in meilleur_serie:
             item['type'] = "serie"
@@ -171,7 +191,6 @@ class Serie_popular(APIView, Listeview):
                 item['favorie'] = True
             else:
                 item['favorie'] = False
-
             
         return Response({
             'Serie_meilleur': meilleur_serie,
@@ -182,10 +201,76 @@ class Serie_popular(APIView, Listeview):
 
 
 class DiscoverView(APIView, Listeview):
-    permission_classes = [AllowAny]
+    authentication_classes = [JWTcookieAuth]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+      
+    async def get(self, request):       
+        try:
+            genre = request.GET.get('with_genres') 
+            sort_by = request.GET.get('sort_by', 'popularity.desc')  
+            release_year = request.GET.get('year') 
+            vote_average1 = request.GET.get('vote_average.gte')
+            vote_average2 = request.GET.get('vote_average.lte')
+            pays = request.GET.get('with_origin_country')
+
+            page_number = request.GET.get('page', 1)
+            params = {
+                'include_adult': False,
+                'sort_by': sort_by,
+                'vote_count.gte': 500,
+                'language': 'fr-FR',
+                'page': page_number
+            }  
+            if genre:
+                params['with_genres'] = genre  
+            if release_year:
+                params['primary_release_year'] = release_year   
+            if vote_average1:
+                params['vote_average.gte'] = vote_average1
+            if vote_average2:
+                params['vote_average.lte'] = vote_average2    
+            if pays:
+                params['with_origin_country'] = pays
+                
+            movie_genre = await self.appel_tmdb(
+                endpoint='discover/movie',
+                params=params
+            )
+            if not movie_genre or movie_genre.is_success:
+                return Response({'erreur': 'TMDB indisponible'}, status=503)
+            
+            response_discover = movie_genre.json()
+            result = response_discover.get('results', []) 
+
+            liste = []
+            if request.user.is_authenticated:
+                liste = await get_user_favori(request.user)
+
+            for item in result:
+                item['type'] = "films"
+                item_id = item.get('id')
+                if request.user.is_authenticated and len(liste) > 0 and item_id in liste:
+                    item['favorie'] = True
+                else:
+                    item['favorie'] = False
+                
+            return Response({ 
+                'liste_discover_filtre': result,
+                'page': response_discover.get('page'),
+                'total_pages': response_discover.get('total_pages'),
+                'total_results': response_discover.get('total_results')
+            })
+        except httpx.HTTPError as e:
+            return Response({'erreur': 'erreur de connexion a tmdb'}, status=503)
+
+class DiscoverTvView(APIView, Listeview):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [JWTcookieAuth]
     
-    def get(self, request):
-         
+    async def get(self, request):
+        
+        page_number = request.GET.get('page', 1)
+
         genre = request.GET.get('with_genres') 
         sort_by = request.GET.get('sort_by', 'popularity.desc')  
         release_year = request.GET.get('year') 
@@ -193,7 +278,6 @@ class DiscoverView(APIView, Listeview):
         vote_average2 = request.GET.get('vote_average.lte')
         pays = request.GET.get('with_origin_country')
 
-        page_number = request.GET.get('page')
         params = {
             'include_adult': False,
             'sort_by': sort_by,
@@ -212,69 +296,11 @@ class DiscoverView(APIView, Listeview):
         if pays:
             params['with_origin_country'] = pays
             
-        movie_genre = self.appel_tmdb(
-            endpoint='discover/movie',
-            params=params
-        )
-        if not movie_genre or movie_genre.status_code != 200:
-            return Response({'erreur': 'TMDB indisponible'}, status=503)
-        
-        response_discover = movie_genre.json()
-        result = response_discover.get('results', []) 
-
-        liste = []
-        if request.user.is_authenticated:
-            liste = Liste_film.objects.filter(user_id=request.user).values_list('tmdb_id', flat=True)
-
-        for item in result:
-            item['type'] = "films"
-            item_id = item.get('id')
-            if request.user.is_authenticated and len(liste) > 0 and item_id in liste:
-                item['favorie'] = True
-            else:
-                item['favorie'] = False
-            
-        return Response({
-            'liste_discover_filtre': result,
-            'page': response_discover.get('page'),
-            'total_pages': response_discover.get('total_pages'),
-            'total_results': response_discover.get('total_results')
-        })
-
-class DiscoverTvView(APIView, Listeview):
-    permission_classes = [AllowAny]
-    
-    def get(self, request):
-         
-        genre = request.GET.get('with_genres') 
-        sort_by = request.GET.get('sort_by', 'popularity.desc')  
-        release_year = request.GET.get('year') 
-        vote_average1 = request.GET.get('vote_average.gte')
-        vote_average2 = request.GET.get('vote_average.lte')
-        pays = request.GET.get('with_origin_country')
-
-        params = {
-            'include_adult': False,
-            'sort_by': sort_by,
-            'vote_count.gte': 500,
-            'language': 'fr-FR'
-        }  
-        if genre:
-            params['with_genres'] = genre  
-        if release_year:
-            params['primary_release_year'] = release_year   
-        if vote_average1:
-            params['vote_average.gte'] = vote_average1
-        if vote_average2:
-            params['vote_average.lte'] = vote_average2    
-        if pays:
-            params['with_origin_country'] = pays
-            
-        tv_genre = self.appel_tmdb(
+        tv_genre = await self.appel_tmdb(
             endpoint='discover/tv',
             params=params
         )
-        if not tv_genre or tv_genre.status_code != 200:
+        if not tv_genre or tv_genre.is_success:
             return Response({'erreur': 'TMDB indisponible'}, status=503)
         
         result_tv = tv_genre.json()
@@ -282,7 +308,7 @@ class DiscoverTvView(APIView, Listeview):
 
         liste = []
         if request.user.is_authenticated:
-            liste = Liste_film.objects.filter(user_id=request.user).values_list('tmdb_id', flat=True)
+            liste = await get_user_favori(request.user)
 
         for item in result:
             item['type'] = "serie"
@@ -302,7 +328,7 @@ class DiscoverTvView(APIView, Listeview):
 class Detail_movie(APIView, Listeview):
     permission_classes = [AllowAny]
     
-    def get(self, request):
+    async def get(self, request):
 
         movie_serie_id = request.GET.get('movie_id')
         type = request.GET.get('type')
@@ -313,32 +339,32 @@ class Detail_movie(APIView, Listeview):
             else:
                 type = 'tv'
 
-        detail_movie = self.appel_tmdb(
+        detail_movie = await self.appel_tmdb(
             endpoint=f'{type}/{movie_serie_id}',
             params={'include_adult': False, 'language': 'fr-FR'}
         )
 
-        if not detail_movie:
+        if not detail_movie.is_success:
             return Response({'erreur film introuvable'})
         
         response = detail_movie.json()
 
-        credit_movie = self.appel_tmdb(
+        credit_movie = await self.appel_tmdb(
             endpoint=f"{type}/{movie_serie_id}/credits",
             params={'include_adult': False, 'language': 'fr-FR'}
         )
 
-        if not credit_movie:
+        if not credit_movie.is_success:
             return Response({'erreur ps de credit'})
         
         response_credit = credit_movie.json()
 
-        similaire_movie = self.appel_tmdb(
+        similaire_movie = await self.appel_tmdb(
             endpoint=f'{type}/{movie_serie_id}/similar',
             params={'include_adult': False}
         )
 
-        if not similaire_movie:
+        if not similaire_movie.is_success:
             return Response({'erreur pas de film similaire'})
         
         film_similaire = similaire_movie.json().get('results', [])

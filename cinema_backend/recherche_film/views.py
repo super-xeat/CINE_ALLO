@@ -1,15 +1,16 @@
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.conf import settings
 import os
 import requests
 from rest_framework.permissions import AllowAny
-
+import httpx
+from asgiref.sync import sync_to_async
+import asyncio
 
 class Appel_TMDB:
 
-    def appel_tmdb(self, endpoint, params=None):
+    async def appel_tmdb(self, endpoint, params=None):
         api_key = settings.TMDB_API_KEY
         base_url = "https://api.themoviedb.org/3"
         url = f'{base_url}/{endpoint}'
@@ -18,25 +19,25 @@ class Appel_TMDB:
             'language': 'fr-FR',
             'api_key': api_key
         }
-
         if params:
             params_base.update(params)
 
-        reponse = requests.get(url, params=params_base)
-        return reponse
+        async with httpx.AsyncClient() as client:
+            reponse = await client.get(url, params=params_base)
+            return reponse
 
 
 class Recommandationview(APIView, Appel_TMDB):
     permission_classes = [AllowAny]
     
-    def get(self, request):
+    async def get(self, request):
         query = request.GET.get('q', '').strip()
         
         if not query:
             return Response({'erreur': 'Requête vide'})
         
         try:
-            result_multi = self.appel_tmdb(
+            result_multi = await self.appel_tmdb(
                 endpoint='search/multi',
                 params={'query': query, 'include_adult': False, 'language': 'fr-FR'}
             )
@@ -60,14 +61,15 @@ class Recommandationview(APIView, Appel_TMDB):
                 film_similar = self.appel_tmdb(
                     endpoint=f'movie/{media_id}/similar',
                     params={'language': 'fr-FR'}
-                )
-                response_similar = film_similar.json().get('results', []) if film_similar else []
-                
+                )               
                 film_recommandation = self.appel_tmdb(
                     endpoint=f'movie/{media_id}/recommendations',
                     params={'language': 'fr-FR'}
                 )
-                response_recommandation = film_recommandation.json().get('results', []) if film_recommandation else []
+                similar, recommandation = await asyncio.gather(film_similar, film_recommandation)
+
+                response_similar = similar.json().get('results', []) if similar else []
+                response_recommandation = recommandation.json().get('results', []) if recommandation else []
                 
                 result_film = {
                     'film_similaire': response_similar,
@@ -80,13 +82,15 @@ class Recommandationview(APIView, Appel_TMDB):
                     endpoint=f"tv/{media_id}/recommendations",
                     params={'language': 'fr-FR'}
                 )
-                recommandation_tv = tv_recommandation.json().get('results', []) if tv_recommandation else []
-                
                 tv_similaire = self.appel_tmdb(
                     endpoint=f'tv/{media_id}/similar',
                     params={'language': 'fr-FR'}
                 )
-                reponse_similaire = tv_similaire.json().get('results', []) if tv_similaire else []
+
+                recommandation, similaire = await asyncio.gather(tv_recommandation, tv_similaire)
+
+                recommandation_tv = recommandation.json().get('results', []) if recommandation else []
+                reponse_similaire = similaire.json().get('results', []) if similaire else []
                 
                 result_serie = {
                     'serie_recommandation': recommandation_tv,
@@ -99,7 +103,7 @@ class Recommandationview(APIView, Appel_TMDB):
                 result_serie = {'erreur': 'no resultat'}
                 
         except:
-            return Response({'erreur dans recommandationview'})
+            return Response({'erreur dans recommandationview'}, status=500)
         
         return Response({
             'result_film': result_film,
@@ -111,7 +115,7 @@ class Recommandationview(APIView, Appel_TMDB):
 class Recherche_navbar(APIView, Appel_TMDB):
     permission_classes = [AllowAny]
     
-    def get(self, request):
+    async def get(self, request):
         query = request.GET.get('q', '').strip()
         if not query:
             return Response({'erreur': 'Query required'}, status=400)
@@ -120,7 +124,7 @@ class Recherche_navbar(APIView, Appel_TMDB):
         data_movie = {}
         
         try:
-            response = self.appel_tmdb(
+            response = await self.appel_tmdb(
             endpoint='search/person', #appel 1
             params={'query':query, 'include_adult': False}
             )
@@ -131,7 +135,7 @@ class Recherche_navbar(APIView, Appel_TMDB):
                 if result:
                     person_id = result[0]['id']  
 
-                    personne = self.appel_tmdb(
+                    personne = await self.appel_tmdb(
                         endpoint=f'person/{person_id}',  #appel 2 
                         params={'language': 'FR-fr'}
                     )
@@ -140,7 +144,7 @@ class Recherche_navbar(APIView, Appel_TMDB):
                     else:
                         result_personne = personne.json()
 
-                        filmographie = self.appel_tmdb(
+                        filmographie = await self.appel_tmdb(
                             endpoint=f'person/{person_id}/movie_credits', #appel 3
                             params={'language': 'FR-fr'}
                         )
@@ -163,7 +167,7 @@ class Recherche_navbar(APIView, Appel_TMDB):
             data_person = {'erreur data_person':'aucune personne trouvé'}
         
         try:
-            response = self.appel_tmdb(
+            response = await self.appel_tmdb(
             endpoint='search/movie',
             params={'query': query, 'language': 'FR-fr'}
             )
@@ -173,7 +177,7 @@ class Recherche_navbar(APIView, Appel_TMDB):
                 result = response.json().get('results', [])          
                 if result:
                     movie_id = result[0]['id']  
-                    film_detail = self.appel_tmdb(
+                    film_detail = await self.appel_tmdb(
                         endpoint=f'movie/{movie_id}',
                         params={'language':'FR-fr'}
                     )
@@ -182,7 +186,7 @@ class Recherche_navbar(APIView, Appel_TMDB):
                     else:
                         result_film_detail = film_detail.json()
 
-                        film_similar = self.appel_tmdb(
+                        film_similar = await self.appel_tmdb(
                             endpoint=f'movie/{movie_id}/similar',
                             params={'language': 'FR-fr'} 
                         )

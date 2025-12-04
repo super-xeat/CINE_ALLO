@@ -72,7 +72,9 @@ export default function Liste_films() {
           }
 
         try {
-          const response = await fetch(url)
+          const response = await fetch(url, {
+            credentials:'include'
+          })
           if (!response.ok) throw new console.error();
           const data = await response.json()
 
@@ -181,7 +183,7 @@ export default function Liste_films() {
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                 <CardFilm film={film}/>
               </Box>
-            </Grid>
+            </Grid> 
           ))
         ) : (
           <Typography variant="body1" sx={{ color: "gray" }}>
@@ -189,14 +191,15 @@ export default function Liste_films() {
           </Typography>
         )}
       </Grid>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 , color: "#f6ededff"}}>
           <Pagination
-
+              
               count={parseInt(totalpage) || 1} 
               page={page} 
               onChange={handlePageChange}         
               renderItem={(item) => (
                   <PaginationItem
+                    sx={{color: "#f6ededff"}}
                       slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
                       {...item}
                   />

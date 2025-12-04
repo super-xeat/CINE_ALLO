@@ -117,7 +117,6 @@ export default function Navbar() {
   return (
     <Box sx={{ flexGrow: 1 }}>
 
-      {/* 🌑 NAVBAR */}
       <AppBar position="static" sx={{ background: 'linear-gradient(90deg, #0a0a0a, #1b1b1b)' }}>
         <Toolbar>
 
@@ -161,7 +160,6 @@ export default function Navbar() {
                 type="text"
                 value={query}
                 onChange={(e) => setquery(e.target.value)}
-                placeholder="Rechercher un film..."
               />
             </Search>
           )}

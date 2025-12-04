@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import Card_film from "../components/film_card";
+import Cardfilm from "../components/film_card";
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -38,14 +38,16 @@ export default function Discover() {
     
     let endpoint;
 
-    if (media === 'movie') {
-      endpoint = 'http://localhost:8000/api/films/discover';
+    if (media === 'movie') { 
+      endpoint = 'http://localhost:8000/api/films/films/discover';
     } else {
-      endpoint = 'http://localhost:8000/api/series/discover';
+      endpoint = 'http://localhost:8000/api/films/series/discover';
     }
 
     try {
-      const response = await fetch(`${endpoint}?${searchparams.toString()}&page=${page}`);
+      const response = await fetch(`${endpoint}?${searchparams.toString()}&page=${page}`, {
+        credentials:'include'
+      });
       
       if (!response.ok) {
         console.log('erreur dans la reponse')
@@ -376,7 +378,7 @@ export default function Discover() {
       {result.length > 0 ? (
         result.map((movie) => (
           <Grid item key={movie.id} xs={12} sm={6} md={4} lg={3}>
-            <Card_film film={movie} />
+            <Cardfilm film={movie} />
           </Grid>
         ))
       ) : (
@@ -400,6 +402,9 @@ export default function Discover() {
               onChange={handlePageChange}         
               renderItem={(item) => (
                   <PaginationItem
+                      sx={{color: "#f6ededff", '&.Mui-selected': { 
+                      backgroundColor: '#0a88aeff', 
+                      color: '#fff'}}}
                       slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
                       {...item}
                   />

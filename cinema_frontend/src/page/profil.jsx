@@ -3,7 +3,9 @@ import { Card, IconButton, CardContent, Button, Typography, TextField, Stack, Av
 import Hook_profil from "../hook/hook_profil";
 import useToken from "../hook/hook_token";
 import { Edit, Key } from "@mui/icons-material";
+import AddCircleIcon from '@mui/icons-material/AddCircle'
 import Card_favori from "../components/card_favorie";
+import { useLocation } from "react-router-dom";
 import './profil.css'
 
 export default function Profil() {
@@ -25,6 +27,7 @@ export default function Profil() {
 
   const { fetchProfil, result, loading} = Hook_profil()
   const {Refresh_token} = useToken()
+  const location = useLocation()
 
 
   useEffect(()=> {
@@ -57,7 +60,7 @@ export default function Profil() {
       console.error('erreur de la demande recup_film')
       return recup_liste
     }
-  }
+  } 
 
   async function fetchListeFavori(pagenum = 1) {
     try {
@@ -127,52 +130,25 @@ export default function Profil() {
         if (newtoken) {
             console.log('nouveau token succès')
             response = await fetch('http://localhost:8000/auth/profile', {
-            method: 'PUT',
+            method: 'PATCH',
             credentials:'include',
             body: formData,
           })} else {
             console.log('Refresh failed - redirection login');
             return
-          }
-        }
+          }}
       if (response.ok) fetchProfil()
-
     } catch (error) {
       console.error(error);
-    }
+    }}
+  
+  if (location.pathname === '/profile') {
+    
   }
 
   const handleAvatarClick = () => {
     setModifImage(true);
   };
-
-  const supprimer = async(tmdb_id) => {
-        try {
-            let response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
-                method:'DELETE',
-                credentials:'include'
-            })
-            if (response.status === 401) {
-              const newtoken = await Refresh_token()
-              if (newtoken) {
-                response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
-                method:'DELETE',
-                credentials:'include'})
-              } else {
-                console.log('erreur de refresh')
-                return
-              }
-            }
-            if (response.ok) {
-              alert('element supprimé')
-              console.log('element supprimé')
-              await fetchListeFavori(1)
-            }
-        } catch(error) {
-            console.error('impossible de supprimer', error)
-        }
-    }
-  
 
   console.log("image URL:", result.image)
   if (loading) return <Typography>Chargement...</Typography>;
@@ -238,8 +214,8 @@ export default function Profil() {
                 onClick={() => setModiUsername(false)}>Annuler</Button>
               </Stack>
             ) : (
-              <Button sx={{ backgroundColor:"#1380b3f0", color:"#f8f3f3" , boxShadow:"2", ":hover": {backgroundColor: '#0c648df0'}}} 
-              variant="outlined" onClick={() => setModiUsername(true)}>Modifier le nom</Button>
+              <Button size="small" variant="contained" sx={{ backgroundColor:"#1380b3f0", color:"#f8f3f3" , boxShadow:"2", ":hover": {backgroundColor: '#0c648df0'}}} 
+               onClick={() => setModiUsername(true)}>Modifier le nom</Button>
             )}
           </Stack>
         </Stack>
@@ -282,7 +258,7 @@ export default function Profil() {
           </>
         )}
 
-        <Typography variant="subtitle1" fontWeight="bold">Ma bio:</Typography>
+        <Typography size="small" variant="subtitle1" fontWeight="bold">Ma bio:</Typography>
         <Typography variant="body1" mb={1}>{result.bio}</Typography>
         {modifbio ? (
           <Stack direction="row" spacing={1} mb={2}>
@@ -315,24 +291,25 @@ export default function Profil() {
                     statutActuel={item.statut}
                     liste={()=>fetchListeFavori(1)}
                     film={item.tmdb_champ || item}
-                    supprimer={() => supprimer(item.tmdb_id)}
                   />
                 </div>
               )
             })}
+            <Box display="flex" justifyContent="center" mt={2}>
+              <Button 
+                variant="outlined" 
+                onClick={chargerplus}
+                disabled={loader}
+                sx={{backgroundColor:'#282727ff', "&:hover": { bgcolor: "#474747ff" }}}
+              >
+                {loader ? 'Chargement...' : <AddCircleIcon />}
+              </Button>
+            </Box>
           </Stack>
           </>
         )}
           
-          <Box display="flex" justifyContent="center" mt={2}>
-            <Button 
-              variant="outlined" 
-              onClick={chargerplus}
-              disabled={loader}
-            >
-              {loader ? 'Chargement...' : 'Charger plus de films'}
-            </Button>
-          </Box>
+          
 
       </CardContent>
     </Card>
