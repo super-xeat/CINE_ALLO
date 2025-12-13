@@ -54,7 +54,7 @@ export default function CommentItem({item, Refresh}) {
 
     const Dislike = async(commentId) => {      
         try {
-            const response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}/dislike`,{
+            let response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}/dislike`,{
                 method: 'POST',
                 credentials: 'include'
             })
@@ -85,7 +85,7 @@ export default function CommentItem({item, Refresh}) {
     const Delete = async(commentId) => {
     
         try {
-            const response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}`, {
+            let response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -114,7 +114,7 @@ export default function CommentItem({item, Refresh}) {
 
     const Modify = async(commentId) => {     
         try {
-            const response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}`, {
+            let response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}`, {
                 method: 'PUT',
                 credentials: 'include',
                 body: JSON.stringify({

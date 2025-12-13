@@ -11,131 +11,192 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import Button from '@mui/material/Button';
 import { motion } from 'framer-motion';
+import { Box, Menu, ListItemText } from '@mui/material'; // <-- Ajout de Menu et ListItemText
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Hook_favori from "../hook/hook_favori";
-import { Box } from '@mui/material';
 
 
 export default function CardFilm({ film }) {
-  const { Favori, supprimer } = Hook_favori();
-  const [isFav, setIsFav] = useState(film.favorie);
+  const { Favori, supprimer } = Hook_favori();
+  const [isFav, setIsFav] = useState(film.favorie);
+  // const [click, setclick] = useState(false) <-- SUPPRIMÉ, INUTILE
+  const [anchorEl, setAnchorEl] = useState(null);
+  
+  const Handleclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation(); // Empêche d'ouvrir le détail du film
+    setAnchorEl(e.currentTarget); // <-- Utilise currentTarget (plus fiable)
+    // setclick(true) <-- SUPPRIMÉ, INUTILE
+  };
 
-  
-  const type = film.type
-  
-  const handleFavoriClick = () => {
-    
-    if (isFav) {
-      supprimer(film.id)
-    } else {
-      Favori(film.id);
-    }
-    setIsFav(!isFav)
-  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    // setclick(false) <-- SUPPRIMÉ, INUTILE
+  };
 
-  return (
-    <Box sx={{m:1, border: '3px solid #0a88aeff', borderRadius: 3, width: 250, mx: 'auto'}}>
-    <Card
-      sx={{
-        height: '100%',
-        Width: '100%',
-        borderRadius: 3,
-        boxShadow: 4,
-        transition: 'transform 0.25s ease, box-shadow 0.25s ease',
-        '&:hover': {
-          transform: 'scale(1.04)',
-          boxShadow: 6,
-        }, 
-      }}
-    >
-      <CardActionArea component={Link} to={`/detail_film/${type}/${film.id}`}>
-        <CardMedia
-          component="img"
-          height="350"
-          image={
-            film?.poster_path
-              ? `https://image.tmdb.org/t/p/w500${film?.poster_path}`
-              : '/placeholder-poster.jpg'
-          }
-          alt={film.original_title}
-          sx={{ objectFit: 'cover' }}
-        />
+  const type = film.type;
+  
+  const handleFavoriClick = () => {
+    if (isFav) {
+      supprimer(film.id)
+    } else {
+      Favori(film.id);
+    }
+    setIsFav(!isFav)
+  };
 
-        <CardContent>
-          <Typography
-            gutterBottom
-            variant="h6"
-            component="div"
-            sx={{
-              color: 'text.primary',
-              textAlign: 'center',
-              fontWeight: 600,
-              mb: 1,
-            }}
-          >
-            {film.original_title}
-          </Typography>
+  const menuOpen = Boolean(anchorEl);
 
-          <Typography
-            variant="body2"
-            sx={{
-              color: 'text.secondary',
-              overflow: 'hidden',
-              display: '-webkit-box',
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
-              textAlign: 'justify',
-            }}
-          >
-            {film.overview || 'Aucune description disponible.'}
-          </Typography>
+  return (
+    <Box sx={{m: { xs: 0.5, sm: 1 }, border: '3px solid #0a88aeff', width:'100%',
+      borderRadius: 3, mx: 'auto', maxWidth: { xs: 180, sm: 250 }}}>
+    <Card
+      sx={{
+        height: '100%',
+        Width: '100%',
+        borderRadius: 3,
+        boxShadow: 4,
+        transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+        '&:hover': {
+          transform: 'scale(1.04)',
+          boxShadow: 6,
+        }, 
+      }}
+    >
+      <CardActionArea component={Link} to={`/detail_film/${type}/${film.id}`}>
+        <CardMedia
+          component="img"
+          image={
+            film?.poster_path
+              ? `https://image.tmdb.org/t/p/w500${film?.poster_path}`
+              : '/placeholder-poster.jpg'
+          }
+          alt={film.original_title}
+          sx={{ objectFit: 'cover', width: '100%', height: {xs:250, sm:350}}}
+        />
 
-          <Typography
-            variant="subtitle2"
-            sx={{
-              mt: 1.5,
-              fontWeight: 500,
-              textAlign: 'center',
-              color: 'text.secondary',
-            }}
-          >
-            Sortie : {film.release_date || 'Inconnue'}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
+        {/* CARD CONTENT VISIBLE UNIQUEMENT SUR DESKTOP (sm+) */}
+        <CardContent
+          sx={{
+            minHeight: { sm: 140 }, 
+            display: { xs: 'none', sm: 'flex' }, // <-- Cache sur mobile (xs)
+            flexDirection: 'column',
+            justifyContent: 'space-between', 
+            paddingBottom: 0, 
+          }}>
+          <Typography gutterBottom variant="h6" component="div"
+            sx={{
+              color: 'text.primary',
+              textAlign: 'center',
+              fontWeight: 600,
+              mb: 0.5, overflow: 'hidden', display:'-webkit-box', 
+              WebkitLineClamp:2, WebkitBoxOrient: 'vertical'
+            }}>
+            {film.original_title}
+          </Typography>
 
-      <CardActions
-        sx={{
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          px: 2,
-          pb: 2,
-        }}
-      >
-        <Button
-          size="small"
-          variant="outlined"
-          color="primary"
-          component={Link}
-          to={`/detail_film/${type}/${film.id}`}
-        >
-          Voir plus
-        </Button>
+          {/* Le Résumé est affiché en entier sur desktop sans gestion de clic */}
+          <Typography variant="body2"
+            sx={{
+              color: 'text.secondary', 
+              textAlign: 'justify', 
+              mb: 1, fontWeight: 500, 
+              overflow: 'hidden', display:'-webkit-box',
+              WebkitLineClamp: 3, WebkitBoxOrient: 'vertical'
+            }}
+          >
+            {film.overview || 'Aucune description disponible.'}
+          </Typography>      
+          <Typography variant="subtitle2" sx={{ mt: 'auto', fontWeight: 500, textAlign: 'center', color: 'text.secondary' }}>
+            Sortie : {film.release_date || 'Inconnue'}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
 
-        <motion.div
-          whileTap={{ scale: 0.8 }}
-          whileHover={{ scale: 1.1 }}
-          transition={{ type: 'spring', stiffness: 300 }}
-        >
-          <IconButton
-            onClick={handleFavoriClick}
-            color={isFav ? 'error' : 'default'}
-            aria-label="ajouter aux favoris"
-          >
-            {isFav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          </IconButton>
-        </motion.div>
-      </CardActions>
-    </Card>
-    </Box>
-  );
+      <CardActions
+        sx={{
+          justifyContent: 'space-between', alignItems: 'center',
+          px: { xs:1, sm:2}, 
+          pb: {xs:1, sm:2},
+          mt:'auto'
+        }}
+      >
+        <Button
+          size="small"
+          variant="outlined"
+          color="primary"
+          component={Link}
+          to={`/detail_film/${type}/${film.id}`}
+          sx={{ 
+          fontSize: { xs: '0.65rem', sm: '0.875rem' }, 
+          px: { xs: 0.5, sm: 1 }, 
+        }}
+        >
+          Voir plus
+        </Button>
+
+        <motion.div
+          whileTap={{ scale: 0.8 }}
+          whileHover={{ scale: 1.1 }}
+          transition={{ type: 'spring', stiffness: 300 }}
+        >
+          <IconButton
+            onClick={handleFavoriClick}
+            color={isFav ? 'error' : 'default'}
+            aria-label="ajouter aux favoris"
+          >
+            {isFav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          </IconButton>
+        </motion.div>
+      </CardActions>
+      
+      {/* BOUTON DE DÉPLIEMENT (UNIQUEMENT MOBILE) */}
+      <Box 
+        sx={{ 
+          textAlign: 'center', mt: 0.5, pb:1,
+          display: { xs: 'block', sm: 'none' }
+        }}>
+      <IconButton 
+        onClick={Handleclick} // Ouvre le Menu
+        aria-expanded={menuOpen}
+        aria-label="afficher plus"
+        size="small"
+        sx={{
+          transition: 'transform 0.3s',
+          transform: menuOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+        }}
+      >
+        <ExpandMoreIcon />
+      </IconButton>
+    </Box>
+
+    {/* MENU TIROIR RECTANGULAIRE (UNIQUEMENT MOBILE) */}
+    <Menu
+        anchorEl={anchorEl}
+        open={menuOpen}
+        onClose={handleMenuClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} 
+        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ 
+          '& .MuiPaper-root': { 
+            maxWidth: 250, 
+            maxHeight: 200, 
+            overflowY: 'auto',
+            p: 1,
+          }
+        }}
+      >
+        <ListItemText primary={film.original_title} primaryTypographyProps={{ variant: 'subtitle1', fontWeight: 'bold' }} />
+        
+        <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
+          {film.overview || 'Aucune description disponible.'}
+        </Typography>
+        
+        <Typography variant="caption" sx={{ mt: 1.5, display: 'block', textAlign: 'right' }}>
+          Sortie : {film.release_date || 'Inconnue'}
+        </Typography>
+      </Menu>
+    </Card>   
+    </Box>
+  );
 }

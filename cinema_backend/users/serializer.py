@@ -82,4 +82,14 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'bio', 'image']
 
+    def validate_username(self, value):
+        user = self.context['request'].user
+        if User.objects.exclude(id=user.id).filter(username=value).exists():
+            raise serializers.ValidationError('username existe pas')
+        return value
+
+    def validate_bio(self, value):
+        if len(value) > 1000:
+            raise serializers.ValidationError('bio trop longue')
+        return value
 

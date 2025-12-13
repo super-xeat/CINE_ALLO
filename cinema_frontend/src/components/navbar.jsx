@@ -213,21 +213,21 @@ export default function Navbar() {
         ))}
 
         {IsAuth ? (
-          <>
+          <Box>
             <MenuItem onClick={closeMobileMenu} component={Link} to="/profile">
               Profil
             </MenuItem>
             <MenuItem onClick={handleLogout}>Déconnexion</MenuItem>
-          </>
+          </Box>
         ) : (
-          <>
+          <Box>
             <MenuItem onClick={closeMobileMenu} component={Link} to="/login">
               Connexion
             </MenuItem>
             <MenuItem onClick={closeMobileMenu} component={Link} to="/register">
               S’inscrire
             </MenuItem>
-          </>
+          </Box>
         )}
       </Menu>
 
@@ -235,21 +235,21 @@ export default function Navbar() {
       {/* 👤 MENU PROFIL (DESKTOP) */}
       <Menu anchorEl={profileAnchor} open={isProfileMenuOpen} onClose={closeProfileMenu}>
         {IsAuth ? (
-          <>
+          <Box>
             <MenuItem onClick={closeProfileMenu} component={Link} to="/profile">
               Profil
             </MenuItem>
             <MenuItem onClick={handleLogout}>Déconnexion</MenuItem>
-          </>
+          </Box>
         ) : (
-          <>
+          <Box>
             <MenuItem onClick={closeProfileMenu} component={Link} to="/login">
               Connexion
             </MenuItem>
             <MenuItem onClick={closeProfileMenu} component={Link} to="/register">
               S’inscrire
             </MenuItem>
-          </>
+          </Box>
         )}
       </Menu>
 

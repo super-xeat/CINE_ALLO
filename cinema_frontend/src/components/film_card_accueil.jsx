@@ -26,17 +26,17 @@ export default function CardFilmAccueil({ film }) {
     }
     setIsFav(!isFav)
   };
-
+ 
   return (
     <Box sx={{ 
       border: '3px solid #0a88aeff', 
-      width: 280, 
+      maxwidth: 250, 
       mx: 'auto', 
       borderRadius: 2
     }}>
     <Card
       sx={{
-        maxWidth: '100%',
+        Width: '100%',
         borderRadius: 2,
         boxShadow: 4,
         transition: 'transform 0.25s ease, box-shadow 0.25s ease',

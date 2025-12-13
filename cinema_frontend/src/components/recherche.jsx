@@ -78,7 +78,7 @@ export default function Recherche() {
       <Grid container spacing={2} justifyContent="center" sx={{ mt: 3 }} className="resultats-liste">
         
         {change1 && result?.result_film?.film_similaire?.map((film, index) => (
-          <Grid key={film.id} item xs={12} sm={10} md={8}>
+          <Grid key={film.id} item xs={6} sm={4} md={2}>
             <Typography>Films Similaire</Typography>
             <motion.div
               initial={{ opacity: 0, y: 40 }}
@@ -91,7 +91,7 @@ export default function Recherche() {
         ))}
 
         {change1 && result?.result_film?.film_recommande?.map((film, index) => (
-          <Grid key={film.id} item xs={12} sm={10} md={8}>
+          <Grid key={film.id} item xs={6} sm={4} md={2}>
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}

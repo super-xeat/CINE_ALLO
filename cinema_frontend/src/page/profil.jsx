@@ -5,7 +5,6 @@ import useToken from "../hook/hook_token";
 import { Edit, Key } from "@mui/icons-material";
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import Card_favori from "../components/card_favorie";
-import { useLocation } from "react-router-dom";
 import './profil.css'
 
 export default function Profil() {
@@ -27,7 +26,6 @@ export default function Profil() {
 
   const { fetchProfil, result, loading} = Hook_profil()
   const {Refresh_token} = useToken()
-  const location = useLocation()
 
 
   useEffect(()=> {
@@ -118,7 +116,7 @@ export default function Profil() {
     formData.append(champ, valeur);
     try {
       let response = await fetch('http://localhost:8000/auth/profile', {
-        method: 'PUT',
+        method: 'PATCH',
         credentials:'include',
         body: formData,
       })
@@ -141,10 +139,6 @@ export default function Profil() {
     } catch (error) {
       console.error(error);
     }}
-  
-  if (location.pathname === '/profile') {
-    
-  }
 
   const handleAvatarClick = () => {
     setModifImage(true);

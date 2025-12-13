@@ -8,7 +8,6 @@ import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-
 import './liste_film.css'
 
 
@@ -83,7 +82,7 @@ export default function Liste_films() {
             settotalpage(data.total_pages)
           }
         } catch(error) {
-          console.error('erreur server')
+          console.error('erreur server'.error)
           if (setter) setter([])
         }
     }
@@ -91,8 +90,8 @@ export default function Liste_films() {
   }, [affichage, page1, page2, page3, page4])
   
 
-  const TVnote = (e) => (e.preventDefault(), setaffichage("TV_note"));
-  const TVpopulaire = (e) => (e.preventDefault(), setaffichage("TV_populaire"));
+  const TVnote = (e) => (e.preventDefault(), setaffichage("tv_note"));
+  const TVpopulaire = (e) => (e.preventDefault(), setaffichage("tv_populaire"));
 
   const Populaire = (e) => {
     e.preventDefault();
@@ -170,19 +169,21 @@ export default function Liste_films() {
         {affichage.replace("_", " ")}
       </Typography>
 
-      <Grid container spacing={3} justifyContent="center" columns={{ xs: 4, sm: 8, md: 12 }}>
+      <Grid container spacing={6} justifyContent="center" >
         {Films.length > 0 ? (
           Films.map((film) => (
-            <Grid 
-              key={film.id} 
-              item 
-              xs={4}  
-              sm={4}  
-              md={3}  
+            <Grid key={film.id} item 
+              sx={{
+              width: {  
+                xs: '40%',   
+                sm: '33.33%', 
+                md: '25%',    
+                lg: '16.66%', 
+              }}}
             >
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <CardFilm film={film}/>
-              </Box>
+          
+              <CardFilm film={film}/>
+              
             </Grid> 
           ))
         ) : (

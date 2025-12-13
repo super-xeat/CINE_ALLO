@@ -38,7 +38,9 @@ export default function Page_result() {
     if (loading) return <p>Chargement ...</p>
 
     return(
-        <Box sx={{ 
+        <Box 
+
+        sx={{ 
             background: "linear-gradient(-45deg, #000000, #4d4c4c, #050505, #0d0d0d)",
             backgroundSize: "400% 400%",
             animation: "gradientBG 15s ease infinite",

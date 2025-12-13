@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
 import useToken from "./hook_token"
 
 export default function Hook_profil(setIsAuth) {
@@ -8,7 +7,7 @@ export default function Hook_profil(setIsAuth) {
     const {Refresh_token} = useToken()
 
     const fetchProfil = async() => {
-        console.log('🍪 Cookies before request:', document.cookie)
+    
         try {
             let response = await fetch('http://localhost:8000/auth/profile', {
                 headers: { 

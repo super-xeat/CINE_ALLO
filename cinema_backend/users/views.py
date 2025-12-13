@@ -21,9 +21,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth import authenticate
 from django.http import HttpResponse
 from users.authentification import JWTcookieAuth
-from asgiref.sync import sync_to_async
-import httpx
-import asyncio
+
 
 
 class Pagination(PageNumberPagination):
@@ -239,14 +237,29 @@ class SupprimeView(APIView):
             return Response({'le film existe pas'})
 
 
-class ProfileView(generics.RetrieveAPIView):
+class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTcookieAuth]
-    queryset = User.objects.all()
-    serializer_class = ProfileSerializer
     
-    def get_object(self):
-        return self.request.user
+    def get(self, request):
+        serializer = ProfileSerializer(request.user, context={'request': request})
+        return Response(serializer.data,status=200)
+    
+    def patch(self, request):
+        try:
+            user = request.user
+            serializer = ProfileSerializer(
+                user,
+                data=request.data,
+                context={'request': request},
+                partial=True
+            )
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=200)
+        except:
+            return Response({'erreur': 'erreur de requete'})
+
 
 class UpdateFilmListeView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
@@ -261,51 +274,50 @@ class UpdateFilmListeView(generics.RetrieveUpdateAPIView):
 class Recup_filmViews(APIView):
     permission_classes = [AllowAny]
 
-    async def get(self, request, tmdb_id):
+    def get(self, request, tmdb_id):
         if not tmdb_id:
             return Response({'erreur': 'il manque le tmdb_id'}, status=400)
         
-        async with httpx.AsyncClient() as client:
-            try:
-                response_film = await client.get(
-                    f'https://api.themoviedb.org/3/movie/{tmdb_id}',
-                    params={
-                        'api_key': settings.TMDB_API_KEY,
-                        'language': "fr-FR"
-                    })
-                
-                if response_film.status_code == 200:
-                    result = response_film.json()
-                    print('result', result)
-                    return Response({
-                        'titre': result.get('title'),
-                        'image': f"https://image.tmdb.org/t/p/w500{result.get('poster_path')}" ,
-                        'synopsis': result.get('overview'),
-                        'date_sortie': result.get('release_date'),
-                        'type': 'movie'
-                    })
-            except:
-                pass  
-        async with httpx.AsyncClient() as client:
-            try:
-                response_serie = await client.get(
-                    f'https://api.themoviedb.org/3/tv/{tmdb_id}',
-                    params={
-                        'api_key': settings.TMDB_API_KEY,
-                        'language': "fr-FR"
-                    })
-                
-                if response_serie.status_code == 200:
-                    result = response_serie.json()
-                    print('result', result)
-                    return Response({
-                        'titre': result.get('name'),
-                        'image': f"https://image.tmdb.org/t/p/w500{result.get('poster_path')}",
-                        'synopsis': result.get('overview'),
-                        'date_sortie': result.get('first_air_date'),
-                        'type': 'tv' 
-                    })
-            except:
-                pass
+        try:
+            response_film = requests.get(
+                f'https://api.themoviedb.org/3/movie/{tmdb_id}',
+                params={
+                    'api_key': settings.TMDB_API_KEY,
+                    'language': "fr-FR"
+                })
+            
+            if response_film.status_code == 200:
+                result = response_film.json()
+                print('result', result)
+                return Response({
+                    'titre': result.get('title'),
+                    'image': f"https://image.tmdb.org/t/p/w500{result.get('poster_path')}" ,
+                    'synopsis': result.get('overview'),
+                    'date_sortie': result.get('release_date'),
+                    'type': 'movie'
+                })
+        except:
+            pass  
+        
+        try:
+            response_serie = requests.get(
+                f'https://api.themoviedb.org/3/tv/{tmdb_id}',
+                params={
+                    'api_key': settings.TMDB_API_KEY,
+                    'language': "fr-FR"
+                })
+            
+            if response_serie.status_code == 200:
+                result = response_serie.json()
+                print('result', result)
+                return Response({
+                    'titre': result.get('name'),
+                    'image': f"https://image.tmdb.org/t/p/w500{result.get('poster_path')}",
+                    'synopsis': result.get('overview'),
+                    'date_sortie': result.get('first_air_date'),
+                    'type': 'tv' 
+                })
+        except:
+            pass
 
         return Response({'error': 'Contenu non trouvé'}, status=404)

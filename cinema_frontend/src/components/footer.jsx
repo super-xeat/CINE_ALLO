@@ -1,45 +1,122 @@
-import React from "react";
-import "./Footer.css";
-import { FaXTwitter, FaFacebookF, FaGithub, FaLinkedinIn } from "react-icons/fa6";
+
+import { Box, Container, Typography, Grid, Link, IconButton } from "@mui/material";
+import XIcon from '@mui/icons-material/X'; 
+import FacebookIcon from '@mui/icons-material/Facebook';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
 const Footer = () => {
+  const footerBgColor = '#212121'; 
+
   return (
-    <footer className="footer">
-      <div className="footer-container">
-        {/* Logo & Description */}
-        <div className="footer-section brand">
-          <h2 className="footer-logo">TMDb Explorer</h2>
-          <p className="footer-text">
-            Découvrez les meilleurs films et séries grâce à l’API The Movie Database.
-          </p>
-        </div>
+    <Box 
+      component="footer" 
+      sx={{ 
+        bgcolor: footerBgColor,
+        color: 'white',          
+        py: 6,          
+        mt: 'auto',              
+        width: '100%',
+        
+      }}
+    >
+      <Container maxWidth="lg">
+        <Grid container spacing={4} justifyContent="space-between">
+          
+          <Grid item xs={12} sm={4}>
+            <Typography 
+              variant="h5" 
+              gutterBottom 
+              sx={{ fontWeight: 'bold', color: 'primary.light' }} 
+            >
+              CINE ALLO
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.8 }}>
+              Découvrez les meilleurs films et séries grâce à l’API The Movie Database.
+            </Typography>
+          </Grid>
 
-        {/* Liens rapides */}
-        <div className="footer-section links">
-          <h3>Navigation</h3>
-          <ul>
-            <li><a href="/">Accueil</a></li>
-            <li><a href="/about">À propos</a></li>
-            <li><a href="/contact">Contact</a></li>
-          </ul>
-        </div>
+          <Grid item xs={6} sm={4}>
+            <Typography variant="h6" gutterBottom>
+              Navigation
+            </Typography>
+            <Box>
+              <Link href="/" color="inherit" display="block" underline="hover" sx={{ mb: 0.5 }}>
+                Accueil
+              </Link>
+              <Link href="/about" color="inherit" display="block" underline="hover" sx={{ mb: 0.5 }}>
+                À propos
+              </Link>
+              <Link href="/contact" color="inherit" display="block" underline="hover">
+                Contact
+              </Link>
+            </Box>
+          </Grid>
 
-        {/* Réseaux sociaux */}
-        <div className="footer-section social">
-          <h3>Suivez-nous</h3>
-          <div className="social-icons">
-            <a href="https://x.com" target="_blank" rel="noreferrer"><FaXTwitter /></a>
-            <a href="https://facebook.com" target="_blank" rel="noreferrer"><FaFacebookF /></a>
-            <a href="https://github.com" target="_blank" rel="noreferrer"><FaGithub /></a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer"><FaLinkedinIn /></a>
-          </div>
-        </div>
-      </div>
+          <Grid item xs={6} sm={4} sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
+            <Typography variant="h6" gutterBottom>
+              Suivez-nous
+            </Typography>
+            <Box className="social-icons" sx={{ '& a': { color: 'inherit' } }}>
+              
+              <IconButton 
+                href="https://x.com" 
+                target="_blank" 
+                rel="noreferrer" 
+                color="inherit" 
+                sx={{ mr: 1.5 }}
+              >
+                <XIcon />
+              </IconButton>
+              
+              <IconButton 
+                href="https://facebook.com" 
+                target="_blank" 
+                rel="noreferrer" 
+                color="inherit" 
+                sx={{ mr: 1.5 }}
+              >
+                <FacebookIcon />
+              </IconButton>
+              
+              <IconButton 
+                href="https://github.com" 
+                target="_blank" 
+                rel="noreferrer" 
+                color="inherit" 
+                sx={{ mr: 1.5 }}
+              >
+                <GitHubIcon />
+              </IconButton>
+              
+              <IconButton 
+                href="https://linkedin.com" 
+                target="_blank" 
+                rel="noreferrer" 
+                color="inherit"
+              >
+                <LinkedInIcon />
+              </IconButton>
+              
+            </Box>
+          </Grid>
 
-      <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} TMDb Explorer. Tous droits réservés.</p>
-      </div>
-    </footer>
+        </Grid>
+        <Box 
+          className="footer-bottom" 
+          sx={{ 
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)', // Séparateur subtil
+            mt: 6, 
+            pt: 3 
+          }}
+        >
+          <Typography variant="body2" align="center" sx={{ opacity: 0.7 }}>
+            © {new Date().getFullYear()} TMDb Explorer. Tous droits réservés.
+          </Typography>
+        </Box>
+        
+      </Container>
+    </Box>
   );
 };
 
