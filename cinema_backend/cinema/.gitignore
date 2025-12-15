@@ -1,5 +1,15 @@
-# Fichier contenant la clé secrète
-settings.py
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
-# Fichier des variables d'environnement
-.env
+venv/
+env/
+.venv
+
+db.sqlite3
+
+/media/
+
+/static_files/
+/staticfiles/
