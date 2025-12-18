@@ -19,19 +19,16 @@ import Hook_favori from "../hook/hook_favori";
 export default function CardFilm({ film }) {
   const { Favori, supprimer } = Hook_favori();
   const [isFav, setIsFav] = useState(film.favorie);
-  // const [click, setclick] = useState(false) <-- SUPPRIMÉ, INUTILE
   const [anchorEl, setAnchorEl] = useState(null);
   
   const Handleclick = (e) => {
     e.preventDefault();
-    e.stopPropagation(); // Empêche d'ouvrir le détail du film
-    setAnchorEl(e.currentTarget); // <-- Utilise currentTarget (plus fiable)
-    // setclick(true) <-- SUPPRIMÉ, INUTILE
+    e.stopPropagation();
+    setAnchorEl(e.currentTarget); 
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    // setclick(false) <-- SUPPRIMÉ, INUTILE
   };
 
   const type = film.type;
@@ -49,12 +46,12 @@ export default function CardFilm({ film }) {
 
   return (
     <Box sx={{m: { xs: 0.5, sm: 1 }, border: '3px solid #0a88aeff', width:'100%',
-      borderRadius: 3, mx: 'auto', maxWidth: { xs: 180, sm: 250 }}}>
+      borderRadius: 5, mx: 'auto', maxWidth: { xs: 180, sm: 250 }}}>
     <Card
       sx={{
         height: '100%',
         Width: '100%',
-        borderRadius: 3,
+        borderRadius: 4,
         boxShadow: 4,
         transition: 'transform 0.25s ease, box-shadow 0.25s ease',
         '&:hover': {
@@ -75,11 +72,10 @@ export default function CardFilm({ film }) {
           sx={{ objectFit: 'cover', width: '100%', height: {xs:250, sm:350}}}
         />
 
-        {/* CARD CONTENT VISIBLE UNIQUEMENT SUR DESKTOP (sm+) */}
         <CardContent
           sx={{
             minHeight: { sm: 140 }, 
-            display: { xs: 'none', sm: 'flex' }, // <-- Cache sur mobile (xs)
+            display: { xs: 'none', sm: 'flex' }, 
             flexDirection: 'column',
             justifyContent: 'space-between', 
             paddingBottom: 0, 
@@ -95,7 +91,7 @@ export default function CardFilm({ film }) {
             {film.original_title}
           </Typography>
 
-          {/* Le Résumé est affiché en entier sur desktop sans gestion de clic */}
+          
           <Typography variant="body2"
             sx={{
               color: 'text.secondary', 
@@ -113,7 +109,7 @@ export default function CardFilm({ film }) {
         </CardContent>
       </CardActionArea>
 
-      <CardActions
+      <CardActions disableSpacing
         sx={{
           justifyContent: 'space-between', alignItems: 'center',
           px: { xs:1, sm:2}, 
@@ -139,25 +135,26 @@ export default function CardFilm({ film }) {
           whileTap={{ scale: 0.8 }}
           whileHover={{ scale: 1.1 }}
           transition={{ type: 'spring', stiffness: 300 }}
+            
         >
           <IconButton
             onClick={handleFavoriClick}
             color={isFav ? 'error' : 'default'}
             aria-label="ajouter aux favoris"
+            sx={{mr: {xs: 2}}}
           >
             {isFav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
           </IconButton>
         </motion.div>
       </CardActions>
       
-      {/* BOUTON DE DÉPLIEMENT (UNIQUEMENT MOBILE) */}
       <Box 
         sx={{ 
           textAlign: 'center', mt: 0.5, pb:1,
           display: { xs: 'block', sm: 'none' }
         }}>
       <IconButton 
-        onClick={Handleclick} // Ouvre le Menu
+        onClick={Handleclick} 
         aria-expanded={menuOpen}
         aria-label="afficher plus"
         size="small"
@@ -170,7 +167,6 @@ export default function CardFilm({ film }) {
       </IconButton>
     </Box>
 
-    {/* MENU TIROIR RECTANGULAIRE (UNIQUEMENT MOBILE) */}
     <Menu
         anchorEl={anchorEl}
         open={menuOpen}

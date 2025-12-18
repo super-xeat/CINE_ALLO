@@ -1,4 +1,4 @@
-
+import { useAlert } from "../context/Alertcontext";
 import { useState, useEffect } from "react"
 import { Card, CardContent, TextField, Button, Stack, Typography, Box } from "@mui/material";
 
@@ -12,6 +12,7 @@ export default function Register() {
     const [password, setpassword] = useState('')
     const [file, setfile] = useState(null)
     const [confirmpassword, setconfirmpassword] = useState('')
+    const {showSnackbar} = useAlert()
 
     function handlesubmit(e) {
         e.preventDefault()
@@ -43,6 +44,7 @@ export default function Register() {
 
             const data = await response.json()
             console.log('data envoyé', data)
+            
         } catch(error) {
             console.error('erreur de formdata', error)
         }

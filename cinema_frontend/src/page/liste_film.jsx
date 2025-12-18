@@ -164,7 +164,7 @@ export default function Liste_films() {
       <Typography
         variant="h5"
         align="center"
-        sx={{ mb: 3, color: "white", textTransform: "capitalize" }}
+        sx={{ mb: 3, color: "white", textTransform: "capitalize" , fontWeight:'800'}}
       >
         {affichage.replace("_", " ")}
       </Typography>
@@ -180,7 +180,7 @@ export default function Liste_films() {
                 md: '25%',    
                 lg: '16.66%', 
               }}}
-            >
+            > 
           
               <CardFilm film={film}/>
               

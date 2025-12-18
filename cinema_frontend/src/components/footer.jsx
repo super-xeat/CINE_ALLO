@@ -37,14 +37,14 @@ const Footer = () => {
           </Grid>
 
           <Grid item xs={6} sm={4}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom sx={{color:'primary.light', fontWeight:'bold'}}>
               Navigation
             </Typography>
             <Box>
               <Link href="/" color="inherit" display="block" underline="hover" sx={{ mb: 0.5 }}>
                 Accueil
               </Link>
-              <Link href="/about" color="inherit" display="block" underline="hover" sx={{ mb: 0.5 }}>
+              <Link href="/Propos" color="inherit" display="block" underline="hover" sx={{ mb: 0.5 }}>
                 À propos
               </Link>
               <Link href="/contact" color="inherit" display="block" underline="hover">

@@ -1,12 +1,13 @@
 import { useState } from "react"
 import useToken from "./hook_token"
 
-export default function Hook_profil(setIsAuth) {
+
+export default function Hook_profil() {
     const [result, setResult] = useState({})
     const [loading, setLoading] = useState(true)
     const {Refresh_token} = useToken()
 
-    const fetchProfil = async() => {
+    const fetchProfil = async(setIsAuth, setuserauth) => {
     
         try {
             let response = await fetch('http://localhost:8000/auth/profile', {
@@ -35,24 +36,23 @@ export default function Hook_profil(setIsAuth) {
                     console.log('📡 Second response status:', response.status)
                 } else {
                     console.log('❌ Refresh completely failed')
-                    setIsAuth(false)
                     return
                 }
             }
 
             if (response.ok) {
-                console.log('✅ Profile fetch SUCCESS')
                 const data = await response.json()
                 setResult(data)
-                setIsAuth(true)
+                
+                if (setIsAuth) setIsAuth(true)
+                if (setuserauth) setuserauth(data.email || data.username) 
             } else {
-                console.log('❌ Final profile fetch failed:', response.status)
-                throw new Error(`Profile fetch failed: ${response.status}`)
+                if (setIsAuth) setIsAuth(false)
             }
 
         } catch (error) {
             console.error('💥 Profile fetch error:', error)
-            setIsAuth(false)
+            if (setIsAuth) setIsAuth(false)
         } finally {
             setLoading(false)
         }

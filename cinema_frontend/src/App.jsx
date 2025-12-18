@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Liste_films from "./page/liste_film";
 import Detail from './page/detail_film';
@@ -13,14 +12,17 @@ import Footer from './components/footer'
 import Page_result from './components/resultat_page';
 import Oubli_mdp from './page/oubli_mdp';
 import Rest_password from './page/resetpassword';
-
+import Propos from './page/propos';
+import Alertprovider from './context/Alertcontext';
 
 export default function App() {
 
   
   return (
-    <AuthProvider>
-      <Router>
+    
+    <Router>
+      <Alertprovider>
+      <AuthProvider>
         <Navbar/>
         <Routes>
           <Route path="/" element={<Recherche/>}/>
@@ -33,9 +35,11 @@ export default function App() {
           <Route path='/page_result' element={<Page_result/>}/>
           <Route path='/reset-password' element={<Rest_password/>}/>
           <Route path='/oubli-mdp' element={<Oubli_mdp/>}/>
+          <Route path='/propos' element={<Propos/>}/>
         </Routes>
-        <Footer/>
-      </Router>   
-    </AuthProvider>
+        <Footer/>       
+      </AuthProvider>
+      </Alertprovider>
+    </Router> 
   )
 }

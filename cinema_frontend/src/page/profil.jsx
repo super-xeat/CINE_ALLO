@@ -7,6 +7,8 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import Card_favori from "../components/card_favorie";
 import './profil.css'
 
+
+
 export default function Profil() {
 
   const [liste, setListe] = useState([]);
@@ -24,8 +26,8 @@ export default function Profil() {
   const [page, setpage] = useState(1)
   const [pageSuivante, setpageSuivante] = useState(true)
 
-  const { fetchProfil, result, loading} = Hook_profil()
-  const {Refresh_token} = useToken()
+  const { fetchProfil, result, loading, authok} = Hook_profil()
+  const {Refresh_token} = useToken() 
 
 
   useEffect(()=> {

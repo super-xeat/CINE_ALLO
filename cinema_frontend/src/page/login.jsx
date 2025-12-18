@@ -5,6 +5,7 @@ import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useSearchParams } from "react-router-dom"
+import { useAlert } from "../context/Alertcontext";
 
 
 export default function LoginPage() {
@@ -12,23 +13,32 @@ export default function LoginPage() {
     const navigate = useNavigate()
     const {Login} = useAuth()
     const [password, setpassword] = useState('')
-    const [username, setusername] = useState('')
+    const [email, setemail] = useState('')
     const [searchparams] = useSearchParams()
     const statut = searchparams.get('statut')
+    const {showSnackbar} = useAlert()
 
     useEffect(()=> {
-        if (statut || statut === 'success' ) {
-        alert('compte créé avec succée')
+        if (statut === 'success' ) {
+        showSnackbar('compte créé avec succé !', 'success')
     }
     }, [statut])
     
-    function handlesubmit(e) {
-        e.preventDefault()
-        Login(username, password)
-        navigate(-1)
-        setusername('')
+    async function handlesubmit(e) {
+    e.preventDefault()
+    try {
+        await Login(email, password)
+        
+        showSnackbar('Vous êtes connecté', 'success')
+        setemail('')
         setpassword('')
+        navigate(-1) 
+
+    } catch(error) {
+        console.error('Erreur :', error.message)
+        showSnackbar(error.message, 'error')
     }
+  }
 
     return (
     <Box
@@ -75,9 +85,10 @@ export default function LoginPage() {
         <form onSubmit={handlesubmit}>
           <TextField
             fullWidth
-            label="Nom d'utilisateur"
-            value={username}
-            onChange={(e) => setusername(e.target.value)}
+            label="email d'utilisateur"
+            value={email}
+            type="email"
+            onChange={(e) => setemail(e.target.value)}
             margin="normal"
             variant="outlined"
             InputLabelProps={{ style: { color: "#7d7b7bff" } }}

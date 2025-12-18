@@ -2,6 +2,7 @@ import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 import { useState } from "react";
 import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
+import { useAlert } from "../context/Alertcontext";
 
 export default function Rest_password() {
 
@@ -10,7 +11,7 @@ export default function Rest_password() {
     
     const [searchParams] = useSearchParams();  
     const token = searchParams.get('token');
-    
+    const {showSnackbar} = useAlert()
     const navigate = useNavigate()
 
     const Reset_mdp = async() => {
@@ -26,13 +27,13 @@ export default function Rest_password() {
                 }) 
             })
             if (response.ok) {
-                alert('nouveau mot de passe créer')
+                
                 setnewpassword('')
                 setconfirmpassword('')
                 navigate('/login')
                 console.log('mdp créer')
             } else {
-                alert('erreur denvoie')
+                showSnackbar('erreur envoi', 'error')
             }
         } catch(error) {
             console.error('erreur', error)
@@ -41,11 +42,11 @@ export default function Rest_password() {
 
     function verification(password, confirmpassword) {
         if (password.length < 8) {
-            alert('doit contenir au moins 8 caractere')
+            showSnackbar('Doit contenir au moins 8 caractère', 'info')
             return
         }
         if (password !== confirmpassword) {
-            alert('le password ne correspond pas')
+            showSnackbar('le mot de passe ne correspond pas', 'info')
             return
         }
         Reset_mdp()

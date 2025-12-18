@@ -1,11 +1,12 @@
-
 import { useState } from "react";
 import useToken from "./hook_token";
+import { useAlert } from "../context/Alertcontext";
 
 export default function Hook_favori() {
     
     const [loading, setloading] = useState(false)
     const {Refresh_token} = useToken()
+    const {showSnackbar} = useAlert()
 
     async function Favori(id) {
         setloading(true)
@@ -48,10 +49,10 @@ export default function Hook_favori() {
             }
 
             if (response.ok) {
-                alert('film ajouté au favori')
+                showSnackbar('ajouté au favori', 'success')
                 console.log('film ajouté au favori', response.status)
             } else {
-                alert('erreur')
+                showSnackbar('erreur', 'error')
                 return
             }
         } catch(error) {
@@ -78,7 +79,7 @@ export default function Hook_favori() {
               }
             }
             if (response.ok) {
-              alert('element supprimé')
+              showSnackbar('film retiré des favories', 'success')
               console.log('element supprimé')
               
             }

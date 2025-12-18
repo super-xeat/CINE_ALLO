@@ -1,9 +1,12 @@
 import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 import { useState } from "react";
+import { useAlert } from "../context/Alertcontext";
+
 
 export default function Oubli_mdp() {
 
     const [email, setmail] = useState('')
+    const {showSnackbar} = useAlert()
 
     const Envoyer_mail = async() => {
         try {
@@ -15,10 +18,10 @@ export default function Oubli_mdp() {
                 body: JSON.stringify({'email': email})
             })
             if (response.ok) {
-                alert('regadez vos mails') 
+                showSnackbar('regardez vos mail', 'info')
                 console.log('email envoyé')
             } else {
-                alert('erreur denvoie')
+                showSnackbar('erreur envoi','error')
             }
         } catch(error) {
             console.error('erreur', error)

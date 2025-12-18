@@ -2,10 +2,15 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import Hook_profil from "../hook/hook_profil";
 
+
 const AuthContext = createContext()
 
 export const useAuth = () => {
-  return useContext(AuthContext)
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth doit être utilisé à l\'intérieur d\'un AuthProvider');
+    }
+    return context;
 }
 
 export default function AuthProvider({children}) {
@@ -13,13 +18,17 @@ export default function AuthProvider({children}) {
     const [IsAuth, setIsAuth] = useState(false)
     const [loading, setloading] = useState(true)
     const [userauth, setuserauth] = useState('')
-    const {fetchProfil} = Hook_profil(setIsAuth)
+    const {fetchProfil} = Hook_profil()
 
     useEffect(()=> {      
-        fetchProfil()
+        const initAuth = async () => {
+            await fetchProfil(setIsAuth, setuserauth)
+            setloading(false) 
+        }
+        initAuth()
     }, [])
 
-    const Login = async(username, password) => {
+    const Login = async(email, password) => {
         try {           
             const response = await fetch('http://localhost:8000/auth/login', {
                 method: 'POST',
@@ -28,7 +37,7 @@ export default function AuthProvider({children}) {
                 },
                 credentials:'include',
                 body: JSON.stringify({
-                    username: username,
+                    email: email,
                     password: password
                 })
             })
@@ -38,12 +47,14 @@ export default function AuthProvider({children}) {
             console.log('data :', data)
 
             if (!response.ok) {
-                throw new Error(data.detail || 'Identifiants incorrects')
+                const errorMsg = data.detail || (data.non_field_errors && data.non_field_errors[0]) || 'Erreur de connexion';
+                throw new Error(errorMsg)
             }
             
-            setuserauth(username)
+            setuserauth(email)
             setIsAuth(true)
-            
+            return true
+
         } catch (error) {
             console.error('erreur de login', error)
             throw error

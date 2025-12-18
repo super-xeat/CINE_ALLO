@@ -17,7 +17,7 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-
+import { useAlert } from '../context/Alertcontext';
 import { useAuth } from '../context/authcontext';
 import Recherche_barre from '../hook/hook_recherche';
 import Hook_profil from '../hook/hook_profil';
@@ -68,6 +68,7 @@ export default function Navbar() {
   const location = useLocation();
   const { query, setquery } = Recherche_barre();
   const { fetchProfil, result } = Hook_profil();
+  const {showSnackbar} = useAlert()
 
 
   const [mobileAnchor, setMobileAnchor] = React.useState(null); 
@@ -90,6 +91,7 @@ export default function Navbar() {
   const handleLogout = () => {
     Logout();
     closeProfileMenu();
+    showSnackbar('vous etes deconnecté', 'info')
     navigate('/login');
   };
 
@@ -106,6 +108,7 @@ export default function Navbar() {
     { label: 'Accueil', to: '/' },
     { label: 'Liste Films', to: '/liste_films' },
     { label: 'Découverte', to: '/discover' },
+    { label: 'A propos', to: '/propos' },
   ];
 
 

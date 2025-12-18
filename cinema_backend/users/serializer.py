@@ -35,16 +35,23 @@ class RegisterSerializer(serializers.ModelSerializer):
     
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        username = attrs.get('username')
+        email = attrs.get('email')
         password = attrs.get('password')
-        user = authenticate(username=username, password=password)
+        try:
+            user_obj = User.objects.get(email=email)
+            user = authenticate(username=user_obj.username, password=password)
+        except User.DoesNotExist:
+            user = None
+
         if not user:
-            raise serializers.ValidationError('email ou mot de passe incorrect')
-        return user
+            raise serializers.ValidationError({'detail': 'Email ou mot de passe incorrect'})
+
+        attrs['user'] = user
+        return attrs
 
 
 class Liste_film_Serializer(serializers.ModelSerializer):
@@ -82,10 +89,10 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'bio', 'image']
 
-    def validate_username(self, value):
+    def validate_email(self, value):
         user = self.context['request'].user
-        if User.objects.exclude(id=user.id).filter(username=value).exists():
-            raise serializers.ValidationError('username existe pas')
+        if User.objects.exclude(id=user.id).filter(email=value).exists():
+            raise serializers.ValidationError('email existe pas')
         return value
 
     def validate_bio(self, value):
