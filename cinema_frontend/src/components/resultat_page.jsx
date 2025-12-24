@@ -16,7 +16,7 @@ export default function Page_result() {
             
             setLoading(true)
             try {
-                const response = await fetch(`http://localhost:8000/api/recherche_navbar/?q=${encodeURIComponent(query)}`)
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/recherche_navbar/?q=${encodeURIComponent(query)}`)
                 
                 if (!response.ok) {
                     console.log('erreur de response')
@@ -25,7 +25,7 @@ export default function Page_result() {
                 
                 const data = await response.json()
                 setResult(data)
-                console.log('data :', data)
+                
             } catch (error) {
                 console.error('erreur de recherche navbar', error)
             } finally {

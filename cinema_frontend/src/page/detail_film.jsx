@@ -54,6 +54,7 @@ export default function Detail() {
                         background: "linear-gradient(-45deg, #000000, #4d4c4c, #050505, #0d0d0d)",
                         backgroundSize: "400% 400%",
                         animation: "gradientBG 10s ease infinite",
+                        margin: '24px',
                         p: 2
                     }}
                 >
@@ -72,7 +73,7 @@ export default function Detail() {
                             : '/placeholder-image.jpg'
                         }
                         alt={result.detail_film_serie.title || "Affiche indisponible"}
-                        sx={{ width: 300, borderRadius: 5, border: '4px solid #0c90b8ff' }}
+                        sx={{ width: 300, borderRadius: 5, border: '4px solid #0c90b8ff', ml: '20px'}}
                         />                   
                 </Grid>
 
@@ -127,7 +128,7 @@ export default function Detail() {
                         <p>pas de realisateur spécifié</p>
                     )}
                     <Typography sx={{marginTop: '5rem', fontWeight: 'bold', color:'#f2efef'}}>Sortie : {result.detail_film_serie.release_date}</Typography>
-                    <Typography sx={{fontWeight: 'bold', color: '#f3ebebff'}}>Note : {result.detail_film_serie.vote_average}/10</Typography>
+                    <Typography sx={{fontWeight: 'bold', color: '#f3ebebff'}}>Note : {result.detail_film_serie.vote_average} / 10</Typography>
                 </Grid>
                 
             </Grid>      

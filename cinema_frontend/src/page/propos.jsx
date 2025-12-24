@@ -32,7 +32,7 @@ export default function Propos() {
                 🎬 À Propos de Nous : 
             </Typography>
             <hr /><br /><br />
-            <Typography variant="h10">
+            <Typography variant="h10" sx={{fontWeight:'800'}}>
                 Votre Guide Cinématographique Propulsé par TMDB
                 Bienvenue sur notre plateforme, le lieu de rencontre des passionnés de 
                 cinéma et des curieux en quête de leur prochain coup de cœur. 

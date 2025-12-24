@@ -33,21 +33,22 @@ export default function Discover() {
   const year = searchparams.get('year') || '';
   const country = searchparams.get('with_origin_country') || '';
 
-  const Decouverte = async () => {
+  const Decouverte = async() => {
     setloading(true);
     
     let endpoint;
 
     if (media === 'movie') { 
-      endpoint = 'http://localhost:8000/api/films/films/discover';
+      endpoint = `http://localhost:8000/api/films/films/discover`;
     } else {
-      endpoint = 'http://localhost:8000/api/films/series/discover';
+      endpoint = `http://localhost:8000/api/films/series/discover`;
     }
 
     try {
       const response = await fetch(`${endpoint}?${searchparams.toString()}&page=${page}`, {
         credentials:'include'
       });
+      console.log("URL envoyée au backend :", response);
       
       if (!response.ok) {
         console.log('erreur dans la reponse')
@@ -68,12 +69,10 @@ export default function Discover() {
     setmedia(event.target.value);
   };
 
-  const handlePageChange = (e, newpage) => {
-      if (setpage) {
-        setpage(newpage)
-      }
-  }
-
+  
+  const handlePageChange = (event, value) => {
+    setpage(value); 
+  };
 
   const handlegenre = (event) => {
     const newgenre = event.target.value;
@@ -138,7 +137,7 @@ export default function Discover() {
   };
 
   useEffect(() => {
-    if (searchparams) Decouverte();
+    Decouverte();
   }, [searchparams, media, page]);
 
   return (

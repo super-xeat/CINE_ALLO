@@ -42,19 +42,19 @@ const Footer = () => {
             </Typography>
             <Box>
               <Link href="/" color="inherit" display="block" underline="hover" sx={{ mb: 0.5 }}>
-                Accueil
+                <Typography sx={{fontWeight:'bold'}}>Accueil</Typography>
               </Link>
               <Link href="/Propos" color="inherit" display="block" underline="hover" sx={{ mb: 0.5 }}>
-                À propos
+                <Typography sx={{fontWeight:'bold'}}>A propos</Typography>
               </Link>
               <Link href="/contact" color="inherit" display="block" underline="hover">
-                Contact
+                <Typography sx={{fontWeight:'bold'}}>Contact</Typography>
               </Link>
             </Box>
           </Grid>
 
           <Grid item xs={6} sm={4} sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom sx={{color: 'primary.light', fontWeight:'bold'}}>
               Suivez-nous
             </Typography>
             <Box className="social-icons" sx={{ '& a': { color: 'inherit' } }}>
@@ -79,15 +79,6 @@ const Footer = () => {
                 <FacebookIcon />
               </IconButton>
               
-              <IconButton 
-                href="https://github.com" 
-                target="_blank" 
-                rel="noreferrer" 
-                color="inherit" 
-                sx={{ mr: 1.5 }}
-              >
-                <GitHubIcon />
-              </IconButton>
               
               <IconButton 
                 href="https://linkedin.com" 

@@ -42,28 +42,28 @@ export default function Liste_films() {
 
         switch(affichage) {
           case "populaire":
-            url = `http://localhost:8000/api/films/liste_movie?page=${page1}`
+            url = `${process.env.REACT_APP_API_URL}/api/films/liste_movie?page=${page1}`
             setter = setliste
             settotalpage = settotalpage1
             page = page1
             break
 
           case 'meilleur_note':
-            url = `http://localhost:8000/api/films/film_meilleur_note?page=${page2}`
+            url = `${process.env.REACT_APP_API_URL}/api/films/film_meilleur_note?page=${page2}`
             setter = setbestnote
             settotalpage = settotalpage2
             page = page2
             break
           
           case 'tv_note':
-            url = `http://localhost:8000/api/films/serie_meilleur_note?page=${page3}`
+            url = `${process.env.REACT_APP_API_URL}/api/films/serie_meilleur_note?page=${page3}`
             setter = setbestnoteTV
             settotalpage = settotalpage3
             page = page3
             break
           
           case 'tv_populaire':
-            url = `http://localhost:8000/api/films/serie_populaire?page=${page4}`
+            url = `${process.env.REACT_APP_API_URL}/api/films/serie_populaire?page=${page4}`
             setter = setpopularTV
             settotalpage = settotalpage4
             page = page4

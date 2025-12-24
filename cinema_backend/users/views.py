@@ -21,7 +21,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth import authenticate
 from django.http import HttpResponse
 from users.authentification import JWTcookieAuth
-
+from django.contrib.auth import logout
 
 
 class Pagination(PageNumberPagination):
@@ -135,6 +135,7 @@ class ConfirmEmailView(APIView):
             return Response({'erreur le token a expiré'})
 
 
+
 class PasswordResetView(APIView):
     permission_classes = [AllowAny]
 
@@ -172,6 +173,18 @@ class LogoutView(APIView):
         response.delete_cookie('access_token')
         response.delete_cookie('refresh_token')
         
+        return response
+
+
+class Force_logout(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = [JWTcookieAuth]
+
+    def get(self, request):
+        logout(request)
+        response = Response({'success': 'Cookies nettoyés'})
+        response.delete_cookie('sessionid')
+        response.delete_cookie('csrftoken')
         return response
 
 

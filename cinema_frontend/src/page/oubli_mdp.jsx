@@ -10,7 +10,7 @@ export default function Oubli_mdp() {
 
     const Envoyer_mail = async() => {
         try {
-            const response = await fetch('http://localhost:8000/auth/oubli-mdp', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/oubli-mdp`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -19,7 +19,6 @@ export default function Oubli_mdp() {
             })
             if (response.ok) {
                 showSnackbar('regardez vos mail', 'info')
-                console.log('email envoyé')
             } else {
                 showSnackbar('erreur envoi','error')
             }

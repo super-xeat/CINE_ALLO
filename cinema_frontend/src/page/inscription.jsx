@@ -182,6 +182,7 @@ export default function Register() {
                   fontWeight: "bold",
                   "&:hover": { backgroundColor: "#176795ff" },
                 }}
+                
               >
                 Envoyer
               </Button>

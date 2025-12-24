@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { Card, Grid, Typography, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Card, Grid, Typography, Button, FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useLocation } from "react-router-dom";
 import Hook_favori from "../hook/hook_favori";
@@ -16,7 +16,7 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film}) {
     const modify_statut = async(newstatu) => {
         setloading(true)
         try {
-            const response = await fetch(`http://localhost:8000/auth/modifier/${tmdb_id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/modifier/${tmdb_id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,17 +49,25 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film}) {
 
     
         return (
+          <Box sx={{ 
+            m: { xs: 0.5, sm: 1 }, 
+            mx: 'auto',
+            width: '100%', 
+            maxWidth: { xs: 180, sm: 250 } 
+        }}>
          <Card
-      sx={{
-      width: 250,
-      p: 2,
-      borderRadius: 3,
-      backgroundColor: "#1e1e1e",
-      color: "white",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
-      margin: "20px auto"
-    }}
-  >
+          sx={{
+          height: { xs: 'auto', sm: 500 },
+          display: 'flex', 
+          flexDirection: 'column',
+          p: 2,
+          borderRadius: 3,
+          backgroundColor: "#1e1e1e",
+          color: "white",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+          margin: "20px auto"
+        }}
+      >
     <Grid container spacing={2}>
       
       <Grid item xs={4}>
@@ -119,15 +127,15 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film}) {
               variant="contained"
               fullWidth
               sx={{
-                bgcolor: "#0c90b8ff",
-                "&:hover": { bgcolor: "#0a7a9b" },
+                bgcolor: "#141516ff",
+                "&:hover": { bgcolor: "#666868ff" },
                 textTransform: "none",
                 borderRadius: 2,
                 fontSize: "0.75rem",
-
+                border: '1px solid #0c90b8ff'
               }}
             >
-              Voir détail
+              <Typography sx={{fontWeight:'800', color:'#0c90b8ff'}}>Details</Typography>
             </Button>
           </Grid>
 
@@ -143,7 +151,8 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film}) {
                 padding: "6px 0",
                 color: '#0c90b8ff',
                 marginLeft: '10px',
-                borderColor: '#0c90b8ff'
+                borderColor: '#0c90b8ff',
+                "&:hover": { bgcolor: "#666868ff" },
               }}
             >
               <DeleteIcon />
@@ -155,5 +164,6 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film}) {
       </Grid>
     </Grid>
   </Card>
+  </Box>
     ) 
 }

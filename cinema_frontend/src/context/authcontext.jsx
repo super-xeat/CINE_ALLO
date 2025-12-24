@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
-import Hook_profil from "../hook/hook_profil";
+import Hook_profil from "../hook/hook_profil"
 
 
 const AuthContext = createContext()
@@ -19,6 +19,7 @@ export default function AuthProvider({children}) {
     const [loading, setloading] = useState(true)
     const [userauth, setuserauth] = useState('')
     const {fetchProfil} = Hook_profil()
+    
 
     useEffect(()=> {      
         const initAuth = async () => {
@@ -30,7 +31,7 @@ export default function AuthProvider({children}) {
 
     const Login = async(email, password) => {
         try {           
-            const response = await fetch('http://localhost:8000/auth/login', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -46,6 +47,17 @@ export default function AuthProvider({children}) {
             const data = await response.json()
             console.log('data :', data)
 
+            if (response.status === 403 || response.status === 401) {
+                console.error("Session corrompue, nettoyage forcé...");
+            
+                await fetch(`${process.env.REACT_APP_API_URL}/auth/force_logout`, 
+                    { method: 'GET',
+                    credentials: 'include' });
+                
+                setIsAuth(null); 
+                return false; 
+            }
+            
             if (!response.ok) {
                 const errorMsg = data.detail || (data.non_field_errors && data.non_field_errors[0]) || 'Erreur de connexion';
                 throw new Error(errorMsg)

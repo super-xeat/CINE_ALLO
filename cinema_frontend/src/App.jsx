@@ -14,10 +14,11 @@ import Oubli_mdp from './page/oubli_mdp';
 import Rest_password from './page/resetpassword';
 import Propos from './page/propos';
 import Alertprovider from './context/Alertcontext';
+import Contact from './page/contact';
+
 
 export default function App() {
 
-  
   return (
     
     <Router>
@@ -36,6 +37,7 @@ export default function App() {
           <Route path='/reset-password' element={<Rest_password/>}/>
           <Route path='/oubli-mdp' element={<Oubli_mdp/>}/>
           <Route path='/propos' element={<Propos/>}/>
+          <Route path='/contact' element={<Contact/>}/>
         </Routes>
         <Footer/>       
       </AuthProvider>

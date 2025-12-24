@@ -1,12 +1,14 @@
-
+import { useAlert } from "../context/Alertcontext"
 
 
 export default function useToken() {
 
+    const {showSnackbar} = useAlert()
+
     const Refresh_token = async() => {
     try {
         
-        const response = await fetch('http://localhost:8000/auth/refresh', {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/refresh`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -15,17 +17,15 @@ export default function useToken() {
         })
         
         if (response.ok) {
-                console.log('✅ Refresh réussi via cookies')
+                showSnackbar('refresh reussi !','success')
                 return true
                 
             } else {
-                const errorText = await response.text()
-                console.error('❌ Refresh failed:', response.status, errorText)
-                throw new Error(`Refresh failed: ${response.status}`)
+                showSnackbar('refresh fail','error')
             }
         
     } catch(error) {
-        console.error('erreur de refresh', error)
+        showSnackbar('erreur de refresh','error')
         return false
     }
 }

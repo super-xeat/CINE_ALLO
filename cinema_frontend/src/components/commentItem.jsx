@@ -5,11 +5,11 @@ import useToken from "../hook/hook_token";
 import { Box, Typography, Button, TextField, IconButton } from '@mui/material';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
+import { useAlert } from "../context/Alertcontext";
 
 
 export default function CommentItem({item, Refresh}) {
 
-    console.log('item :', item)
 
     const [loading, setloading] = useState(false)
     const [newtexte, setnewtexte] = useState('')
@@ -17,11 +17,12 @@ export default function CommentItem({item, Refresh}) {
     const [cache, setcache] = useState(false)
     const {Refresh_token} = useToken()
     const [msg, setmsg] = useState([])
+    const {showSnackbar} = useAlert()
 
     const Like = async(commentId) => {   
         setloading(true)
         try {
-            let response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}/like`,{
+            let response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/commentaires/${commentId}/like`,{
                 method: 'POST',
                 credentials:'include'
             })
@@ -30,17 +31,17 @@ export default function CommentItem({item, Refresh}) {
                 const newtoken = await Refresh_token()
 
                 if (newtoken) {
-                    response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}/like`,{
+                    response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/commentaires/${commentId}/like`,{
                     method: 'POST',
                     credentials:'include'
                     })
                 } else {
-                    console.log('refresh erreur')
+                    showSnackbar('erreur de refresh', 'error')
                     return
                 }
             }
             if (response.ok) {
-                alert('like ajouté')
+                showSnackbar('like ajouté !', 'success')
                 setmsg(data.message)
                 Refresh()
             }
@@ -54,7 +55,7 @@ export default function CommentItem({item, Refresh}) {
 
     const Dislike = async(commentId) => {      
         try {
-            let response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}/dislike`,{
+            let response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/commentaires/${commentId}/dislike`,{
                 method: 'POST',
                 credentials: 'include'
             })
@@ -64,7 +65,7 @@ export default function CommentItem({item, Refresh}) {
                 const newtoken = await Refresh_token()
 
                 if (newtoken) {
-                    response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}/dislike`,{
+                    response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/commentaires/${commentId}/dislike`,{
                     method: 'POST',
                     credentials:'include'
                 })
@@ -74,7 +75,7 @@ export default function CommentItem({item, Refresh}) {
                 }
             }
             if (response.ok) {
-                alert('dislike ajouté')
+                showSnackbar('dislike ajouté', 'success')
                 Refresh()
             }
         } catch(error) {
@@ -85,7 +86,7 @@ export default function CommentItem({item, Refresh}) {
     const Delete = async(commentId) => {
     
         try {
-            let response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}`, {
+            let response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/commentaires/${commentId}`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -95,7 +96,7 @@ export default function CommentItem({item, Refresh}) {
             if (response.status === 401) {
                 const newtoken = await Refresh_token()
                 if (newtoken) {
-                    response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}`, {
+                    response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/commentaires/${commentId}`, {
                     method: 'DELETE',
                     credentials: 'include'
                     })
@@ -104,7 +105,7 @@ export default function CommentItem({item, Refresh}) {
                     return
                 }}
             if (response.ok) {
-                alert('commentaire supprimé')
+                showSnackbar('commentaire supprimer !', 'success')
                 Refresh()
             }
         } catch(error) {
@@ -114,7 +115,7 @@ export default function CommentItem({item, Refresh}) {
 
     const Modify = async(commentId) => {     
         try {
-            let response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}`, {
+            let response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/commentaires/${commentId}`, {
                 method: 'PUT',
                 credentials: 'include',
                 body: JSON.stringify({
@@ -127,7 +128,7 @@ export default function CommentItem({item, Refresh}) {
                 const newtoken = await Refresh_token()
 
                 if (newtoken) {
-                    response = await fetch(`http://localhost:8000/api/films/commentaires/${commentId}`, {
+                    response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/commentaires/${commentId}`, {
                         method: 'PUT',
                         credentials: 'include',
                         body: JSON.stringify({
@@ -135,13 +136,13 @@ export default function CommentItem({item, Refresh}) {
                         })
                     })
                 } else {
-                    console.log('erreur de refresh')
+                    showSnackbar('erreur de refresh','error')
                     return
                 }
             }
             if (response.ok) {
                 Refresh()
-                console.log('commentaire modifier')
+                showSnackbar('commentaire modifié','info')
             }              
         } catch(error) {
             console.error('erreur')
@@ -153,7 +154,7 @@ export default function CommentItem({item, Refresh}) {
             Like(item.id)
 
         } else {
-            alert('vous devez etre connecté pour liker')
+            showSnackbar('vous devez etre connecté pour liké', 'info')
             return
         }
     }
@@ -163,7 +164,7 @@ export default function CommentItem({item, Refresh}) {
             Dislike(item.id)
         
         } else {
-            alert('vous devez etre connecté pour liker')
+            showSnackbar('vous devez etre connecté pour dislike', 'info')
             return
         }
     }

@@ -84,8 +84,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'xeatteam@gmail.com'  # Votre adresse Gmail
-EMAIL_HOST_PASSWORD = 'ggeg senk shgh crrp'  # Mot de passe d'application
-DEFAULT_FROM_EMAIL = 'xeatteam@gmail.com'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('EMAIL_USER')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = 'media/'
@@ -111,10 +111,15 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -178,11 +183,11 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cinema_db',       # nom de ta base
-        'USER': 'postgres',             # utilisateur PostgreSQL
-        'PASSWORD': 'tomfeu83',     # mot de passe
-        'HOST': 'localhost',          # ou IP du serveur PostgreSQL
-        'PORT': '5432',               # port par défaut PostgreSQL
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
         'OPTIONS': {
             'client_encoding': 'UTF8',  # Forcer l'encodage UTF-8
         }

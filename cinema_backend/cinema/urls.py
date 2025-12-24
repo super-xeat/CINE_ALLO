@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/', include('recherche_film.urls')),
     path('api/films/', include('films.urls')),
     path('auth/', include('users.urls')),
+    path('admin', admin.site.urls)
 ]
 
 if settings.DEBUG:

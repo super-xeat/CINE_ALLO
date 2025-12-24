@@ -16,7 +16,7 @@ export default function Rest_password() {
 
     const Reset_mdp = async() => {
         try {
-            const response = await fetch('http://localhost:8000/auth/passwordreset/confirm', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/passwordreset/confirm`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json' 
@@ -31,7 +31,7 @@ export default function Rest_password() {
                 setnewpassword('')
                 setconfirmpassword('')
                 navigate('/login')
-                console.log('mdp créer')
+                showSnackbar('mot de passe créer','success')
             } else {
                 showSnackbar('erreur envoi', 'error')
             }

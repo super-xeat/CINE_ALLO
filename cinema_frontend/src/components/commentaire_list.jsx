@@ -21,17 +21,15 @@ export default function CommentListe() {
     async function Liste() {
         setloading(true)
         try {
-            const response = await fetch(`http://localhost:8000/api/films/commentaires?movie_id=${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/commentaires?movie_id=${id}`, {
                 method:'GET',
                 credentials:'include'
             })
             if (!response.ok) {
                 console.log('erreur de fetch')
-                alert('erreur de liste')
             }
             const data = await response.json()
             setliste(data)
-            console.log('data :', data)
 
         } catch(error) {
             console.error('erreur', error)
@@ -73,4 +71,4 @@ export default function CommentListe() {
             }  
         </Box>
     )
-} //enlever de comment form de detail film et le mettre là
+} 

@@ -1,17 +1,36 @@
 import {Button} from "@mui/material";
 import Recherche_barre from "../hook/hook_recherche";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CardFilmAccueil from "../components/film_card_accueil";
-import { color, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Grid, Typography, Box, InputBase } from "@mui/material"; 
-import { borderRadius, fontWeight, keyframes, margin, padding } from '@mui/system'; 
+import { keyframes } from "@mui/system";
+import { useInView } from 'react-intersection-observer';
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
 
-const gradientBG = keyframes`
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+
+const scrollX = keyframes`
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+`;
+
+const bounceInLeft = keyframes`
+  from, 60%, 75%, 90%, to { animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); }
+  0% { opacity: 0; transform: translate3d(-3000px, 0, 0); }
+  60% { opacity: 1; transform: translate3d(25px, 0, 0); }
+  75% { transform: translate3d(-10px, 0, 0); }
+  90% { transform: translate3d(5px, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
+`;
+
+const bounceInRight = keyframes`
+  from, 60%, 75%, 90%, to { animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); }
+  0% { opacity: 0; transform: translate3d(3000px, 0, 0); }
+  60% { opacity: 1; transform: translate3d(-25px, 0, 0); }
+  75% { transform: translate3d(10px, 0, 0); }
+  90% { transform: translate3d(-5px, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
 `;
 
 export default function Recherche() {
@@ -20,8 +39,24 @@ export default function Recherche() {
     const [change2, setchange2] = useState(false);
     const [liste, setliste] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
+    const [isready, setisready] = useState(false)
+    const [isready2, setisready2] = useState(false)
 
+    const [filmMoment, setfilmMoment] = useState([])
 
+    const gradientBG = keyframes`
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    `;
+
+    
+    const { ref, inView } = useInView({
+        triggerOnce: true, 
+        threshold: 0.8,
+        
+    });
+    
     function handlesubmit(e) {
         e.preventDefault();
         fetch_recherche(query);
@@ -32,9 +67,14 @@ export default function Recherche() {
 
     async function handleproposition(params) {
         try {
-            const response = await fetch(`http://localhost:8000/api/films/films/discover?${params}`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/films/discover?${params}`);
             const data = await response.json();
-            setliste(data.liste_discover_filtre || []);
+
+            if (data && Array.isArray(data.liste_discover_filtre)) {
+                setliste(data.liste_discover_filtre);
+            } else {
+                setliste([]);
+            }
             setchange1(false);
             setchange2(true);
             setHasSearched(true);
@@ -43,6 +83,26 @@ export default function Recherche() {
             setliste([]);
         }
     }
+
+    useEffect(()=> {
+        async function Suggestion() {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/liste_movie`, {
+                    credentials:'include'
+                })
+                const data = await response.json()
+                console.log('data movie :',data)
+                if (data && Array.isArray(data.liste_movie)) {
+                    setfilmMoment(data.liste_movie.slice(0, 18))
+                    setTimeout(()=> setisready(true), 300)
+                    setTimeout(()=> setisready2(true), 500)
+                } 
+            } catch(error) {
+        console.error('erreur')
+        }
+        }
+        Suggestion()
+    }, [])
 
     const styleButton = {
         background: 'linear-gradient(45deg, #007bff, #0056b3)',
@@ -83,7 +143,7 @@ export default function Recherche() {
                     alignItems: 'center',
                     transition: 'all 0.5s ease',
                     justifyContent: hasSearched ? 'flex-start' : 'center',
-                    height: hasSearched ? 'auto' : '70vh',
+                    minheight: hasSearched ? 'auto' : '50vh',
                     marginBottom: hasSearched ? '2rem' : 0,
                 }}>
                 <Box component="form" onSubmit={handlesubmit} 
@@ -97,6 +157,7 @@ export default function Recherche() {
                     <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: 3 }}>
                     <InputBase
                         value={query}
+                        placeholder="rechercher un film ou serie"
                         onChange={(e) => setquery(e.target.value)}
                         sx={{
                             width: { 
@@ -213,6 +274,41 @@ export default function Recherche() {
                     </Box>
                 </Box>
             </Box>
+            
+            {!hasSearched && filmMoment.length > 0 && (
+            <Box sx={{width: '100%', overflow: 'hidden' }}>
+                <Typography variant="h5" sx={{ mt: 7, textAlign: 'center', fontWeight:'bold' }}>🔥 Tendances</Typography>
+        
+                <Box sx={{    
+                    width:'100%',  
+                    position: 'relative',           
+                    mt: 2,
+                    py: 3,
+                    overflowX: 'auto',
+
+                    maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 35%, transparent)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 10%, black 35%, transparent)',
+                }}>
+                    
+                <Box sx={{
+                    display: 'flex',
+                    width: 'max-content', 
+                    animation: `${scrollX} 140s linear infinite`,
+                    '&:hover': { animationPlayState: 'paused' }
+                }}>               
+                    {[...filmMoment, ...filmMoment].map((film, index) => (
+                        <Box key={index} 
+                            sx={{ width: 200, flexShrink: 0, mx: 2 }}>
+                            <CardFilmAccueil film={film} />
+                        </Box>                  
+                    ))}
+                </Box>
+                
+                </Box>     
+                <hr /><br /><br />
+                
+            </Box>             
+        )}
 
             {loading && <Typography variant="body1">Chargement...</Typography>}
 
@@ -246,8 +342,7 @@ export default function Recherche() {
                 ))}
 
                 {change1 && result?.result_serie?.serie_recommandation?.map((film, index) => (
-                    // La taille ci-dessous était très grande (xs=12, md=8). 
-                    // Je suppose que vous vouliez les mêmes cartes. Ajusté pour correspondre.
+                    
                     <Grid key={film.id} item xs={6} sm={4} md={3} lg={2}>
                         <motion.div
                             initial={{ opacity: 0, y: 40 }}
@@ -283,6 +378,57 @@ export default function Recherche() {
                     </Grid>
                 ))}
             </Grid>
+
+            {isready && 
+            <Box ref={ref} sx={{ display: 'flex', justifyContent: 'flex-start',
+                overflow: 'visible', width: '100%',
+                WebkitMaskImage: 'linear-gradient(to left, transparent 10%, black 10%, black 80%, transparent 100%)',
+                maskImage: 'linear-gradient(to left, transparent 10%, black 10%, black 80%, transparent 100%)'
+            }}>
+                <Box 
+                sx={{
+                    background: 'linear-gradient(45deg, #007bff, #0056b3)',
+                    width: { xs: '60%', sm: '50%', md: '30%' },
+                    maxWidth: '800px',
+                    borderRadius: '0 40px 40px 0',
+                    p: 2,
+                    overflow:'visible',
+                    animation: inView ? `${bounceInLeft} 1s both` : 'none',
+                    opacity: inView ? 1 : 0,
+                    boxShadow: '10px 10px 20px rgba(0,0,0,0.1)'
+                }}>
+                    <Typography variant="h5" 
+                    sx={{ml:'1rem', fontWeight: 600}}
+                    >+ de 900 000 films !</Typography>
+                </Box>
+            </Box>
+            }
+            <br /><br />
+            {isready2 && 
+            <Box ref={ref} sx={{ display: 'flex', justifyContent: 'flex-end',
+                overflow: 'visible', width: '100%',
+                WebkitMaskImage: 'linear-gradient(to right, transparent 10%, black 10%, black 80%, transparent 100%)',
+                maskImage: 'linear-gradient(to right, transparent 10%, black 10%, black 80%, transparent 100%)'
+            }}>
+                <Box 
+                sx={{
+                    background: 'linear-gradient(45deg, #007bff, #0056b3)',
+                    width: { xs: '60%', sm: '50%', md: '30%' },
+                    maxWidth: '800px',
+                    borderRadius: '40px 0 0 40px',
+                    p: 2,
+                    overflow:'visible',
+                    animation: inView ? `${bounceInRight} 1s both` : 'none',
+                    opacity: inView ? 1 : 0,
+                    boxShadow: '10px 10px 20px rgba(0,0,0,0.1)'
+                }}>
+                    <Typography variant="h5" 
+                    sx={{ml:'1rem', fontWeight: 600}}
+                    >+ de 150 000 séries !</Typography>
+                </Box>
+            </Box>
+            }
+            <br />
         </Box>
     );
 }

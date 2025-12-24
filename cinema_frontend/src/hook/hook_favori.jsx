@@ -12,7 +12,7 @@ export default function Hook_favori() {
         setloading(true)
         try {
 
-            let response = await fetch('http://localhost:8000/auth/ajout_film', {
+            let response = await fetch(`${process.env.REACT_APP_API_URL}/auth/ajout_film`, {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
@@ -24,13 +24,11 @@ export default function Hook_favori() {
                 
             })
             let data = await response.json()
-            console.log('data :', data)
             
             if (response.status === 401) {
                 const newtoken = await Refresh_token()
                 if (newtoken) {
-                    console.log('nouveau token favori')
-                    response = await fetch('http://localhost:8000/auth/ajout_film', {
+                    response = await fetch(`${process.env.REACT_APP_API_URL}/auth/ajout_film`, {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json',
@@ -41,7 +39,6 @@ export default function Hook_favori() {
                     })             
                     })
                     data = await response.json()
-                    console.log('data refresh:', data)
                 } else {
                     console.log('refresh failed')
                     return
@@ -50,7 +47,6 @@ export default function Hook_favori() {
 
             if (response.ok) {
                 showSnackbar('ajouté au favori', 'success')
-                console.log('film ajouté au favori', response.status)
             } else {
                 showSnackbar('erreur', 'error')
                 return
@@ -63,24 +59,22 @@ export default function Hook_favori() {
     }
     const supprimer = async(tmdb_id) => {
         try {
-            let response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
+            let response = await fetch(`${process.env.REACT_APP_API_URL}/auth/supprimer/${tmdb_id}`, {
                 method:'DELETE',
                 credentials:'include'
             }) 
             if (response.status === 401) {
               const newtoken = await Refresh_token()
               if (newtoken) {
-                response = await fetch(`http://localhost:8000/auth/supprimer/${tmdb_id}`, {
+                response = await fetch(`${process.env.REACT_APP_API_URL}/auth/supprimer/${tmdb_id}`, {
                 method:'DELETE',
                 credentials:'include'})
               } else {
-                console.log('erreur de refresh')
                 return
               }
             }
             if (response.ok) {
               showSnackbar('film retiré des favories', 'success')
-              console.log('element supprimé')
               
             }
         } catch(error) {

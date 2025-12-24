@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { useParams } from 'react-router-dom'
 import {
   Box,
   Card,
@@ -19,7 +18,7 @@ export default function CommentForm({id, Refresh}) {
 
     async function Comment() {
         try {
-            let response = await fetch(`http://localhost:8000/api/films/commentaires?movie_id=${id}`, {
+            let response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/commentaires?movie_id=${id}`, {
                 method:'POST',
                 headers: {
                     'Content-type': 'application/json',
@@ -32,7 +31,7 @@ export default function CommentForm({id, Refresh}) {
             if (response.status === 401) {
                 const newtoken = await Refresh_token()
                 if (newtoken) {
-                    response = await fetch(`http://localhost:8000/api/films/commentaires?movie_id=${id}`, {
+                    response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/commentaires?movie_id=${id}`, {
                     method:'POST',
                     headers: {
                         'Content-type': 'application/json',
@@ -53,7 +52,6 @@ export default function CommentForm({id, Refresh}) {
                 settexte('')
             }
             const data = await response.json()
-            console.log('data :', data)
 
         } catch(error) {
             console.error('erreur', error)

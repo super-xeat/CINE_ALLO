@@ -196,6 +196,7 @@ class DiscoverView(APIView, Listeview):
       
     def get(self, request):       
 
+            page_number = request.GET.get('page', 1)
             genre = request.GET.get('with_genres') 
             sort_by = request.GET.get('sort_by', 'popularity.desc')  
             release_year = request.GET.get('year') 
@@ -208,7 +209,7 @@ class DiscoverView(APIView, Listeview):
                 'sort_by': sort_by,
                 'vote_count.gte': 500,
                 'language': 'fr-FR',
-    
+                'page': page_number
             }  
             if genre:
                 params['with_genres'] = genre  
@@ -256,7 +257,7 @@ class DiscoverTvView(APIView, Listeview):
     
     def get(self, request):
         
-
+        page_number = request.GET.get('page', 1)
         genre = request.GET.get('with_genres') 
         sort_by = request.GET.get('sort_by', 'popularity.desc')  
         release_year = request.GET.get('year') 
@@ -269,6 +270,7 @@ class DiscoverTvView(APIView, Listeview):
             'sort_by': sort_by,
             'vote_count.gte': 500,
             'language': 'fr-FR',
+            'page': page_number
         }  
         if genre:
             params['with_genres'] = genre  

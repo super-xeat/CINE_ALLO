@@ -10,7 +10,7 @@ export default function Hook_profil() {
     const fetchProfil = async(setIsAuth, setuserauth) => {
     
         try {
-            let response = await fetch('http://localhost:8000/auth/profile', {
+            let response = await fetch(`${process.env.REACT_APP_API_URL}/auth/profile`, {
                 headers: { 
                     'Content-Type': 'application/json'  
                 },
@@ -27,15 +27,13 @@ export default function Hook_profil() {
                 if (newToken) {
                     console.log('🚀 Second profile request with new token...')
                 
-                    response = await fetch('http://localhost:8000/auth/profile', {
+                    response = await fetch(`${process.env.REACT_APP_API_URL}/auth/profile`, {
                         headers: { 
                             'Content-Type': 'application/json'
                         },
                         credentials:'include'
                     })
-                    console.log('📡 Second response status:', response.status)
                 } else {
-                    console.log('❌ Refresh completely failed')
                     return
                 }
             }

@@ -6,7 +6,7 @@ import { Edit, Key } from "@mui/icons-material";
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import Card_favori from "../components/card_favorie";
 import './profil.css'
-
+import { useAlert } from "../context/Alertcontext";
 
 
 export default function Profil() {
@@ -28,7 +28,7 @@ export default function Profil() {
 
   const { fetchProfil, result, loading, authok} = Hook_profil()
   const {Refresh_token} = useToken() 
-
+  const {showSnackbar} = useAlert
 
   useEffect(()=> {
     fetchProfil()
@@ -39,17 +39,14 @@ export default function Profil() {
       const films = await Promise.all(
         recup_liste.map(async(item)=> {
           try {
-            const response = await fetch(`http://localhost:8000/auth/recup_film/${item.tmdb_id}`)
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/recup_film/${item.tmdb_id}`)
             if (response.ok) {
               const data = await response.json()
-              console.log('data recup :', data)
               return {...item, tmdb_champ: data}
             } else {
-              console.log('erreur recup item', response.status)
               return item
             }
           } catch(error) {
-            console.log('erreur recup item', error)
             return item
           }
         })
@@ -65,7 +62,7 @@ export default function Profil() {
   async function fetchListeFavori(pagenum = 1) {
     try {
       setloader(true)
-      let response = await fetch(`http://localhost:8000/auth/voir_liste?page=${pagenum}`, {
+      let response = await fetch(`${process.env.REACT_APP_API_URL}/auth/voir_liste?page=${pagenum}`, {
         credentials:'include'
       })
       
@@ -73,19 +70,16 @@ export default function Profil() {
         const newtoken = await Refresh_token()
 
         if (newtoken) {
-            console.log('newtoken liste obtenu')
-            response = await fetch(`http://localhost:8000/auth/voir_liste?page=${pagenum}`, {
+            response = await fetch(`${process.env.REACT_APP_API_URL}/auth/voir_liste?page=${pagenum}`, {
             credentials:'include'
           })
           } else {
-            console.log('Refresh failed - redirection login');
             setListe([])
             return
         }}
 
       if (response.ok) {
           const data = await response.json();
-          console.log('data :', data)
 
           let recup_liste
           if (pagenum === 1) {
@@ -100,7 +94,6 @@ export default function Profil() {
           }
                  
           setpage(pagenum)
-          console.log('data :', data)
         } else {       
             console.error('Erreur serveur:', response.status);
         }
@@ -117,7 +110,7 @@ export default function Profil() {
     const formData = new FormData();
     formData.append(champ, valeur);
     try {
-      let response = await fetch('http://localhost:8000/auth/profile', {
+      let response = await fetch(`${process.env.REACT_APP_API_URL}/auth/profile`, {
         method: 'PATCH',
         credentials:'include',
         body: formData,
@@ -128,8 +121,7 @@ export default function Profil() {
         const newtoken = await Refresh_token()
 
         if (newtoken) {
-            console.log('nouveau token succès')
-            response = await fetch('http://localhost:8000/auth/profile', {
+            response = await fetch(`${process.env.REACT_APP_API_URL}/auth/profile`, {
             method: 'PATCH',
             credentials:'include',
             body: formData,
@@ -146,7 +138,6 @@ export default function Profil() {
     setModifImage(true);
   };
 
-  console.log("image URL:", result.image)
   if (loading) return <Typography>Chargement...</Typography>;
   
   const chargerplus = () => {
@@ -305,8 +296,6 @@ export default function Profil() {
           </>
         )}
           
-          
-
       </CardContent>
     </Card>
   </Box>

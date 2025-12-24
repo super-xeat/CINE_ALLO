@@ -35,7 +35,6 @@ export default function LoginPage() {
         navigate(-1) 
 
     } catch(error) {
-        console.error('Erreur :', error.message)
         showSnackbar(error.message, 'error')
     }
   }

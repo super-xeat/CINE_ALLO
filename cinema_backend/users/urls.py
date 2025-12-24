@@ -3,7 +3,7 @@ from django.urls import path
 from .views import (ListeFilmViews, RegisterViews, SupprimeView, 
                     ProfileView, AjoutFilmview, ConfirmEmailView, PasswordResetView,
                     PasswordResetConfirmview, UpdateFilmListeView, Recup_filmViews,
-                    LoginViews, LogoutView, RefreshViews)
+                    LoginViews, LogoutView, RefreshViews, Force_logout)
 
 
 urlpatterns = [
@@ -19,5 +19,6 @@ urlpatterns = [
     path('profile', ProfileView.as_view(), name='profile'),
     path('confirm-email/<str:token>/', ConfirmEmailView.as_view(), name='confirm_email'),
     path('oubli-mdp', PasswordResetView.as_view(), name='passwordreset'),
-    path('passwordreset/confirm', PasswordResetConfirmview.as_view(), name='confirm_reset') 
+    path('passwordreset/confirm', PasswordResetConfirmview.as_view(), name='confirm_reset'),
+    path('force_logout', Force_logout.as_view(), name='force_logout')
 ] 
