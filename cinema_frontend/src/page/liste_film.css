@@ -1,0 +1,25 @@
+
+.liste_film {
+    background: linear-gradient(-45deg, #000000, #4d4c4c, #050505, #0d0d0d);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+}
+
+.critere Button {
+    border-radius: 25px;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border: none;
+    color: white;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.critere Button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+    background: linear-gradient(45deg, #0056b3, #004494);
+}
