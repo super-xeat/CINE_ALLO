@@ -7,7 +7,7 @@ from .views import (ListeFilmViews, RegisterViews, SupprimeView,
 
 
 urlpatterns = [
-    path('login', LoginViews.as_view(), name='register'),
+    path('login', LoginViews.as_view(), name='login'),
     path('logout', LogoutView.as_view(), name='logout'), 
     path('register/', RegisterViews.as_view(), name='register'),
     path('refresh', RefreshViews.as_view()),

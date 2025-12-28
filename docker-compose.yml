@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: cinema_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: tomfeu83
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./cinema_backend
+    volumes:
+      - ./cinema_backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./cinema_frontend
+    volumes:
+      - ./cinema_frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:

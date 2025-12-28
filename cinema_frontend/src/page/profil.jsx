@@ -39,7 +39,7 @@ export default function Profil() {
       const films = await Promise.all(
         recup_liste.map(async(item)=> {
           try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/recup_film/${item.tmdb_id}`)
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/recup_film/${item.tmdb_id}`)
             if (response.ok) {
               const data = await response.json()
               return {...item, tmdb_champ: data}
@@ -62,7 +62,7 @@ export default function Profil() {
   async function fetchListeFavori(pagenum = 1) {
     try {
       setloader(true)
-      let response = await fetch(`${process.env.REACT_APP_API_URL}/auth/voir_liste?page=${pagenum}`, {
+      let response = await fetch(`${import.meta.env.VITE_API_URL}/auth/voir_liste?page=${pagenum}`, {
         credentials:'include'
       })
       
@@ -70,7 +70,7 @@ export default function Profil() {
         const newtoken = await Refresh_token()
 
         if (newtoken) {
-            response = await fetch(`${process.env.REACT_APP_API_URL}/auth/voir_liste?page=${pagenum}`, {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/auth/voir_liste?page=${pagenum}`, {
             credentials:'include'
           })
           } else {
@@ -110,7 +110,7 @@ export default function Profil() {
     const formData = new FormData();
     formData.append(champ, valeur);
     try {
-      let response = await fetch(`${process.env.REACT_APP_API_URL}/auth/profile`, {
+      let response = await fetch(`${import.meta.env.VITE_API_URL}/auth/profile`, {
         method: 'PATCH',
         credentials:'include',
         body: formData,
@@ -121,7 +121,7 @@ export default function Profil() {
         const newtoken = await Refresh_token()
 
         if (newtoken) {
-            response = await fetch(`${process.env.REACT_APP_API_URL}/auth/profile`, {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/auth/profile`, {
             method: 'PATCH',
             credentials:'include',
             body: formData,

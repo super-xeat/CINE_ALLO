@@ -39,9 +39,9 @@ export default function Discover() {
     let endpoint;
 
     if (media === 'movie') { 
-      endpoint = `http://localhost:8000/api/films/films/discover`;
+      endpoint = `${import.meta.env.VITE_API_URL}/api/films/films/discover`;
     } else {
-      endpoint = `http://localhost:8000/api/films/series/discover`;
+      endpoint = `${import.meta.env.VITE_API_URL}/api/films/series/discover`;
     }
 
     try {

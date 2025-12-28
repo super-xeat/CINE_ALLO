@@ -15,7 +15,7 @@ export default function Detail_movie() {
         setloading(true)
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/detail_movie?movie_id=${encodeURIComponent(item)}&type=${item2}`)
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/detail_movie?movie_id=${encodeURIComponent(item)}&type=${item2}`)
             const data = await response.json()
             
             setresult(data)

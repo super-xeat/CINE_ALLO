@@ -16,7 +16,7 @@ export default function Page_result() {
             
             setLoading(true)
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/recherche_navbar/?q=${encodeURIComponent(query)}`)
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/recherche_navbar/?q=${encodeURIComponent(query)}`)
                 
                 if (!response.ok) {
                     console.log('erreur de response')

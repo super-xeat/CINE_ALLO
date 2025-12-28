@@ -31,7 +31,7 @@ export default function AuthProvider({children}) {
 
     const Login = async(email, password) => {
         try {           
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export default function AuthProvider({children}) {
             if (response.status === 403 || response.status === 401) {
                 console.error("Session corrompue, nettoyage forcé...");
             
-                await fetch(`${process.env.REACT_APP_API_URL}/auth/force_logout`, 
+                await fetch(`${import.meta.env.VITE_API_URL}/auth/force_logout`, 
                     { method: 'GET',
                     credentials: 'include' });
                 
@@ -75,7 +75,7 @@ export default function AuthProvider({children}) {
 
     const Logout = async () => {
         try {
-            await fetch('http://localhost:8000/auth/logout', {
+            await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
                 method: 'POST',
                 credentials: 'include' 
             })

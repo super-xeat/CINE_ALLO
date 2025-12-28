@@ -16,7 +16,7 @@ export default function Rest_password() {
 
     const Reset_mdp = async() => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/passwordreset/confirm`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/passwordreset/confirm`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json' 

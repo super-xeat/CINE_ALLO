@@ -21,7 +21,7 @@ export default function CommentListe() {
     async function Liste() {
         setloading(true)
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/films/commentaires?movie_id=${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires?movie_id=${id}`, {
                 method:'GET',
                 credentials:'include'
             })

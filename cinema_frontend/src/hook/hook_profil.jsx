@@ -10,7 +10,7 @@ export default function Hook_profil() {
     const fetchProfil = async(setIsAuth, setuserauth) => {
     
         try {
-            let response = await fetch(`${process.env.REACT_APP_API_URL}/auth/profile`, {
+            let response = await fetch(`${import.meta.env.VITE_API_URL}/auth/profile`, {
                 headers: { 
                     'Content-Type': 'application/json'  
                 },
@@ -27,13 +27,14 @@ export default function Hook_profil() {
                 if (newToken) {
                     console.log('🚀 Second profile request with new token...')
                 
-                    response = await fetch(`${process.env.REACT_APP_API_URL}/auth/profile`, {
+                    response = await fetch(`${import.meta.env.VITE_API_URL}/auth/profile`, {
                         headers: { 
                             'Content-Type': 'application/json'
                         },
                         credentials:'include'
                     })
                 } else {
+                    console.log('probleme de profil')
                     return
                 }
             }

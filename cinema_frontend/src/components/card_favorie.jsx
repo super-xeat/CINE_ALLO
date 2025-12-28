@@ -16,7 +16,7 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film}) {
     const modify_statut = async(newstatu) => {
         setloading(true)
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/modifier/${tmdb_id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/modifier/${tmdb_id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
