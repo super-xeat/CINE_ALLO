@@ -109,7 +109,7 @@ REST_FRAMEWORK = {
 # CORS settings si tu as un frontend séparé
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "https://ton-nom-de-site-frontend.onrender.com", # URL Render de ton React
+    "https://CINE-ALLO.onrender.com", # URL Render de ton React
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:5173",
