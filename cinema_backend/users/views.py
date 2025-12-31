@@ -55,7 +55,7 @@ class RegisterViews(APIView):
             )
             return Response({'succé': 'compte créé : vérifiez vos mails'})
         else:
-            return Response(serializer.errors, status=404)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginViews(APIView):
@@ -258,7 +258,7 @@ class ProfileView(APIView):
         serializer = ProfileSerializer(request.user, context={'request': request})
         return Response(serializer.data,status=200)
     
-    def patch(self, request):
+    def patch(self, request): 
         try:
             user = request.user
             serializer = ProfileSerializer(

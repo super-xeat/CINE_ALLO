@@ -114,37 +114,65 @@ export default function Page_result() {
             )} 
 
             {result.films && !result.films.erreur && (
-                <div>
-                    <h2>Films</h2>
-                    
-                    {result.films.film?.results?.[0]?.title && (
-                        <h3>{result.films.film.results[0].title}</h3>
-                    )}
+                <Box sx={{ flexGrow: 1, p: 2 }}>
+                    <Grid container spacing={4}>
+                        
+                        <Grid item xs={12}>
+                            <Typography variant='h4' sx={{ color: '#dad7d7ff', fontWeight: '800', mb: 2 }}>
+                                {result.films?.detail?.title}
+                            </Typography>
+                        </Grid>
 
-                    {result.films.detail?.poster_path ? (
-                        <img src={`https://image.tmdb.org/t/p/w500${result?.films?.detail?.poster_path}`}/>
-                    ) : (
-                        <p>pas d'image pour ce film</p>
-                    )}
-                    
-                    {result.films.detail?.overview && (
-                        <div>
-                            <h4>Synopsis</h4>
-                            <p>{result.films.detail.overview}</p>
-                        </div>
-                    )}
-                    
-                    {result.films.film_similaire?.results && result.films.film_similaire.results.length > 0 && (
-                        <div>
-                            <h3>Films similaires</h3>
-                            <div>
-                                {result.films.film_similaire.results.map((item) => (
-                                    <CardFilm key={item.id} film={item} />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
+                        <Grid item xs={12} md={5} lg={4}>
+                            <CardMedia
+                                component='img'
+                                image={result.films.detail?.poster_path 
+                                    ? `https://image.tmdb.org/t/p/w500${result.films.detail.poster_path}`
+                                    : "https://via.placeholder.com/500x750?text=Image+non+disponible"
+                                }
+                                alt={result.films?.detail?.title}
+                                sx={{ 
+                                    maxWidth: 400, 
+                                    width: '100%', 
+                                    borderRadius: 5, 
+                                    border: '2px solid #0c90b8ff',
+                                    boxShadow: '0px 4px 20px rgba(0,0,0,0.5)'
+                                }}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12} md={7} lg={8}>
+                            {result.films.detail?.overview && (
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant='h6' sx={{ color: '#d7d3d3ff', fontWeight: '800', mb: 1 }}>
+                                        Synopsis
+                                    </Typography>
+                                    <Typography variant='body1' sx={{ color: '#d9d6d6ff', lineHeight: 1.6, textAlign: 'justify' }}>
+                                        {result.films.detail.overview}
+                                    </Typography>
+                                </Box>
+                            )}
+
+                            {result.films.film_similaire?.results?.length > 0 && (
+                                <Box sx={{ mt: 4 }}>
+                                    <Typography variant='h5' sx={{ color: '#dad7d7ff', fontWeight: '700', mb: 2 }}>
+                                        Films similaires
+                                    </Typography>
+                                    <Box sx={{ 
+                                        display: 'flex', 
+                                        flexWrap: 'wrap', 
+                                        gap: 2 
+                                    }}>
+                                        {result.films.film_similaire.results.slice(0, 4).map((item) => (
+                                            <CardFilm key={item.id} film={item} />
+                                        ))}
+                                    </Box>
+                                </Box>
+                            )}
+                        </Grid>
+
+                    </Grid>
+                </Box>
             )}
 
             {result.personne && result.personne.erreur && (

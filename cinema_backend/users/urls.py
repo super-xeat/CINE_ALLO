@@ -9,7 +9,7 @@ from .views import (ListeFilmViews, RegisterViews, SupprimeView,
 urlpatterns = [
     path('login', LoginViews.as_view(), name='login'),
     path('logout', LogoutView.as_view(), name='logout'), 
-    path('register/', RegisterViews.as_view(), name='register'),
+    path('register', RegisterViews.as_view(), name='register'),
     path('refresh', RefreshViews.as_view()),
     path('ajout_film', AjoutFilmview.as_view(), name='ajouter_film'),
     path('recup_film/<int:tmdb_id>', Recup_filmViews.as_view(), name='recup_film'),
@@ -21,4 +21,4 @@ urlpatterns = [
     path('oubli-mdp', PasswordResetView.as_view(), name='passwordreset'),
     path('passwordreset/confirm', PasswordResetConfirmview.as_view(), name='confirm_reset'),
     path('force_logout', Force_logout.as_view(), name='force_logout')
-] 
+]  

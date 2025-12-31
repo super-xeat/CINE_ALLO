@@ -44,7 +44,7 @@ export default function Alertprovider({children}) {
                     onClose={handleCloseAlert} 
                     severity={Alertstate.severity} 
                     variant="filled"
-                    sx={{ width: '100%' }}
+                    sx={{ width: '80%' }}
                 >
                     {Alertstate.message} 
                 </Alert>

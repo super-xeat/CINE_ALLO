@@ -7,7 +7,8 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import Card_favori from "../components/card_favorie";
 import './profil.css'
 import { useAlert } from "../context/Alertcontext";
-
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function Profil() {
 
@@ -28,7 +29,7 @@ export default function Profil() {
 
   const { fetchProfil, result, loading, authok} = Hook_profil()
   const {Refresh_token} = useToken() 
-  const {showSnackbar} = useAlert
+  const {showSnackbar} = useAlert()
 
   useEffect(()=> {
     fetchProfil()
@@ -145,6 +146,12 @@ export default function Profil() {
       fetchListeFavori(page + 1)
     }
   }
+
+  const handlevoirliste = () => {
+    fetchListeFavori(1); 
+     setCache(true);
+    
+  }
   return (
   <Box display="flex" justifyContent="center" className="discover" sx={{ minHeight: '70vh'}} padding={3}>
     <Card sx={{ maxWidth: 600, width: '90%', p: 2, boxShadow: 4, backgroundColor:"rgba(137, 140, 137, 1)"}}>
@@ -194,15 +201,39 @@ export default function Profil() {
               Bienvenu {result.username}
             </Typography>
             {modiusername ? (
-              <Stack direction="row" spacing={1} mt={1} >
-                <TextField size="small" sx={{ backgroundColor:"#f1ececf0" }} value={username} onChange={(e) => setUsername(e.target.value)} label="Modifier nom" />
-                <Button variant="contained" onClick={() => { envoyer('username', username); setUsername(''); }}>Envoyer</Button>
-                <Button variant="outlined" color="secondary" sx={{ backgroundColor: '#ece6e6'}}
-                onClick={() => setModiUsername(false)}>Annuler</Button>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} mt={1} alignItems='center'>
+                <TextField size="small" 
+                sx={{ backgroundColor:"#f1ececf0", border:'2px solid black', borderRadius:'10px'}} 
+                value={username} onChange={(e) => setUsername(e.target.value)} 
+                label="Modifier nom" />
+                <Box sx={{display:'flex', flexdirection:'row'}}>
+                  <IconButton 
+                    color="success" 
+                    onClick={() => { envoyer('username', username); setUsername(''); }}
+                    aria-label="valider"
+                  >
+                    <CheckIcon />
+                  </IconButton>
+
+                  <IconButton 
+                    color="error" 
+                    onClick={() => setModiUsername(false)}
+                    aria-label="annuler"
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </Box>
               </Stack>
+
             ) : (
-              <Button size="small" variant="contained" sx={{ backgroundColor:"#1380b3f0", color:"#f8f3f3" , boxShadow:"2", ":hover": {backgroundColor: '#0c648df0'}}} 
-               onClick={() => setModiUsername(true)}>Modifier le nom</Button>
+              <Button  variant="contained" 
+              sx={{ backgroundColor:"#1380b3f0", color:"#f8f3f3" , boxShadow:"2", 
+                ":hover": {backgroundColor: '#0c648df0'},
+                width:{xs:'80%', sm:'100%'}
+              }} 
+               onClick={() => setModiUsername(true)}>
+                <Typography sx={{fontSize: {xs:'70%',sm:'90%'}, fontWeight:800}}>Modifier le nom</Typography>
+              </Button>
             )}
           </Stack>
         </Stack>
@@ -214,9 +245,13 @@ export default function Profil() {
             <Typography variant="subtitle1" fontWeight="bold" mb={1} >
               Modifier la photo de profil
             </Typography>
-            <Stack direction="row" spacing={1} mb={2} alignItems="center">
-              <Button variant="outlined" component="label">
-                Choisir un fichier
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} mb={2} alignItems="center">
+              <Button variant="outlined" component="label"
+              sx={{backgroundColor:"#1380b3f0", color:"#f8f3f3", border:'1px solid black',
+                boxShadow:'2', width:{xs:'80%', sm:'60%'}
+              }}>
+                <Typography sx={{fontSize:{xs:'80%'}}}>
+                  Choisir un fichier</Typography>
                 <input 
                   type="file" 
                   hidden 
@@ -229,17 +264,21 @@ export default function Profil() {
                   Fichier sélectionné: {file.name}
                 </Typography>
               )}
-              <Button 
-                variant="contained" 
-                onClick={() => { envoyer('image', file); setFile(null); }}
-                disabled={!file}
-              >
-                Envoyer
-              </Button>
-              <Button variant="outlined" sx={{ backgroundColor: '#ece6e6'}}
-              color="secondary" onClick={() => { setModifImage(false); setFile(null); }}>
-                Annuler
-              </Button>
+              <Box sx={{display:'flex', flexdirection:'row'}}>
+                <IconButton 
+                  
+                  onClick={() => { envoyer('image', file); setFile(null); }}
+                  disabled={!file}
+                  aria-label="valider"
+                >
+                  <CheckIcon color='success'/>
+                </IconButton>
+                <IconButton color='error'
+                 onClick={() => { setModifImage(false); setFile(null); }}
+                 aria-label="annuler">
+                  <CloseIcon/>
+                </IconButton>
+              </Box>
             </Stack>
             <Divider sx={{ my: 2 }} />
           </>
@@ -248,51 +287,88 @@ export default function Profil() {
         <Typography size="small" variant="subtitle1" fontWeight="bold">Ma bio:</Typography>
         <Typography variant="body1" mb={1}>{result.bio}</Typography>
         {modifbio ? (
-          <Stack direction="row" spacing={1} mb={2}>
-            <TextField size="small" sx={{ backgroundColor: '#ece6e6'}}
+          <Stack direction={{xs: 'column', sm:'row'}} spacing={1} mb={2} alignItems='center'>
+            <TextField size="small" sx={{ 
+              backgroundColor: '#ece6e6',
+            border: '2px solid black',
+            borderRadius: '10px'}}
             value={bio} onChange={(e) => setBio(e.target.value)} label="Modifier bio" fullWidth />
-            <Button variant="contained" onClick={() => { envoyer('bio', bio); setBio(''); }}>Envoyer</Button>
-            <Button variant="outlined" sx={{ backgroundColor: '#ece6e6'}}
-            color="secondary" onClick={() => setModifBio(false)}>Annuler</Button>
+            <Box sx={{display:'flex', flexdirection:'row'}}>
+            <IconButton variant="contained" 
+            onClick={() => { envoyer('bio', bio); setBio(''); }}>
+              <CheckIcon color='success'/>
+            </IconButton>
+            <IconButton 
+              onClick={() => setModifBio(false)}>
+              
+              <CloseIcon color='error'/>
+            </IconButton>
+            </Box>
           </Stack>
         ) : (
-          <Button variant="outlined" sx={{ backgroundColor:"#1380b3f0", color:"#f8f3f3" , boxShadow:"2", ":hover": {backgroundColor: '#0c648df0'}}}
-           onClick={() => setModifBio(true)}>Modifier la bio</Button>
+          <Button variant="outlined" 
+          sx={{ backgroundColor:"#1380b3f0", color:"#f8f3f3" , boxShadow:"2", 
+            ":hover": {backgroundColor: '#0c648df0'}, width:{xs:'60%', sm:'40%'}}}
+           onClick={() => setModifBio(true)}>
+            <Typography sx={{fontSize:{xs:'80%', sm:'90%'},  fontWeight:800}}>Modifier la bio</Typography>
+          </Button>
         )}
 
         <Divider sx={{ my: 2 }} />
 
         <Typography variant="h6" fontWeight="bold" mb={1}>Mes favoris</Typography>
         {!cache ? (
-          <Button variant="contained" onClick={() => { fetchListeFavori(1); setCache(true); }}>Voir ma liste de favoris</Button>
+          <Button variant="contained" 
+            sx={{width:{xs:'60%', sm:'40%'}}}
+            onClick={handlevoirliste}>
+            <Typography sx={{fontSize:{xs:'80%', sm:'90%'}, fontWeight:800}}>
+              Voir ma liste
+            </Typography>
+          </Button>
         ) : (
           <>
-            <Button variant="outlined" color="secondary" sx={{ backgroundColor: '#ece6e6'}} onClick={() => setCache(false)}>Cacher</Button>
+          <Box sx={{display:'flex', justifyContent:'flex-end'}}>
+            <IconButton
+              onClick={() => setCache(false)}
+              >
+              <CloseIcon color='error'/>
+            </IconButton>
+          </Box>
             <Stack spacing={1} mt={2}>
-            {liste.map((item) => { 
-              console.log("Item avec infos TMDB:", item)
-              return(
-                <div key={item.id}>
-                  <Card_favori 
-                    tmdb_id={item.tmdb_id}
-                    statutActuel={item.statut}
-                    liste={()=>fetchListeFavori(1)}
-                    film={item.tmdb_champ || item}
-                  />
-                </div>
-              )
-            })}
+          {loader && liste.length === 0 ? (
+            <Typography sx={{ textAlign: 'center', py: 3, fontStyle: 'italic' }}>
+              Chargement de vos favoris...
+            </Typography>
+          ) : Array.isArray(liste) && liste.length > 0 ? (
+            liste.map((item) => (
+              <div key={item.id || item.tmdb_id}>
+                <Card_favori 
+                  tmdb_id={item.tmdb_id}
+                  statutActuel={item.statut}
+                  liste={() => fetchListeFavori(1)}
+                  film={item.tmdb_champ || item}
+                />
+              </div>
+            ))
+          ) : (
+            <Typography sx={{ textAlign: 'center', py: 3, color: 'text.secondary' }}>
+              Vous n'avez pas encore de films dans votre liste.
+            </Typography>
+          )}
+
+          {Array.isArray(liste) && liste.length > 0 && (
             <Box display="flex" justifyContent="center" mt={2}>
               <Button 
                 variant="outlined" 
                 onClick={chargerplus}
                 disabled={loader}
-                sx={{backgroundColor:'#282727ff', "&:hover": { bgcolor: "#474747ff" }}}
+                sx={{ backgroundColor: '#282727ff', "&:hover": { bgcolor: "#474747ff" } }}
               >
                 {loader ? 'Chargement...' : <AddCircleIcon />}
               </Button>
             </Box>
-          </Stack>
+          )}
+        </Stack>
           </>
         )}
           

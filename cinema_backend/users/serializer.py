@@ -8,7 +8,8 @@ from datetime import timedelta
 
 class RegisterSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
-
+    image = serializers.ImageField(required=False, allow_null=True)
+    
     class Meta:
         model = User
         fields = ['username','password', 'bio', 'image', 'confirm_password', 'email']

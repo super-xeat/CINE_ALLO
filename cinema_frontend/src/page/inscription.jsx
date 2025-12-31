@@ -28,22 +28,30 @@ export default function Register() {
     async function Inscription() {
         const formdata = new FormData()
         formdata.append('confirm_password', confirmpassword)
-    
-        formdata.append('image', file)
+        if (file) {
+          formdata.append('image', file)
+        }
         formdata.append('username', username)
         formdata.append('bio', bio)
-        formdata.append('identifiant', identifiant)
+        formdata.append('username', identifiant)
         formdata.append('email', email)
         formdata.append('password', password)
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register/`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
                 method: 'POST',
                 body: formdata
             })
-
             const data = await response.json()
-            console.log('data envoyé', data)
+            
+            if (!response.ok) {
+              console.log("Données d'erreur reçues :", data)
+              const message = Object.values(data).join('')
+              showSnackbar(message, 'error')
+              
+            } else {             
+              showSnackbar('vérifiez vos mail', 'info')
+            }
             
         } catch(error) {
             console.error('erreur de formdata', error)

@@ -3,6 +3,8 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from users.models import Liste_film
+ 
 
 class Logintest(APITestCase):
     def test_login(self):
@@ -27,18 +29,14 @@ class TestregisterUser(APITestCase):
     def test_register(self):
 
         url = reverse('register')
-        fake_image = SimpleUploadedFile(
-            name='test_avatar.jpg',
-            content=b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b',
-            content_type='image/jpeg'
-        )
+        
         data = {
-            'username': 'user123',
+            'username': 'user_sans_photo',
             'identifiant': 'user',
             'email': 'user@gmail.com',
             'bio': 'tic-tac boom',
             'password': 'groscaca',
-            'image': fake_image
+            'confirm_password': 'groscaca'
         }
 
         response = self.client.post(url, data, format='multipart')
@@ -46,7 +44,41 @@ class TestregisterUser(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         User = get_user_model()
-        self.assertTrue(User.objects.filter(email='user@gmail.com').exists())
+        user = User.objects.get(username='user_sans_photo')
+        self.assertFalse(not user.image)
 
-        print(f"URL testée : {url}")
-        print(f"Contenu de la réponse : {response.data}")
+
+class Modifytest(APITestCase):
+    def test_modify(self):
+        user = get_user_model()
+        user_obj = user.objects.create_user(
+            username='sacha',
+            bio='yoyo'
+        )
+        self.client.force_authenticate(user=user_obj)
+
+        url = reverse('profile')
+        data = {
+            'username': 'tom',
+            'bio':'yoyo'
+        }
+        response = self.client.patch(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotEqual(response.data['username'], 'sacha')
+        self.assertEqual(response.data['username'], 'tom')
+
+
+class Supprime_film_test(APITestCase):
+    def test_supprime_film(self):
+        user = get_user_model()
+        user_obj = user.objects.create_user(username='sonic')
+        film_liste = Liste_film.objects.create(tmdb_id='52', user=user_obj)
+
+        self.client.force_authenticate(user=user_obj)
+        url = reverse('supprimer', kwargs={'tmdb_id':52})
+
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertFalse(Liste_film.objects.filter(tmdb_id='52').exists())
