@@ -119,6 +119,10 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True
 
+# settings.py
+CSRF_COOKIE_HTTPONLY = False  # DOIT être False pour que ton JS puisse lire le jeton et l'envoyer en header
+CSRF_USE_SESSIONS = False
+
 CSRF_TRUSTED_ORIGINS = ['https://cine-allo-1.onrender.com']
 
 CORS_ALLOWED_ORIGINS = [
