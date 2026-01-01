@@ -15,6 +15,7 @@ import Rest_password from './page/resetpassword';
 import Propos from './page/propos';
 import Alertprovider from './context/Alertcontext';
 import Contact from './page/contact';
+import CssBaseline from '@mui/material/CssBaseline';
 
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
   return (
     
     <Router>
+      <CssBaseline/>
       <Alertprovider>
       <AuthProvider>
         <Navbar/>
