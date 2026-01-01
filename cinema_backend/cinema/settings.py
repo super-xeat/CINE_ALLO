@@ -148,8 +148,8 @@ SIMPLE_JWT = {
     'AUTH_COOKIE': 'access_token',  # nom du cookie access
     'AUTH_COOKIE_REFRESH': 'refresh_token',  # nom du cookie refresh
     'AUTH_COOKIE_HTTP_ONLY': True,  # HTTP Only pour sécurité
-    'AUTH_COOKIE_SECURE': False,  # True en production avec HTTPS
-    'AUTH_COOKIE_SAMESITE': 'Lax',  # Protection contre CSRF
+    'AUTH_COOKIE_SECURE': True,  # True en production avec HTTPS
+    'AUTH_COOKIE_SAMESITE': 'None',  # Protection contre CSRF
 }
 
 MIDDLEWARE = [
