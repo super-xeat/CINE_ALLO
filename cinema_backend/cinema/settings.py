@@ -108,6 +108,11 @@ REST_FRAMEWORK = {
 
 # CORS settings si tu as un frontend séparé
 CORS_ALLOW_CREDENTIALS = True
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
+
 CORS_ALLOWED_ORIGINS = [
     "https://cine-allo-1.onrender.com", # URL Render de ton React
     "http://localhost:3000",
