@@ -42,14 +42,26 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
+        
         try:
             user_obj = User.objects.get(email=email)
+            print(f"DEBUG: User trouvé: {user_obj.username}, Actif: {user_obj.is_active}")
+            
+            # Test 1: Authentification classique
             user = authenticate(username=user_obj.username, password=password)
+            print(f"DEBUG: Authenticate classique: {user}")
+            
+            # Test 2: Si le 1 échoue, on check le pass en direct
+            if not user:
+                pass_ok = user_obj.check_password(password)
+                print(f"DEBUG: Mot de passe en direct: {pass_ok}")
+                
         except User.DoesNotExist:
+            print(f"DEBUG: Aucun user avec l'email {email}")
             user = None
 
         if not user:
-            raise serializers.ValidationError({'detail': 'Email ou mot de passe incorrect'})
+            raise serializers.ValidationError({'detail': 'Erreur de connexion'})
 
         attrs['user'] = user
         return attrs
