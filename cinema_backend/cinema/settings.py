@@ -119,6 +119,8 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True
 
+CSRF_TRUSTED_ORIGINS = ['https://cine-allo-1.onrender.com']
+
 CORS_ALLOWED_ORIGINS = [
     "https://cine-allo-1.onrender.com", # URL Render de ton React
     "http://localhost:3000",
