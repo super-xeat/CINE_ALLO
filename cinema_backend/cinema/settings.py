@@ -37,7 +37,6 @@ ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1']
 
-APPEND_SLASH = True
 # Application definition
 
 INSTALLED_APPS = [
