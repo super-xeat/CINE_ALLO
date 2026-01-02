@@ -33,7 +33,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'cine-allo.onrender.com', 
-    'cine-allo-1.onrender.com',
     'localhost', 
     '127.0.0.1']
 
@@ -84,8 +83,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # URLs de redirection
-LOGIN_REDIRECT_URL = 'https://cine-allo-1.onrender.com'
-ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'https://cine-allo-1.onrender.com/login'
+LOGIN_REDIRECT_URL = 'https://cine-allo.onrender.com'
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'https://cine-allo.onrender.com/login'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -140,13 +139,13 @@ CORS_ALLOW_HEADERS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://cine-allo-1.onrender.com',
+    'https://cine-allo.onrender.com',
     "http://localhost:3000",
     "http://localhost:5173"
     ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://cine-allo-1.onrender.com", # URL Render de ton React
+    "https://cine-allo.onrender.com", # URL Render de ton React
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:5173",
@@ -154,7 +153,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://cine-allo-1.onrender.com",
+    "https://cine-allo.onrender.com",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:3000"
@@ -198,7 +197,7 @@ MIDDLEWARE = [
 ]
 
 
-FRONTEND_URL = 'https://cine-allo-1.onrender.com'
+FRONTEND_URL = 'https://cine-allo.onrender.com'
 ACCOUNT_EMAIL_CONFIRMATION_URL = f'{FRONTEND_URL}/confirm-email/'
 
 ROOT_URLCONF = 'cinema.urls'
