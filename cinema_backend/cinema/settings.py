@@ -33,6 +33,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'cine-allo.onrender.com', 
+    "cine-allo-1.onrender.com",
     'localhost', 
     '127.0.0.1']
 
@@ -146,6 +147,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 CORS_ALLOWED_ORIGINS = [
     "https://cine-allo.onrender.com", # URL Render de ton React
+    "https://cine-allo-1.onrender.com",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:5173",
