@@ -77,14 +77,18 @@ class LoginViews(APIView):
                 value=access_token,
                 httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                 max_age=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
-                path='/'
+                path='/',
+                samesite='None',
+                secure=True
             )
             response.set_cookie(
                 key=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
                 value=refresh_token,
                 httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                 max_age=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
-                path='/'
+                path='/',
+                samesite='None',
+                secure=True
             )
             print('cookie dans la reponse')
             return response
@@ -109,7 +113,9 @@ class RefreshViews(APIView):
                 value=new_access_token,
                 httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                 max_age=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
-                path='/'
+                path='/',
+                samesite='None',
+                secure=True
             )
             print('refresh cest bon')
             return response
