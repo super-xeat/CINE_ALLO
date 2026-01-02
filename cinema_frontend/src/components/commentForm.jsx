@@ -18,7 +18,7 @@ export default function CommentForm({id, Refresh}) {
 
     async function Comment() {
         try {
-            let response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires?movie_id=${id}`, {
+            let response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/?movie_id=${id}`, {
                 method:'POST',
                 headers: {
                     'Content-type': 'application/json',
@@ -31,7 +31,7 @@ export default function CommentForm({id, Refresh}) {
             if (response.status === 401) {
                 const newtoken = await Refresh_token()
                 if (newtoken) {
-                    response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires?movie_id=${id}`, {
+                    response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/?movie_id=${id}`, {
                     method:'POST',
                     headers: {
                         'Content-type': 'application/json',

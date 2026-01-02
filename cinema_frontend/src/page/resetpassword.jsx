@@ -89,7 +89,7 @@ export default function Rest_password() {
 
           <Button
             variant="contained"
-            onClick={() => navigate("/oubli-mdp/")}
+            onClick={() => navigate("/oubli-mdp")}
             sx={{
               backgroundColor: "#0c90b8ff",
               "&:hover": { backgroundColor: "#0b7a9d" },

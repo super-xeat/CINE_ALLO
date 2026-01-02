@@ -63,7 +63,7 @@ export default function Profil() {
   async function fetchListeFavori(pagenum = 1) {
     try {
       setloader(true)
-      let response = await fetch(`${import.meta.env.VITE_API_URL}/auth/voir_liste/?page=${pagenum}/`, {
+      let response = await fetch(`${import.meta.env.VITE_API_URL}/auth/voir_liste/?page=${pagenum}`, {
         credentials:'include'
       })
       
@@ -71,7 +71,7 @@ export default function Profil() {
         const newtoken = await Refresh_token()
 
         if (newtoken) {
-            response = await fetch(`${import.meta.env.VITE_API_URL}/auth/voir_liste/?page=${pagenum}/`, {
+            response = await fetch(`${import.meta.env.VITE_API_URL}/auth/voir_liste/?page=${pagenum}`, {
             credentials:'include'
           })
           } else {

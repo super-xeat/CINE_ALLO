@@ -16,7 +16,7 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film}) {
     const modify_statut = async(newstatu) => {
         setloading(true)
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/modifier/${tmdb_id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/modifier/${tmdb_id}/`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ export default function Card_favori({tmdb_id, statutActuel, liste, film}) {
           <Grid item xs={8}>
             <Button
               component={Link}
-              to={`/detail_film/${film.type || "film"}/${tmdb_id}`}
+              to={`/detail_film/${film.type || "film"}/${tmdb_id}/`}
               variant="contained"
               fullWidth
               sx={{

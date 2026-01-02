@@ -50,7 +50,7 @@ export default function AuthProvider({children}) {
             if (response.status === 403 || response.status === 401) {
                 console.error("Session corrompue, nettoyage forcé...");
             
-                await fetch(`${import.meta.env.VITE_API_URL}/auth/force_logout`, 
+                await fetch(`${import.meta.env.VITE_API_URL}/auth/force_logout/`, 
                     { method: 'GET',
                     credentials: 'include' });
                 

@@ -95,15 +95,11 @@ export default function Navbar() {
     navigate('/login');
   };
 
-
-  // FORM SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
     navigate(`/page_result?q=${encodeURIComponent(query)}`);
   };
 
-
-  // LINKS
   const links = [
     { label: 'Accueil', to: '/' },
     { label: 'Liste Films', to: '/liste_films' },

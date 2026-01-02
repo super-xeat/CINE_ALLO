@@ -45,7 +45,7 @@ export default function Discover() {
     }
 
     try {
-      const response = await fetch(`${endpoint}?${searchparams.toString()}&page=${page}/`, {
+      const response = await fetch(`${endpoint}?${searchparams.toString()}&page=${page}`, {
         credentials:'include'
       });
       console.log("URL envoyée au backend :", response);
