@@ -139,7 +139,7 @@ CORS_ALLOW_HEADERS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://cine-allo.onrender.com',
+    'https://cine-allo-1.onrender.com',
     "http://localhost:3000",
     "http://localhost:5173"
     ]
@@ -152,12 +152,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://cine-allo.onrender.com",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:3000"
-]
 
 from datetime import timedelta
 
