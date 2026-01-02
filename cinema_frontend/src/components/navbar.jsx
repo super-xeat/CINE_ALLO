@@ -195,7 +195,7 @@ export default function Navbar() {
                 alt={result.username}
                 src={result.image.startsWith('http') 
                       ? result.image 
-                      : `http://localhost:8000/media/${result.image}`}
+                      : `${import.meta.env.VITE_API_URL}/media/${result.image}`}
                 sx={{ width: 32, height: 32 }}
               />
             ) : (

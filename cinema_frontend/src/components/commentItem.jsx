@@ -22,7 +22,7 @@ export default function CommentItem({item, Refresh}) {
     const Like = async(commentId) => {   
         setloading(true)
         try {
-            let response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}/like`,{
+            let response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}/like/`,{
                 method: 'POST',
                 credentials:'include'
             })
@@ -31,7 +31,7 @@ export default function CommentItem({item, Refresh}) {
                 const newtoken = await Refresh_token()
 
                 if (newtoken) {
-                    response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}/like`,{
+                    response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}/like/`,{
                     method: 'POST',
                     credentials:'include'
                     })
@@ -55,7 +55,7 @@ export default function CommentItem({item, Refresh}) {
 
     const Dislike = async(commentId) => {      
         try {
-            let response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}/dislike`,{
+            let response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}/dislike/`,{
                 method: 'POST',
                 credentials: 'include'
             })
@@ -65,7 +65,7 @@ export default function CommentItem({item, Refresh}) {
                 const newtoken = await Refresh_token()
 
                 if (newtoken) {
-                    response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}/dislike`,{
+                    response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}/dislike/`,{
                     method: 'POST',
                     credentials:'include'
                 })
@@ -86,7 +86,7 @@ export default function CommentItem({item, Refresh}) {
     const Delete = async(commentId) => {
     
         try {
-            let response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}`, {
+            let response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}/`, {
                 method: 'DELETE',
                 credentials: 'include'
             })
@@ -96,7 +96,7 @@ export default function CommentItem({item, Refresh}) {
             if (response.status === 401) {
                 const newtoken = await Refresh_token()
                 if (newtoken) {
-                    response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}`, {
+                    response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}/`, {
                     method: 'DELETE',
                     credentials: 'include'
                     })
@@ -115,7 +115,7 @@ export default function CommentItem({item, Refresh}) {
 
     const Modify = async(commentId) => {     
         try {
-            let response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}`, {
+            let response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}/`, {
                 method: 'PUT',
                 credentials: 'include',
                 body: JSON.stringify({
@@ -128,7 +128,7 @@ export default function CommentItem({item, Refresh}) {
                 const newtoken = await Refresh_token()
 
                 if (newtoken) {
-                    response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}`, {
+                    response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/${commentId}/`, {
                         method: 'PUT',
                         credentials: 'include',
                         body: JSON.stringify({

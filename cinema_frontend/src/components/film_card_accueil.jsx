@@ -68,12 +68,12 @@ export default function CardFilmAccueil({ film }) {
           }, 
         }}
       >
-        <CardActionArea component={Link} to={`/detail_film/${type}/${film.id}`}>
+        <CardActionArea component={Link} to={`/detail_film/${type}/${film.id}/`}>
           <CardMedia
             component="img"
             image={
               film?.poster_path
-                ? `https://image.tmdb.org/t/p/w500${film?.poster_path}`
+                ? `https://image.tmdb.org/t/p/w500${film?.poster_path}/`
                 : '/placeholder-poster.jpg'
             }
             alt={film.original_title}
@@ -140,7 +140,7 @@ export default function CardFilmAccueil({ film }) {
             variant="outlined"
             color="primary"
             component={Link}
-            to={`/detail_film/${type}/${film.id}`}
+            to={`/detail_film/${type}/${film.id}/`}
             sx={{ 
               fontSize: { xs: '0.65rem', sm: '0.875rem' }, 
               px: { xs: 0.5, sm: 1 }, 

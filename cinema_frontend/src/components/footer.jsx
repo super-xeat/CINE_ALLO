@@ -96,7 +96,7 @@ const Footer = () => {
         <Box 
           className="footer-bottom" 
           sx={{ 
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)', // Séparateur subtil
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)', 
             mt: 6, 
             pt: 3 
           }}

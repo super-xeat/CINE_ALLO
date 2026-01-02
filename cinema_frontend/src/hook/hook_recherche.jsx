@@ -13,7 +13,7 @@ export default function Recherche_barre() {
         if (!item) return
         setloading(true)
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/recommandation?q=${encodeURIComponent(item)}`)
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/recommandation/?q=${encodeURIComponent(item)}`)
             const data = await response.json()
 
             setresult(data)

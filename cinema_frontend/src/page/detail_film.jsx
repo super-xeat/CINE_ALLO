@@ -90,7 +90,7 @@ export default function Detail() {
                             >
                                 <Typography
                                     component={Link}
-                                    to={`/page_result?q=${encodeURIComponent(actor.name)}`}
+                                    to={`/page_result/?q=${encodeURIComponent(actor.name)}`}
                                     sx={{
                                         textDecoration: 'none',
                                         color: '#0a88aeff',
@@ -118,7 +118,7 @@ export default function Detail() {
                         <ListItem>
                         <Typography
                         component={Link}
-                        to={`/page_result?q=${encodeURIComponent(director.name)}`}
+                        to={`/page_result/?q=${encodeURIComponent(director.name)}`}
                         sx={{listStyle: 'None', fontWeight: 'bold', '&:hover': {color: '#acbec4ff', cursor: 'pointer'}}}
                         >
                         {director.name}

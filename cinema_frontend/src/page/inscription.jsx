@@ -38,7 +38,7 @@ export default function Register() {
         formdata.append('password', password)
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register/`, {
                 method: 'POST',
                 body: formdata
             })

@@ -29,17 +29,17 @@ export default function App() {
         <Navbar/>
         <Routes>
           <Route path="/" element={<Recherche/>}/>
-          <Route path="/detail_film/:type/:id" element={<Detail/>}/>
-          <Route path='/liste_films' element={<Liste_films/>}/>
-          <Route path='/register' element={<Register/>}/>
-          <Route path='/login' element={<LoginPage/>}/>
-          <Route path='/profile' element={<Profil/>}/>
-          <Route path='/discover' element={<Discover/>}/>
-          <Route path='/page_result' element={<Page_result/>}/>
-          <Route path='/reset-password' element={<Rest_password/>}/>
-          <Route path='/oubli-mdp' element={<Oubli_mdp/>}/>
-          <Route path='/propos' element={<Propos/>}/>
-          <Route path='/contact' element={<Contact/>}/>
+          <Route path="/detail_film/:type/:id/" element={<Detail/>}/>
+          <Route path='/liste_films/' element={<Liste_films/>}/>
+          <Route path='/register/' element={<Register/>}/>
+          <Route path='/login/' element={<LoginPage/>}/>
+          <Route path='/profile/' element={<Profil/>}/>
+          <Route path='/discover/' element={<Discover/>}/>
+          <Route path='/page_result/' element={<Page_result/>}/>
+          <Route path='/reset-password/' element={<Rest_password/>}/>
+          <Route path='/oubli-mdp/' element={<Oubli_mdp/>}/>
+          <Route path='/propos/' element={<Propos/>}/>
+          <Route path='/contact/' element={<Contact/>}/>
         </Routes>
         <Footer/>       
       </AuthProvider>

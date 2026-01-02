@@ -12,7 +12,7 @@ export default function Hook_favori() {
         setloading(true)
         try {
 
-            let response = await fetch(`${import.meta.env.VITE_API_URL}/auth/ajout_film`, {
+            let response = await fetch(`${import.meta.env.VITE_API_URL}/auth/ajout_film/`, {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
@@ -28,7 +28,7 @@ export default function Hook_favori() {
             if (response.status === 401) {
                 const newtoken = await Refresh_token()
                 if (newtoken) {
-                    response = await fetch(`${import.meta.env.VITE_API_URL}/auth/ajout_film`, {
+                    response = await fetch(`${import.meta.env.VITE_API_URL}/auth/ajout_film/`, {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json',
@@ -59,14 +59,14 @@ export default function Hook_favori() {
     }
     const supprimer = async(tmdb_id) => {
         try {
-            let response = await fetch(`${import.meta.env.VITE_API_URL}/auth/supprimer/${tmdb_id}`, {
+            let response = await fetch(`${import.meta.env.VITE_API_URL}/auth/supprimer/${tmdb_id}/`, {
                 method:'DELETE',
                 credentials:'include'
             }) 
             if (response.status === 401) {
               const newtoken = await Refresh_token()
               if (newtoken) {
-                response = await fetch(`${import.meta.env.VITE_API_URL}/auth/supprimer/${tmdb_id}`, {
+                response = await fetch(`${import.meta.env.VITE_API_URL}/auth/supprimer/${tmdb_id}/`, {
                 method:'DELETE',
                 credentials:'include'})
               } else {
