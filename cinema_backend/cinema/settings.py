@@ -32,8 +32,8 @@ SECRET_KEY = os.getenv("SECRET_KEY", "default-secret-key")
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'cine-allo-1.onrender.com', 
-    'cine-allo.onrender.com',
+    'cine-allo.onrender.com', 
+    'cine-allo-1.onrender.com',
     'localhost', 
     '127.0.0.1']
 
@@ -125,6 +125,19 @@ CSRF_COOKIE_SECURE = True
 # settings.py
 CSRF_COOKIE_HTTPONLY = False  # DOIT être False pour que ton JS puisse lire le jeton et l'envoyer en header
 CSRF_USE_SESSIONS = False
+
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://cine-allo-1.onrender.com',

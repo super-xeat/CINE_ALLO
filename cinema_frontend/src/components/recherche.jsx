@@ -67,7 +67,7 @@ export default function Recherche() {
 
     async function handleproposition(params) {
         try {
-            const response = await fetch(`https://cine-allo-1.onrender.com/api/films/films/discover/?${params}/`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/films/discover/?${params}/`);
             const data = await response.json();
 
             if (data && Array.isArray(data.liste_discover_filtre)) {
