@@ -30,11 +30,3 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-from users.models import User
-try:
-    print(f"--- DEBUG BASE DE DONNÉES ---")
-    print(f"Nombre total d'users en base: {User.objects.count()}")
-    print(f"Liste des emails: {[u.email for u in User.objects.all()]}")
-    print(f"------------------------------")
-except Exception as e:
-    print(f"Erreur debug base: {e}")
