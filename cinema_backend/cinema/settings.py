@@ -127,11 +127,16 @@ CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = False  # DOIT être False pour que ton JS puisse lire le jeton et l'envoyer en header
 CSRF_USE_SESSIONS = False
 
-CSRF_TRUSTED_ORIGINS = ['https://cine-allo-1.onrender.com']
+CSRF_TRUSTED_ORIGINS = [
+    'https://cine-allo-1.onrender.com',
+    "https://cine-allo.onrender.com",
+    "http://localhost:3000",
+    "http://localhost:5173"
+    ]
 
 CORS_ALLOWED_ORIGINS = [
     "https://cine-allo-1.onrender.com", # URL Render de ton React
-    'cine-allo.onrender.com',
+    'https://cine-allo.onrender.com',
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:5173",
@@ -140,7 +145,7 @@ CORS_ALLOWED_ORIGINS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "https://cine-allo-1.onrender.com",
-    'cine-allo.onrender.com',
+    'https://cine-allo.onrender.com',
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:3000"
