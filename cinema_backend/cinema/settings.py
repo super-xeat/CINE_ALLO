@@ -84,8 +84,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # URLs de redirection
-LOGIN_REDIRECT_URL = 'http://localhost:3000'
-ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'http://localhost:3000/login'
+LOGIN_REDIRECT_URL = 'https://cine-allo-1.onrender.com'
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'https://cine-allo-1.onrender.com/login'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -140,6 +140,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://cine-allo-1.onrender.com",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:3000"
 ]
 
 from datetime import timedelta
@@ -180,7 +181,7 @@ MIDDLEWARE = [
 ]
 
 
-FRONTEND_URL = 'http://localhost:3000'
+FRONTEND_URL = 'https://cine-allo-1.onrender.com'
 ACCOUNT_EMAIL_CONFIRMATION_URL = f'{FRONTEND_URL}/confirm-email/'
 
 ROOT_URLCONF = 'cinema.urls'
