@@ -64,6 +64,7 @@ export default function AuthProvider({children}) {
             }
             
             setuserauth(username)
+            console.log(username)
             setIsAuth(true)
             return true
 

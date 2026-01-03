@@ -10,7 +10,7 @@ import { useAlert } from "../context/Alertcontext";
 
 export default function CommentItem({item, Refresh}) {
 
-
+    console.log(item.username)
     const [loading, setloading] = useState(false)
     const [newtexte, setnewtexte] = useState('')
     const {IsAuth, userauth} = useAuth()
