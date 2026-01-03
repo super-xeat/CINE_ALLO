@@ -225,7 +225,7 @@ export default function CommentItem({item, Refresh}) {
                     </form>
                     <Button onClick={()=>handlecache}>cacher</Button>
                     <Button onClick={()=>Delete(item.id)}>supprimer</Button>
-                </Box>
+                </Box> 
             ) : (
                 <Box>
                     <Button onClick={()=>handlecache}>Modifier</Button>

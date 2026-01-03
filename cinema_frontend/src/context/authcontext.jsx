@@ -63,7 +63,7 @@ export default function AuthProvider({children}) {
                 throw new Error(errorMsg)
             }
             
-            setuserauth(email)
+            setuserauth(username)
             setIsAuth(true)
             return true
 
