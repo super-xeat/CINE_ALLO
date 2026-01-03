@@ -380,10 +380,10 @@ class CommentaireFilmView(APIView):
         
          
     def post(self, request):
-        movie_id = request.GET.get('movie_id')
+        movie_id = request.data.get('movie_id')
         serializer = CommentaireSerializer(
             data=request.data,
-            context={
+            context={ 
                 'request': request,
             })
         if serializer.is_valid():

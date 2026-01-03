@@ -388,9 +388,10 @@ export default function Recherche() {
                 <Box 
                 sx={{
                     background: 'linear-gradient(45deg, #007bff, #0056b3)',
-                    width: { xs: '60%', sm: '50%', md: '30%' },
+                    width: { xs: '70%', sm: '50%', md: '30%' },
                     maxWidth: '800px',
-                    borderRadius: '0 40px 40px 0',
+                    borderRadius: '0 7px 40px 0',
+                    clipPath: 'polygon(0% 0%, 100% 0%, 85% 100%, 0% 100%)',
                     p: 2,
                     overflow:'visible',
                     animation: inView ? `${bounceInLeft} 1s both` : 'none',
@@ -413,9 +414,10 @@ export default function Recherche() {
                 <Box 
                 sx={{
                     background: 'linear-gradient(45deg, #007bff, #0056b3)',
-                    width: { xs: '60%', sm: '50%', md: '30%' },
+                    width: { xs: '70%', sm: '50%', md: '30%' },
                     maxWidth: '800px',
-                    borderRadius: '40px 0 0 40px',
+                    borderRadius: '7px 0 0 20px',
+                    clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 12% 100%)',
                     p: 2,
                     overflow:'visible',
                     animation: inView ? `${bounceInRight} 1s both` : 'none',

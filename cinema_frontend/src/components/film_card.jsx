@@ -178,17 +178,18 @@ export default function CardFilm({ film }) {
             maxWidth: 250, 
             maxHeight: 200, 
             overflowY: 'auto',
+            background:'#252424ff',
             p: 1,
           }
         }}
       >
-        <ListItemText primary={film.original_title} primaryTypographyProps={{ variant: 'subtitle1', fontWeight: 'bold' }} />
+        <ListItemText primary={film.original_title} primaryTypographyProps={{ variant: 'subtitle1', fontWeight: 'bold', color: '#0a88aeff' }} />
         
-        <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
+        <Typography variant="body2" sx={{ mt: 1, color: '#0a88aeff' }}>
           {film.overview || 'Aucune description disponible.'}
         </Typography>
         
-        <Typography variant="caption" sx={{ mt: 1.5, display: 'block', textAlign: 'right' }}>
+        <Typography variant="caption" sx={{ mt: 1.5, display: 'block', textAlign: 'right', color: '#0a88aeff' }}>
           Sortie : {film.release_date || 'Inconnue'}
         </Typography>
       </Menu>

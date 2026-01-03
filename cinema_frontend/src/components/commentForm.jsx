@@ -18,13 +18,14 @@ export default function CommentForm({id, Refresh}) {
 
     async function Comment() {
         try {
-            let response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/?movie_id=${id}`, {
+            let response = await fetch(`${import.meta.env.VITE_API_URL}/api/films/commentaires/`, {
                 method:'POST',
                 headers: {
-                    'Content-type': 'application/json',
+                    'Content-type': 'application/json', 
                 },
                 credentials:'include',
                 body: JSON.stringify({
+                    movie_id: id,
                     texte: texte
                 })
             })
@@ -38,7 +39,8 @@ export default function CommentForm({id, Refresh}) {
                     },
                     credentials:'include',
                     body: JSON.stringify({
-                        texte: texte
+                        texte: texte,
+                        movie_id: id
                     })})
                 }
             }
