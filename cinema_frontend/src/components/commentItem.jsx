@@ -10,7 +10,6 @@ import { useAlert } from "../context/Alertcontext";
 
 export default function CommentItem({item, Refresh}) {
 
-    console.log(item.username)
     const [loading, setloading] = useState(false)
     const [newtexte, setnewtexte] = useState('')
     const {IsAuth, userauth} = useAuth()
@@ -178,6 +177,11 @@ export default function CommentItem({item, Refresh}) {
 
     if (loading) return <p>Chargement...</p>
 
+    console.log("IsAuth:", IsAuth);
+    console.log("Username Item:", item.username, typeof item.username);
+    console.log("User Auth:", userauth, typeof userauth);
+    console.log("Comparaison:", item.username === userauth);
+    
     return(
         <Box sx={{ backgroundColor: "#2a2a2a", p: 2, borderRadius: 2, width: "100%" }}>
             <Typography variant="h6" sx={{ color: "#0c90b8ff" }}>
