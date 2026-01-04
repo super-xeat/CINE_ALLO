@@ -2,11 +2,14 @@
 import { useState } from "react";
 import { useAuth } from "../context/authcontext";
 import useToken from "../hook/hook_token";
-import { Box, Typography, Button, TextField, IconButton } from '@mui/material';
+import { Box, Typography, Button, TextField, IconButton, Tooltip, Stack } from '@mui/material';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 import { useAlert } from "../context/Alertcontext";
-
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function CommentItem({item, Refresh}) {
 
@@ -208,29 +211,59 @@ export default function CommentItem({item, Refresh}) {
                 </IconButton>
             </Box>
             
-            {IsAuth  && item.username === userauth && (
-                cache ? (
-                <Box>
-                    <form onSubmit={handlemodify}>
-                        <TextField 
-                            onChange={(e) => setnewtexte(e.target.value)} 
-                            value={newtexte} 
-                            type="text"
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            sx={{ mr: 1, backgroundColor: '#706d6dff', borderRadius: 1 }}
-                        />
-                        <button type="submit">envoyer</button>
-                    </form>
-                    <Button onClick={handlecache}>cacher</Button>
-                    <Button onClick={()=>Delete(item.id)}>supprimer</Button>
-                </Box> 
-            ) : (
-                <Box>
-                    <Button onClick={handlecache}>Modifier</Button>
+        {IsAuth && item.username === userauth && (
+                <Box sx={{ mt: 1 }}>
+                    {cache ? (
+                        
+                        <Box component="form" onSubmit={handlemodify} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <TextField 
+                                onChange={(e) => setnewtexte(e.target.value)} 
+                                value={newtexte} 
+                                size="small"
+                                fullWidth
+                                autoFocus
+                                sx={{ 
+                                    backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+                                    borderRadius: 1,
+                                    input: { color: 'white' }
+                                }}
+                            />
+                            <Stack direction="row" spacing={0.5}>
+                                <Tooltip title="Enregistrer">
+                                    <IconButton type="submit" color="success" size="small">
+                                        <CheckIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Annuler">
+                                    <IconButton onClick={handlecache} color="error" size="small">
+                                        <CloseIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Supprimer définitivement">
+                                    <IconButton onClick={() => Delete(item.id)} color="error" size="small">
+                                        <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                            </Stack>
+                        </Box>
+                    ) : (
+                        
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Button 
+                                startIcon={<EditIcon />} 
+                                size="small" 
+                                onClick={handlecache}
+                                sx={{ 
+                                    color: 'rgba(255,255,255,0.6)', 
+                                    '&:hover': { color: '#12a6d3ff' } 
+                                }}
+                            >
+                                Modifier
+                            </Button>
+                        </Box>
+                    )}
                 </Box>
-            ))}
+            )}
                 
         </Box>
     )
