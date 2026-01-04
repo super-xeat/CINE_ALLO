@@ -19,5 +19,5 @@ urlpatterns = [
     path('commentaires/<int:pk>/', CommentaireUpdateDeleteView.as_view(), name='commentaire_update_delete'),
     path('commentaires/<int:pk>/like/', LikeCommentaire.as_view(), name='like'),
     path('commentaires/<int:pk>/dislike/', DislikeCommentaire.as_view(), name='dislike')
-
+ 
 ]

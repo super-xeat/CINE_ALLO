@@ -41,7 +41,7 @@ export default function Discover() {
     if (media === 'movie') { 
       endpoint = `${import.meta.env.VITE_API_URL}/api/films/films/discover/`;
     } else {
-      endpoint = `${import.meta.env.VITE_API_URL}/api/films/series/discover/`;
+      endpoint = `${import.meta.env.VITE_API_URL}/api/films/serie/discover/`;
     }
 
     try {
