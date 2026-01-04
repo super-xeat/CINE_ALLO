@@ -177,10 +177,6 @@ export default function CommentItem({item, Refresh}) {
 
     if (loading) return <p>Chargement...</p>
 
-    console.log("IsAuth:", IsAuth);
-    console.log("Username Item:", item.username, typeof item.username);
-    console.log("User Auth:", userauth, typeof userauth);
-    console.log("Comparaison:", item.username === userauth);
     
     return(
         <Box sx={{ backgroundColor: "#2a2a2a", p: 2, borderRadius: 2, width: "100%" }}>
@@ -227,12 +223,12 @@ export default function CommentItem({item, Refresh}) {
                         />
                         <button type="submit">envoyer</button>
                     </form>
-                    <Button onClick={()=>handlecache}>cacher</Button>
+                    <Button onClick={handlecache}>cacher</Button>
                     <Button onClick={()=>Delete(item.id)}>supprimer</Button>
                 </Box> 
             ) : (
                 <Box>
-                    <Button onClick={()=>handlecache}>Modifier</Button>
+                    <Button onClick={handlecache}>Modifier</Button>
                 </Box>
             ))}
                 
