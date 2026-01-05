@@ -21,6 +21,17 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('cette email existe deja')
         return value
     
+    def validate_password(self, value):
+        if len(value) < 8 :
+            raise serializers.ValidationError('le mdp doit contenir au moins 8 caractère avec au moins deux chiffre')
+        liste = []
+        for i in value:
+            if i.isdigit():
+                liste.append(i)
+        if len(liste) < 2:
+            raise serializers.ValidationError('il ny a pas assez de chiffre')
+        return value
+    
     def validate(self, attrs):
         if attrs['password'] != attrs['confirm_password']:
             raise serializers.ValidationError('erreur')

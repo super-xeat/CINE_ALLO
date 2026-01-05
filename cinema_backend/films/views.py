@@ -252,8 +252,8 @@ class DiscoverView(APIView, Listeview):
             })
         
 class DiscoverTvView(APIView, Listeview):
-    permission_classes = [IsAuthenticatedOrReadOnly]
     authentication_classes = [JWTcookieAuth]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     
     def get(self, request):
         

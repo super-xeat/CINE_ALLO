@@ -17,16 +17,12 @@ export default function Hook_profil() {
                 credentials:'include'
             })
 
-            console.log('📡 First response status:', response.status)
-
             if (response.status === 401) {
-                console.log('🔄 Token expired - attempting refresh...')
                 const newToken = await Refresh_token()
-                console.log('📝 New token after refresh:', !!newToken)
+                console.log('refresh:', !!newToken)
                 
                 if (newToken) {
-                    console.log('🚀 Second profile request with new token...')
-                
+                    
                     response = await fetch(`${import.meta.env.VITE_API_URL}/auth/profile/`, {
                         headers: { 
                             'Content-Type': 'application/json'
@@ -50,7 +46,6 @@ export default function Hook_profil() {
             }
 
         } catch (error) {
-            console.error('💥 Profile fetch error:', error)
             if (setIsAuth) setIsAuth(false)
         } finally {
             setLoading(false)

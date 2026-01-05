@@ -8,6 +8,7 @@ import {
   Toolbar,
   IconButton,
   Typography,
+  keyframes,
   Menu,
   MenuItem,
   Avatar,
@@ -38,6 +39,17 @@ const Search = styled('form')(({ theme }) => ({
     '&:hover': { width: '30ch' },
   },
 }));
+
+const neonPulse = keyframes`
+  0%, 100% {
+    text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff, 0 0 42px #0a80ff, 0 0 82px #0a80ff, 0 0 92px #0a80ff;
+    color: #fff;
+  }
+  50% {
+    text-shadow: 0 0 4px #fff, 0 0 7px #fff, 0 0 15px #fff, 0 0 30px #0a80ff, 0 0 60px #0a80ff, 0 0 70px #0a80ff;
+    color: #b3d9ff; 
+  }
+`;
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 2),
@@ -130,21 +142,28 @@ export default function Navbar() {
             <MenuIcon />
           </IconButton>
 
-          {/* LOGO */}
+        
           <Typography
             variant="h6"
             noWrap
             component={Link}
             to="/"
             sx={{
-              color: 'white',
-              textDecoration: 'none',
-              fontWeight: 'bold',
-              fontSize: '1.5rem',
-              '&:hover': { color: '#0a80ff' },
-            }}
+            color: 'white',
+            textDecoration: 'none',
+            fontWeight: '900', 
+            fontSize: '1.8rem', 
+            letterSpacing: '3px', 
+            fontFamily: '"Orbitron", "Roboto", sans-serif', 
+            animation: `${neonPulse} 1.5s infinite ease-in-out`, 
+            transition: '0.3s all ease',
+            '&:hover': {
+              color: '#ff00ff', 
+              textShadow: '0 0 10px #fff, 0 0 20px #ff00ff, 0 0 40px #ff00ff',
+            },
+          }}
           >
-            🎬 CINE ALLO
+            CINE ALLO
           </Typography>
 
           

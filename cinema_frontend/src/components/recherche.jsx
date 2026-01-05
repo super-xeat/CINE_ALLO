@@ -277,7 +277,7 @@ export default function Recherche() {
             
             {!hasSearched && filmMoment.length > 0 && (
             <Box sx={{width: '100%', overflow: 'hidden' }}>
-                <Typography variant="h5" sx={{ mt: 7, textAlign: 'center', fontWeight:'bold' }}>🔥 Tendances</Typography>
+                <Typography variant="h5" sx={{ mt: 7, textAlign: 'center', fontWeight:'bold' }}>Tendances</Typography>
         
                 <Box sx={{    
                     width:'100%',  

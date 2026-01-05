@@ -7,6 +7,8 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from django.core.mail import send_mail
 from rest_framework import  status
+import os
+from dotenv import load_dotenv
 import jwt
 from datetime import datetime, timedelta
 from django.conf import settings
@@ -46,10 +48,12 @@ class RegisterViews(APIView):
                 algorithm='HS256'
             )
 
+            email = os.getenv('EMAIL_USER')
+            backend = os.getenv('SITE_DOMAIN_BACKEND')
             send_mail(
                 'Activez votre compte Cine Allo',
-                f'Cliquez ici pour activer votre compte : http://localhost:8000/auth/confirm-email/{token}/',
-                'xeatteam@gmail.com',
+                f'Cliquez ici pour activer votre compte : http://{backend}/auth/confirm-email/{token}/',
+                f'{email}',
                 [user.email],
                 fail_silently=False
             )
@@ -132,7 +136,8 @@ class ConfirmEmailView(APIView):
             user = User.objects.get(id=decode['user_id'])
             user.is_active = True
             user.save()
-            return redirect('http://localhost:5173/login?statut=success')
+            frontend = os.getenv('SITE_DOMAIN_FRONTEND')
+            return redirect(f'http://{frontend}/login?statut=success')
         
         except User.DoesNotExist:
             return Response({'lien de confirmation invalide'}, status=400)
@@ -154,15 +159,15 @@ class PasswordResetView(APIView):
                 'user_id': user.id,
                 'exp': timezone.now() + timedelta(hours=24)
             }, settings.SECRET_KEY, algorithm='HS256')
-            
-            reset_url = f"http://localhost:5173/reset-password?token={token}"
-            
+            frontend = os.getenv('SITE_DOMAIN_FRONTEND')
+            reset_url = f"http://{frontend}/reset-password?token={token}"
+            email = os.getenv('EMAIL_USER')
             send_mail(
                 'Réinitialisez votre mot de passe Cine Allo',
                 f'Cliquez ici pour réinitialiser : {reset_url}',
-                'noreply@cineallo.com',
+                f'{email}',
                 [user.email],
-                fail_silently=False
+                fail_silently=False 
             ) 
         except User.DoesNotExist:
             pass
