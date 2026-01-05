@@ -8,6 +8,7 @@ import { keyframes } from "@mui/system";
 import { useInView } from 'react-intersection-observer';
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
+import StarBackground from "./starbackground";
 
 
 const scrollX = keyframes`
@@ -123,20 +124,23 @@ export default function Recherche() {
             sx={{
                 width: '100vw',
                 minHeight: '100vh',
+                position: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 color: '#fff',
                 boxSizing: 'border-box',
-                background: 'linear-gradient(-45deg, #000000, #4d4c4c, #050505, #0d0d0d)',
+                background: 'linear-gradient(-45deg, #000000, #1a1a1a, #050505, #0d0d0d)',
                 backgroundSize: '400% 400%',
                 animation: `${gradientBG} 15s ease infinite`,
-            
-                padding: { xs: '1rem', sm: '2rem' }, 
+                padding: { xs: '1rem', sm: '2rem' },
                 pt: hasSearched ? '1rem' : { xs: '1rem', sm: '2rem' },
+                overflow: 'hidden', 
             }}>
+                <StarBackground />
             <Box 
                 sx={{
+                    zIndex: 1, 
                     width: '100%',
                     display: 'flex',
                     flexDirection: 'column',
