@@ -52,7 +52,7 @@ class RegisterViews(APIView):
             backend = os.getenv('SITE_DOMAIN_BACKEND')
             send_mail(
                 'Activez votre compte Cine Allo',
-                f'Cliquez ici pour activer votre compte : http://{backend}/auth/confirm-email/{token}/',
+                f'Cliquez ici pour activer votre compte : https://{backend}/auth/confirm-email/{token}/',
                 f'{email}',
                 [user.email],
                 fail_silently=False
@@ -137,7 +137,7 @@ class ConfirmEmailView(APIView):
             user.is_active = True
             user.save()
             frontend = os.getenv('SITE_DOMAIN_FRONTEND')
-            return redirect(f'http://{frontend}/login?statut=success')
+            return redirect(f'https://{frontend}/login?statut=success')
         
         except User.DoesNotExist:
             return Response({'lien de confirmation invalide'}, status=400)
@@ -160,7 +160,7 @@ class PasswordResetView(APIView):
                 'exp': timezone.now() + timedelta(hours=24)
             }, settings.SECRET_KEY, algorithm='HS256')
             frontend = os.getenv('SITE_DOMAIN_FRONTEND')
-            reset_url = f"http://{frontend}/reset-password?token={token}"
+            reset_url = f"https://{frontend}/reset-password?token={token}"
             email = os.getenv('EMAIL_USER')
             send_mail(
                 'Réinitialisez votre mot de passe Cine Allo',
