@@ -80,7 +80,7 @@ export default function AuthProvider({children}) {
                 credentials: 'include' 
             })
         } catch (error) {
-            console.error('❌ Erreur lors du logout:', error)
+            console.error('Erreur lors du logout:', error)
         } finally {
             setIsAuth(false)
             setuserauth('')

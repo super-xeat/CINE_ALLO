@@ -1,0 +1,13 @@
+<html>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2 style="color: #e50914;">Bienvenue sur Cine Allo !</h2>
+        <p>Merci de vous être inscrit. Cliquez sur le bouton ci-dessous pour activer votre compte :</p>
+        <div style="margin: 20px 0;">
+            <a href="{{ confirmation_url }}" 
+               style="background-color: #e50914; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+               Activer mon compte
+            </a>
+        </div>
+        <p style="font-size: 12px; color: #666;">Si le bouton ne fonctionne pas, copiez ce lien : <br> {{ confirmation_url }}</p>
+    </body>
+</html>

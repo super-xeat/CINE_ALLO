@@ -24,12 +24,13 @@ from django.contrib.auth import authenticate
 from django.http import HttpResponse
 from users.authentification import JWTcookieAuth
 from django.contrib.auth import logout
-
+from django.template.loader import render_to_string
 
 class Pagination(PageNumberPagination):
     page_size = 5
     page_size_query_param = 'limit'
     max_page_size = 5
+
 
 class RegisterViews(APIView):
     permission_classes = [AllowAny]
@@ -39,28 +40,34 @@ class RegisterViews(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save(is_active=False)
-            token = jwt.encode(
-                {
-                    'user_id': user.id,
-                    'exp': timezone.now() + timedelta(hours=24)
-                },
-                settings.SECRET_KEY,  
-                algorithm='HS256'
-            )
+            token = jwt.encode(...) 
 
-            email = os.getenv('EMAIL_USER')
-            backend = os.getenv('SITE_DOMAIN_BACKEND')
-            send_mail(
-                'Activez votre compte Cine Allo',
-                f'Cliquez ici pour activer votre compte : https://{backend}/auth/confirm-email/{token}/',
-                f'{email}',
-                [user.email],
-                fail_silently=False
-            )
-            return Response({'succé': 'compte créé : vérifiez vos mails'})
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            backend_domain = os.getenv('SITE_DOMAIN_BACKEND', 'cine-allo.onrender.com')
+            context = {'confirmation_url': f"https://{backend_domain}/auth/confirm-email/{token}/"}
+            
+            html_message = render_to_string('emails/activation.html', context)
+            
+            payload = {
+                "sender": {"name": "Cine Allo", "email": "xeatteam@gmail.com"},
+                "to": [{"email": user.email}],
+                "subject": "Activez votre compte Cine Allo",
+                "htmlContent": html_message
+            }
+            
+            headers = {
+                "accept": "application/json",
+                "content-type": "application/json",
+                "api-key": os.getenv('BREVO_API_KEY')
+            }
 
+            try:
+                requests.post("https://api.api.brevo.com/v3/smtp/email", json=payload, headers=headers, timeout=10)
+                return Response({'succès': 'Compte créé : vérifiez vos mails'}, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                return Response({'error': 'Erreur envoi mail'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 class LoginViews(APIView):
     permission_classes = [AllowAny]
@@ -180,9 +187,11 @@ class LogoutView(APIView):
     authentication_classes = [JWTcookieAuth]
 
     def post(self, request):
+        logout(request)
         response = Response({'message': 'deconnexion réussie'})
         response.delete_cookie('access_token')
         response.delete_cookie('refresh_token')
+        response.delete_cookie('sessionid')
         
         return response
 

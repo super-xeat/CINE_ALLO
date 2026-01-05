@@ -102,16 +102,11 @@ LOGIN_REDIRECT_URL = 'https://cine-allo.onrender.com'
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'https://cine-allo.onrender.com/login'
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_HOST_USER = os.getenv('EMAIL_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
-DEFAULT_FROM_EMAIL = os.getenv('EMAIL_USER')
-EMAIL_TIMEOUT = 10
-
+# --- Configuration Brevo ---
+BREVO_API_KEY = os.getenv('BREVO_API_KEY')
+# On met le backend en console par précaution pour que Django ne cherche pas de SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'quizzmaster1998@gmail.com'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = 'media/'
