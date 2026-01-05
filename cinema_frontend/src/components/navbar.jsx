@@ -118,7 +118,7 @@ export default function Navbar() {
   return (
     <Box sx={{ flexGrow: 1 }}>
 
-      <AppBar position="static" sx={{ background: 'linear-gradient(90deg, #0a0a0a, #1b1b1b)' }}>
+      <AppBar position="sticky" sx={{ background: 'linear-gradient(90deg, #0a0a0a, #1b1b1b)' }}>
         <Toolbar>
 
           <IconButton

@@ -111,8 +111,7 @@ EMAIL_HOST_USER = os.getenv('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('EMAIL_USER')
 
-import ssl
-EMAIL_SSL_CONTEXT = ssl.create_default_context()
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = 'media/'
