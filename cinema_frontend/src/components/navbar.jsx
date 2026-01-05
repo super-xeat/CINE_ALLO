@@ -40,16 +40,6 @@ const Search = styled('form')(({ theme }) => ({
   },
 }));
 
-const neonPulse = keyframes`
-  0%, 100% {
-    text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff, 0 0 42px #0a80ff, 0 0 82px #0a80ff, 0 0 92px #0a80ff;
-    color: #fff;
-  }
-  50% {
-    text-shadow: 0 0 4px #fff, 0 0 7px #fff, 0 0 15px #fff, 0 0 30px #0a80ff, 0 0 60px #0a80ff, 0 0 70px #0a80ff;
-    color: #b3d9ff; 
-  }
-`;
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 2),
@@ -131,7 +121,6 @@ export default function Navbar() {
       <AppBar position="static" sx={{ background: 'linear-gradient(90deg, #0a0a0a, #1b1b1b)' }}>
         <Toolbar>
 
-          {/* MENU MOBILE (hamburger) */}
           <IconButton
             size="large"
             edge="start"
@@ -143,31 +132,56 @@ export default function Navbar() {
           </IconButton>
 
         
-          <Typography
-            variant="h6"
-            noWrap
+          <Box
             component={Link}
             to="/"
             sx={{
-            color: 'white',
-            textDecoration: 'none',
-            fontWeight: '900', 
-            fontSize: '1.8rem', 
-            letterSpacing: '3px', 
-            fontFamily: '"Orbitron", "Roboto", sans-serif', 
-            animation: `${neonPulse} 1.5s infinite ease-in-out`, 
-            transition: '0.3s all ease',
-            '&:hover': {
-              color: '#ff00ff', 
-              textShadow: '0 0 10px #fff, 0 0 20px #ff00ff, 0 0 40px #ff00ff',
-            },
-          }}
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+              gap: 0.5, // Espace léger entre le carré et la suite
+            }}
           >
-            CINE ALLO
-          </Typography>
+          
+            <Box
+              sx={{
+                backgroundColor: 'white',
+                width: '2.5rem',
+                height: '2.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '4px', // Un léger arrondi pour le style
+              }}
+            >
+              <Typography
+                sx={{
+                  color: 'black',
+                  fontWeight: '900',
+                  fontSize: '1.8rem',
+                  fontFamily: '"Orbitron", sans-serif',
+                  lineHeight: 1,
+                }}
+              >
+                C
+              </Typography>
+            </Box>
+
+            <Typography
+              sx={{
+                color: 'white',
+                fontWeight: '900',
+                fontSize: '1.8rem',
+                letterSpacing: '2px',
+                fontFamily: '"Orbitron", sans-serif',
+                textTransform: 'uppercase',
+              }}
+            >
+              INE ALLO
+            </Typography>
+          </Box>
 
           
-          {/* 🔎 BARRE DE RECHERCHE */}
           {location.pathname !== '/' && (
             <Search onSubmit={handleSubmit}>
               <SearchIconWrapper>
