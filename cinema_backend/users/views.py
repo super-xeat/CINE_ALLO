@@ -52,10 +52,10 @@ class RegisterViews(APIView):
             backend_domain = os.getenv('SITE_DOMAIN_BACKEND', 'cine-allo.onrender.com')
             context = {'confirmation_url': f"https://{backend_domain}/auth/confirm-email/{token}/"}
             
-            html_message = render_to_string('emails/activation.html', context)
+            html_message = render_to_string('email/activation.html', context)
             
             payload = {
-                "sender": {"name": "Cine Allo", "email": "xeatteam@gmail.com"},
+                "sender": {"name": "Cine Allo", "email": "quizzmaster1998@gmail.com"},
                 "to": [{"email": user.email}],
                 "subject": "Activez votre compte Cine Allo",
                 "htmlContent": html_message
@@ -191,14 +191,26 @@ class PasswordResetView(APIView):
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTcookieAuth]
+    # On garde ton JWTcookieAuth si c'est ta classe personnalisée
+    authentication_classes = [JWTcookieAuth] 
 
     def post(self, request):
+        # 1. Déconnexion côté Django (nettoie la session)
         logout(request)
-        response = Response({'message': 'deconnexion réussie'})
-        response.delete_cookie('access_token')
-        response.delete_cookie('refresh_token')
-        response.delete_cookie('sessionid')
+        
+        response = Response({'message': 'déconnexion réussie'}, status=status.HTTP_200_OK)
+        
+        cookie_params = {
+            'path': '/',
+            'samesite': 'None',
+            'secure': True,  
+            'httponly': True
+        }
+
+        response.delete_cookie('access_token', **cookie_params)
+        response.delete_cookie('refresh_token', **cookie_params)
+        response.delete_cookie('sessionid', **cookie_params)
+        response.delete_cookie('csrftoken', **cookie_params) 
         
         return response
 
