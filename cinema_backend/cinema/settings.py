@@ -105,7 +105,6 @@ ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'https://cine-allo.onren
 # --- Configuration Brevo ---
 BREVO_API_KEY = os.getenv('BREVO_API_KEY')
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-relay.brevo.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
