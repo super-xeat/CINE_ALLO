@@ -191,29 +191,16 @@ class PasswordResetView(APIView):
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
-    # On garde ton JWTcookieAuth si c'est ta classe personnalisée
     authentication_classes = [JWTcookieAuth] 
 
     def post(self, request):
-        # 1. Déconnexion côté Django (nettoie la session)
         logout(request)
         
-        response = Response({'message': 'déconnexion réussie'}, status=status.HTTP_200_OK)
-        
-        cookie_params = {
-            'path': '/',
-            'samesite': 'None',
-            'secure': True,  
-            'httponly': True
-        }
-
-        response.delete_cookie('access_token', **cookie_params)
-        response.delete_cookie('refresh_token', **cookie_params)
-        response.delete_cookie('sessionid', **cookie_params)
-        response.delete_cookie('csrftoken', **cookie_params) 
+        response = Response({'message': 'déconnexion réussie'}, status=200)
+        response.delete_cookie('access_token', path='/')
+        response.delete_cookie('refresh_token', path='/')
         
         return response
-
 
 class Force_logout(APIView):
     permission_classes = [AllowAny]
