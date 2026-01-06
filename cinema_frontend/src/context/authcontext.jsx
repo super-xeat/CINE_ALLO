@@ -74,21 +74,24 @@ export default function AuthProvider({children}) {
     }
 
     const Logout = async () => {
-        try {
-            await fetch(`${import.meta.env.VITE_API_URL}/auth/logout/`, {
-                method: 'POST',
-                credentials: 'include' 
-            })
-            setIsAuth(false)
-            setuserauth('')
-        } catch (error) {
-            console.error('Erreur lors du logout:', error)
-        } finally {
-            setIsAuth(false)
-            setuserauth('')
-            console.log('Déconnecté')
-        }
+    try {
+        await fetch(`${import.meta.env.VITE_API_URL}/auth/logout/`, {
+            method: 'POST',
+            credentials: 'include' 
+        });
+    } catch (error) {
+        console.error('Erreur lors du logout:', error);
+    } finally {
+        // On vide l'état peu importe si le fetch a réussi ou non
+        setIsAuth(false);
+        setuserauth('');
+        
+        // OPTIONNEL : Effacer le localStorage au cas où des infos y traînent
+        localStorage.clear(); 
+    
+        window.location.href = '/'; 
     }
+};  
 
 
     return (
