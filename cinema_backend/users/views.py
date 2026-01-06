@@ -40,7 +40,14 @@ class RegisterViews(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save(is_active=False)
-            token = jwt.encode(...) 
+            token = jwt.encode(
+                {
+                    'user_id': user.id,
+                    'exp': timezone.now() + timedelta(hours=24)
+                },
+                settings.SECRET_KEY, 
+                algorithm='HS256'
+            )
 
             backend_domain = os.getenv('SITE_DOMAIN_BACKEND', 'cine-allo.onrender.com')
             context = {'confirmation_url': f"https://{backend_domain}/auth/confirm-email/{token}/"}
