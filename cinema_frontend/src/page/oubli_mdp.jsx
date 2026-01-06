@@ -13,7 +13,7 @@ export default function Oubli_mdp() {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/oubli-mdp/`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                  'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({'email': email})
             })

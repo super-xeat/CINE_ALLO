@@ -12,6 +12,7 @@ const Footer = () => {
     <Box 
       component="footer" 
       sx={{ 
+        zindex:1000,
         bgcolor: footerBgColor,
         color: 'white',          
         py: 6,          
