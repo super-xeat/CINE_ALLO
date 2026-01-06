@@ -79,6 +79,8 @@ export default function AuthProvider({children}) {
                 method: 'POST',
                 credentials: 'include' 
             })
+            setIsAuth(false)
+            setuserauth('')
         } catch (error) {
             console.error('Erreur lors du logout:', error)
         } finally {

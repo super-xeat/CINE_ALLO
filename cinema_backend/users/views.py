@@ -51,7 +51,9 @@ class RegisterViews(APIView):
 
             backend_domain = os.getenv('SITE_DOMAIN_BACKEND', 'cine-allo.onrender.com')
             context = {'confirmation_url': f"https://{backend_domain}/auth/confirm-email/{token}/"}
-            
+         
+            print(f"DEBUG: BASE_DIR est {settings.BASE_DIR}")
+            print(f"DEBUG: Le dossier templates existe : {os.path.exists(os.path.join(settings.BASE_DIR, 'templates'))}")
             html_message = render_to_string('email/activation.html', context)
             
             payload = {
