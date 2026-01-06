@@ -88,10 +88,8 @@ export default function AuthProvider({children}) {
         
         // OPTIONNEL : Effacer le localStorage au cas où des infos y traînent
         localStorage.clear(); 
-    
-        window.location.href = '/'; 
-    }
-};  
+        }
+    };  
 
 
     return (

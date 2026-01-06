@@ -199,8 +199,14 @@ class LogoutView(APIView):
         logout(request)
         
         response = Response({'message': 'déconnexion réussie'}, status=200)
-        response.delete_cookie('access_token', path='/')
-        response.delete_cookie('refresh_token', path='/')
+        params = {
+            'path': '/',
+            'samesite': 'None',
+            'secure': True, # INDISPENSABLE sur Render
+            'max_age': 0,
+        }
+        response.delete_cookie('access_token', **params)
+        response.delete_cookie('refresh_token', **params)
         
         return response
 
