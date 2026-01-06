@@ -52,10 +52,23 @@ class RegisterViews(APIView):
             backend_domain = os.getenv('SITE_DOMAIN_BACKEND', 'cine-allo.onrender.com')
             context = {'confirmation_url': f"https://{backend_domain}/auth/confirm-email/{token}/"}
          
-            print(f"DEBUG: BASE_DIR est {settings.BASE_DIR}")
-            print(f"DEBUG: Le dossier templates existe : {os.path.exists(os.path.join(settings.BASE_DIR, 'templates'))}")
-            html_message = render_to_string('email/activation.html', context)
-            
+            try:
+                # Ton code actuel pour envoyer le mail
+                html_message = render_to_string('email/activation.html', context)
+                send_mail(
+                    'Activez votre compte',
+                    '',
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],
+                    html_message=html_message,
+                    fail_silently=False, # On le met à False pour voir l'erreur dans les logs
+                )
+            except Exception as e:
+                # C'EST ICI QUE TU VERRAS LE PROBLÈME DANS RENDER
+                print("--- ERREUR CRITIQUE ENVOI MAIL ---")
+                print(f"Type d'erreur: {type(e).__name__}")
+                print(f"Message d'erreur: {str(e)}")
+                print("---------------------------------")
             payload = {
                 "sender": {"name": "Cine Allo", "email": "quizzmaster1998@gmail.com"},
                 "to": [{"email": user.email}],
@@ -201,12 +214,13 @@ class LogoutView(APIView):
         response = Response({'message': 'déconnexion réussie'}, status=200)
         params = {
             'path': '/',
+            'domain': None,
             'samesite': 'None',
-            'secure': True, # INDISPENSABLE sur Render
-            'max_age': 0,
+            'secure': True,
+            'httponly': True,
         }
-        response.delete_cookie('access_token', **params)
-        response.delete_cookie('refresh_token', **params)
+        response.set_cookie('access_token', '', max_age=0, **params)
+        response.set_cookie('refresh_token', '', max_age=0, **params)
         
         return response
 
