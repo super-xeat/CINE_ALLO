@@ -209,8 +209,7 @@ class PasswordResetView(APIView):
         except User.DoesNotExist:
             return Response({'error':'utilisateur inconnu'})
         
-            
-        
+                   
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]

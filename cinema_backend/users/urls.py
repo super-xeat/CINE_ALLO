@@ -18,7 +18,7 @@ urlpatterns = [
     path('voir_liste/', ListeFilmViews.as_view(), name='voir_liste'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('confirm-email/<str:token>/', ConfirmEmailView.as_view(), name='confirm_email'),
-    path('oubli-mdp/<str:token>/', PasswordResetView.as_view(), name='passwordreset'),
+    path('oubli-mdp/', PasswordResetView.as_view(), name='passwordreset'),
     path('passwordreset/confirm/', PasswordResetConfirmview.as_view(), name='confirm_reset'),
     path('force_logout/', Force_logout.as_view(), name='force_logout')
 ]  
