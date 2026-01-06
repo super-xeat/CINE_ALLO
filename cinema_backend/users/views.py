@@ -184,7 +184,7 @@ class PasswordResetView(APIView):
             }, settings.SECRET_KEY, algorithm='HS256')
 
             frontend = os.getenv('SITE_DOMAIN_FRONTEND', 'cine-allo.onrender.com')
-            context = {'confirmation_url': f"https://{frontend}/oubli-mdp/{token}"}
+            context = {'password_reset': f"https://{frontend}/oubli-mdp/{token}"}
             html_message = render_to_string('mdp/password_confirm_email.html', context)
             
             payload = {
