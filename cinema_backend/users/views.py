@@ -34,62 +34,68 @@ class Pagination(PageNumberPagination):
 
 class RegisterViews(APIView):
     permission_classes = [AllowAny]
-    parser_classes = [MultiPartParser]
+    # N'utilisez MultiPartParser que si vous envoyez réellement des fichiers (ex: photo de profil)
+    parser_classes = [MultiPartParser] 
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save(is_active=False)
-            token = jwt.encode(
-                {
-                    'user_id': user.id,
-                    'exp': timezone.now() + timedelta(hours=24)
-                },
-                settings.SECRET_KEY, 
-                algorithm='HS256'
-            )
-
-            backend_domain = os.getenv('SITE_DOMAIN_BACKEND', 'cine-allo.onrender.com')
-            context = {'confirmation_url': f"https://{backend_domain}/auth/confirm-email/{token}/"}
-         
-            try:
-                # Ton code actuel pour envoyer le mail
-                html_message = render_to_string('email/activation.html', context)
-                send_mail(
-                    'Activez votre compte',
-                    '',
-                    settings.DEFAULT_FROM_EMAIL,
-                    [user.email],
-                    html_message=html_message,
-                    fail_silently=False, # On le met à False pour voir l'erreur dans les logs
-                )
-            except Exception as e:
-                # C'EST ICI QUE TU VERRAS LE PROBLÈME DANS RENDER
-                print("--- ERREUR CRITIQUE ENVOI MAIL ---")
-                print(f"Type d'erreur: {type(e).__name__}")
-                print(f"Message d'erreur: {str(e)}")
-                print("---------------------------------")
-            payload = {
-                "sender": {"name": "Cine Allo", "email": "quizzmaster1998@gmail.com"},
-                "to": [{"email": user.email}],
-                "subject": "Activez votre compte Cine Allo",
-                "htmlContent": html_message
-            }
-            
-            headers = {
-                "accept": "application/json",
-                "content-type": "application/json",
-                "api-key": os.getenv('BREVO_API_KEY')
-            }
-
-            try:
-                requests.post("https://api.api.brevo.com/v3/smtp/email", json=payload, headers=headers, timeout=10)
-                return Response({'succès': 'Compte créé : vérifiez vos mails'}, status=status.HTTP_201_CREATED)
-            except Exception as e:
-                return Response({'error': 'Erreur envoi mail'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+        # 1. Validation immédiate
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # 2. Création de l'utilisateur (inactif par défaut)
+        user = serializer.save(is_active=False)
+
+        # 3. Génération du Token JWT
+        token = jwt.encode(
+            {
+                'user_id': user.id,
+                'exp': timezone.now() + timedelta(hours=24)
+            },
+            settings.SECRET_KEY, 
+            algorithm='HS256'
+        )
+
+        # 4. Préparation de l'email
+        backend_domain = os.getenv('SITE_DOMAIN_BACKEND', 'cine-allo.onrender.com')
+        context = {'confirmation_url': f"https://{backend_domain}/auth/confirm-email/{token}/"}
+        html_message = render_to_string('email/activation.html', context)
+        
+        # 5. Envoi via l'API Brevo (Uniquement)
+        payload = {
+            "sender": {"name": "Cine-allo", "email": "quizzmaster1998@gmail.com"},
+            "to": [{"email": user.email}],
+            "subject": "Activez votre compte Cine Allo",
+            "htmlContent": html_message
+        }
+        
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "api-key": os.getenv('BREVO_API_KEY')
+        }
+
+        try:
+            # On fixe un timeout court (5s) pour ne pas bloquer le serveur
+            response = requests.post(
+                "https://api.brevo.com/v3/smtp/email", 
+                json=payload, 
+                headers=headers, 
+                timeout=5
+            )
+            # Vérifie si l'API a renvoyé une erreur (4xx ou 5xx)
+            response.raise_for_status() 
+            
+            return Response({'succès': 'Compte créé : vérifiez vos mails'}, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            # Log l'erreur mais ne bloque pas forcément l'expérience utilisateur
+            print(f"ERREUR ENVOI MAIL : {e}")
+            return Response(
+                {'attention': 'Compte créé, mais l\'envoi du mail de confirmation a échoué.'}, 
+                status=status.HTTP_201_CREATED) 
+
 
 class LoginViews(APIView):
     permission_classes = [AllowAny]
