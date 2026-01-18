@@ -157,7 +157,7 @@ CORS_ALLOW_HEADERS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://cine-allo.onrender.com", # URL Render de ton React
+    "https://cine-allo-prod.onrender.com", # URL Render de ton React
     "https://cine-allo-1.onrender.com",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
