@@ -34,6 +34,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'cine-allo.onrender.com', 
     "cine-allo-1.onrender.com",
+    'cine-allo-prod.onrender.com',
     'localhost', 
     '127.0.0.1']
 
