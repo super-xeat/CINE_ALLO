@@ -242,10 +242,14 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL', 'postgres://postgres:tomfeu83@db:5432/cinema_db')
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True  # FORCE l'utilisation du SSL pour Neon
     )
 }
-
+DATABASES['default']['OPTIONS'] = {
+    'sslmode': 'require',
+}
 
 
 # Password validation
